@@ -1,43 +1,38 @@
-package hu.numichi.kotlin.reactive
+package hu.numichi.kotlin.reactive.logger
 
 import hu.numichi.reactive.logger.ReactiveLogger as ReactiveJavaLogger
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.slf4j.Marker
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 import reactor.util.context.Context
+import reactor.util.context.ContextView
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
-class ReactiveLogger private constructor(private val reactiveLogger: ReactiveJavaLogger) {
+class ReactiveLogger(
+    private val reactiveLogger: ReactiveJavaLogger,
+    private val contextKey: CoroutineContext.Key<out CoroutineContext.Element>,
+    private val contextExtractive: suspend (CoroutineContext.Key<out CoroutineContext.Element>) -> Context?,
+) {
+
     companion object {
-        const val DEFAULT_REACTOR_CONTEXT_MDC_KEY = ReactiveJavaLogger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+        @JvmStatic
+        fun reactorBuild() = ReactiveLoggerBuilder<ReactorContext>()
+            .withContext(ReactorContext) { coroutineContext[it]?.context }
 
         @JvmStatic
-        private val DEFAULT_SCHEDULER: Scheduler = ReactiveJavaLogger.DEFAULT_SCHEDULER
-
-        @JvmStatic
-        private val DEFAULT_LOGGER: Logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
-
-        @JvmStatic
-        fun builder() = Builder()
+        fun <T : CoroutineContext.Element> build() = ReactiveLoggerBuilder<T>()
     }
 
-    fun imperative(): Logger {
-        return reactiveLogger.imperative()
-    }
-
-    fun scheduler(): Scheduler {
-        return reactiveLogger.scheduler()
-    }
-
-    fun readMDC(context: Context): Optional<Map<String, String>> {
-        return reactiveLogger.readMDC(context)
-    }
+    fun imperative(): Logger = reactiveLogger.imperative()
+    fun scheduler(): Scheduler = reactiveLogger.scheduler()
+    fun readMDC(context: Context): Optional<Map<String, String>> = reactiveLogger.readMDC(context)
+    fun getName(): String? = reactiveLogger.name
 
     //region Trace
     fun isTraceEnabled(): Boolean {
@@ -290,44 +285,12 @@ class ReactiveLogger private constructor(private val reactiveLogger: ReactiveJav
     //endregion
 
     private suspend fun wrap(fn: (ReactiveJavaLogger) -> Mono<Context>) {
-        val context = coroutineContext[ReactorContext]?.context ?: Context.empty()
+        val key = coroutineContext[contextKey] as CoroutineContext.Key<out CoroutineContext.Element>
+        val context: ContextView = contextExtractive(key)?.readOnly() ?: Context.empty().readOnly()
 
         mono { fn(reactiveLogger) }
-            .contextWrite { it.putAll(context.readOnly()) }
+            .contextWrite { it.putAll(context) }
             .awaitSingleOrNull()
-    }
-
-    class Builder {
-        private var scheduler = DEFAULT_SCHEDULER
-        private var logger = DEFAULT_LOGGER
-        private var mdcContextKey = DEFAULT_REACTOR_CONTEXT_MDC_KEY
-
-        fun withLogger(logger: Logger): Builder {
-            this.logger = logger
-            return this
-        }
-
-        fun withScheduler(scheduler: Scheduler): Builder {
-            this.scheduler = scheduler
-            return this
-        }
-
-        fun withMDCContextKey(mdcContextKey: String): Builder {
-            require(mdcContextKey.trim { it <= ' ' }.isNotEmpty()) { "MDC context key must not be blank" }
-
-            this.mdcContextKey = mdcContextKey
-            return this
-        }
-
-        fun build(): ReactiveLogger {
-            return ReactiveLogger(
-                ReactiveJavaLogger.builder()
-                    .withLogger(logger)
-                    .withScheduler(scheduler)
-                    .withMDCContextKey(mdcContextKey)
-                    .build()
-            )
-        }
     }
 }
 

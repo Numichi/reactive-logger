@@ -1,0 +1,1 @@
+![CircleCI](https://img.shields.io/circleci/build/github/Numichi/reactive-logger/develop?token=1ab3c1c3f9d1d17daf4bc4cb2eb24ccdc35b8001)
