@@ -1,22 +1,13 @@
-<div style="text-align: center;">
-    <h1>
-        reactive-logger
-    </h1>
-</div>
+# reactive-logger
+[![CircleCI](https://circleci.com/gh/Numichi/reactive-logger/tree/develop.svg?style=shield)](https://circleci.com/gh/Numichi/reactive-logger/tree/develop)
+[![Maintainability](https://api.codeclimate.com/v1/badges/3b8d1ff3b57491648f7d/maintainability)](https://codeclimate.com/github/Numichi/reactive-logger/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/3b8d1ff3b57491648f7d/test_coverage)](https://codeclimate.com/github/Numichi/reactive-logger/test_coverage)
 
----
+### Supported:
+<img src="https://pics.freeicons.io/uploads/icons/png/18852341021548218200-512.png" alt="Kotlin" width="24"/>&nbsp;&nbsp;
+<img src="https://pics.freeicons.io/uploads/icons/png/378554371540553613-512.png" alt="Kotlin" width="24"/>
 
-<div style="text-align: center;">
-    <a href="https://circleci.com/gh/Numichi/reactive-logger/tree/develop">
-        <img src="https://circleci.com/gh/Numichi/reactive-logger/tree/develop.svg?style=shield" alt="CircleCI">
-    </a>
-    <a href="https://circleci.com/gh/Numichi/reactive-logger/tree/develop">
-        <img src="https://api.codeclimate.com/v1/badges/3b8d1ff3b57491648f7d/maintainability" alt="CodeClimate Maintainability">
-    </a>
-    <a href="https://codeclimate.com/github/Numichi/reactive-logger/test_coverage">
-        <img src="https://api.codeclimate.com/v1/badges/3b8d1ff3b57491648f7d/test_coverage" alt="CodeClimate Test Coverage">
-    </a>
-</div>
+
 
 ## Documentation
 
