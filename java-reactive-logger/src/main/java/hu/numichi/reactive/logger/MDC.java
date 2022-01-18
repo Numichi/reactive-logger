@@ -1,5 +1,6 @@
 package hu.numichi.reactive.logger;
 
+import hu.numichi.reactive.logger.exception.InvalidContextDataException;
 import reactor.core.publisher.Mono;
 import reactor.util.annotation.NonNull;
 import reactor.util.context.ContextView;
@@ -63,7 +64,7 @@ public final class MDC {
         try {
             data = contextView.getOrDefault(mdcContextKey, new HashMap<>());
         } catch (ClassCastException exception) {
-            data = new HashMap<>();
+            return Mono.error(new InvalidContextDataException(exception));
         }
         
         return Mono.just(new MDC(mdcContextKey, data));

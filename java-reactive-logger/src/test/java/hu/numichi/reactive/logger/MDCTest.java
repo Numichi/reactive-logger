@@ -1,5 +1,6 @@
 package hu.numichi.reactive.logger;
 
+import hu.numichi.reactive.logger.exception.InvalidContextDataException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -9,7 +10,6 @@ import reactor.util.context.Context;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,7 +73,7 @@ class MDCTest {
     }
     
     @Test
-    @DisplayName("MDC.restore(ContextView) - should give empty map with wrong context")
+    @DisplayName("MDC.restore(ContextView) - should give error with wrong context")
     void mdcRestoreContextViewWithWrongContextTest() {
         Map<String, Object> map = new HashMap<>();
         map.put(ReactiveLogger.DEFAULT_REACTOR_CONTEXT_MDC_KEY, 1000);
@@ -81,10 +81,7 @@ class MDCTest {
         Mono<MDC> mdc2 = MDC.restore(Context.of(map));
         
         StepVerifier.create(mdc2)
-            .expectNextMatches((predicate) ->
-                predicate.getMdcContextKey().equals(ReactiveLogger.DEFAULT_REACTOR_CONTEXT_MDC_KEY)
-                    && predicate.getMdcMap().isEmpty()
-            )
-            .verifyComplete();
+            .expectError(InvalidContextDataException.class)
+            .verify();
     }
 }
