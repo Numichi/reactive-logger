@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.6.10"
     java
+    jacoco
 }
 
 group = "org.example"
@@ -18,6 +19,7 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.0")
     implementation("org.slf4j:slf4j-api:1.7.33")
+    implementation(project(":reactive-logger-common"))
     implementation(project(":java-reactive-logger"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
@@ -26,4 +28,26 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
 }

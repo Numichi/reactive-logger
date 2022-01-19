@@ -1,7 +1,8 @@
-package hu.numichi.kotlin.reactive.logger
+package hu.numichi.reactive.logger.kotlin
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactor.asCoroutineContext
+import hu.numichi.reactive.logger.MDC
 import reactor.util.context.Context
 
 suspend fun <T> withReactorContext(mdc: MDC, block: suspend CoroutineScope.() -> T): T {
@@ -24,8 +25,8 @@ suspend fun <T> withContext(mdcCollection: Collection<MDC>, context: Context?, b
     var newContext = context ?: Context.empty()
 
     mdcCollection.forEach {
-        newContext = newContext.delete(it.mdcContextKey)
-        newContext = newContext.put(it.mdcContextKey, it.mdcMap)
+        newContext = newContext.delete(it.contextKey)
+        newContext = newContext.put(it.contextKey, it.map)
     }
 
     return kotlinx.coroutines.withContext(newContext.asCoroutineContext()) {

@@ -14,6 +14,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "java-reactive-logger/build.gradle.kts" }}-{{ checksum "kotlin-coroutine-reactive-logger/build.gradle.kts" }}
             - v1-dependencies-
+      - run: gradle :reactive-logger-common:build
       - run: gradle :java-reactive-logger:test
       - run: gradle :kotlin-coroutine-reactive-logger:test
       - save_cache:

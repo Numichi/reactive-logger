@@ -1,4 +1,4 @@
-package hu.numichi.reactive.logger;
+package hu.numichi.reactive.logger.java;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +13,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+import static hu.numichi.reactive.logger.Consts.DEFAULT_SCHEDULER;
+
 public final class ReactiveLogger {
-    public static final String DEFAULT_REACTOR_CONTEXT_MDC_KEY = "DEFAULT_REACTOR_CONTEXT_MDC_KEY";
-    public static final Scheduler DEFAULT_SCHEDULER = Schedulers.boundedElastic();
+    
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(ReactiveLogger.class);
     private final Scheduler scheduler;
     private final Logger logger;

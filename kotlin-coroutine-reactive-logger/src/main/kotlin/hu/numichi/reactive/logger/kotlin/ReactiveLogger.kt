@@ -1,6 +1,6 @@
-package hu.numichi.kotlin.reactive.logger
+package hu.numichi.reactive.logger.kotlin
 
-import hu.numichi.reactive.logger.ReactiveLogger as ReactiveJavaLogger
+import hu.numichi.reactive.logger.java.ReactiveLogger as JReactiveLogger
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
@@ -15,14 +15,14 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 class ReactiveLogger(
-    private val reactiveLogger: ReactiveJavaLogger,
+    private val reactiveLogger: JReactiveLogger,
     private val contextKey: CoroutineContext.Key<out CoroutineContext.Element>,
     private val contextExtractive: suspend (CoroutineContext.Key<out CoroutineContext.Element>) -> Context?,
 ) {
 
     companion object {
         @JvmStatic
-        fun reactorBuild() = ReactiveLoggerBuilder<ReactorContext>()
+        fun defaultBuilder() = build<ReactorContext>()
             .withContext(ReactorContext) { coroutineContext[it]?.context }
 
         @JvmStatic
@@ -284,7 +284,7 @@ class ReactiveLogger(
     }
     //endregion
 
-    private suspend fun wrap(fn: (ReactiveJavaLogger) -> Mono<Context>) {
+    private suspend fun wrap(fn: (JReactiveLogger) -> Mono<Context>) {
         val key = coroutineContext[contextKey] as CoroutineContext.Key<out CoroutineContext.Element>
         val context: ContextView = contextExtractive(key)?.readOnly() ?: Context.empty().readOnly()
 

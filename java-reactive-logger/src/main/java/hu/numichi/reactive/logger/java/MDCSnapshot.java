@@ -1,4 +1,4 @@
-package hu.numichi.reactive.logger;
+package hu.numichi.reactive.logger.java;
 
 import org.slf4j.MDC;
 import reactor.util.annotation.NonNull;

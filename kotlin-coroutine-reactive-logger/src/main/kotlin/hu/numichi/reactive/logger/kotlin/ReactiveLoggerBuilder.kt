@@ -1,5 +1,7 @@
-package hu.numichi.kotlin.reactive.logger
+package hu.numichi.reactive.logger.kotlin
 
+import hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+import hu.numichi.reactive.logger.Consts.DEFAULT_SCHEDULER
 import kotlinx.coroutines.reactor.ReactorContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,7 +14,6 @@ class ReactiveLoggerBuilder<T : CoroutineContext.Element> {
     private var scheduler = DEFAULT_SCHEDULER
     private var logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
     private var mdcContextKey = DEFAULT_REACTOR_CONTEXT_MDC_KEY
-
     private var contextKey: CoroutineContext.Key<T>? = null
     private var contextExtractive: suspend (CoroutineContext.Key<out CoroutineContext.Element>) -> Context? = {
         coroutineContext[ReactorContext]?.context
@@ -54,12 +55,12 @@ class ReactiveLoggerBuilder<T : CoroutineContext.Element> {
 
     fun build(): ReactiveLogger {
         return ReactiveLogger(
-            hu.numichi.reactive.logger.ReactiveLogger.builder()
+            ReactiveLogger.build<T>()
                 .withLogger(logger)
                 .withScheduler(scheduler)
                 .withMDCContextKey(mdcContextKey)
                 .build(),
-            contextKey ?: ReactorContext.Key,
+            contextKey ?: ReactorContext,
             contextExtractive
         )
     }
