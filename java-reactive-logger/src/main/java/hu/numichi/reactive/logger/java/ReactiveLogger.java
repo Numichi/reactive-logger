@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 import reactor.util.annotation.NonNull;
 import reactor.util.context.Context;
 
@@ -42,6 +41,10 @@ public final class ReactiveLogger {
         return scheduler;
     }
     
+    public String mdcContextKey() {
+        return mdcContextKey;
+    }
+    
     @NonNull
     public Optional<Map<String, String>> readMDC(@NonNull final Context context) {
         return context.getOrEmpty(mdcContextKey);
@@ -62,35 +65,12 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> trace(
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.trace(format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> trace(
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.trace(format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> trace(
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> trace(final String format, final Object... arguments) {
         return wrap(() -> logger.trace(format, arguments));
     }
     
     @NonNull
-    public Mono<Context> trace(
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> trace(final String msg, final Throwable t) {
         return wrap(() -> logger.trace(msg, t));
     }
     
@@ -99,46 +79,18 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> trace(
-        final Marker marker,
-        final String msg
-    ) {
+    public Mono<Context> trace(final Marker marker, final String msg) {
         return wrap(() -> logger.trace(marker, msg));
     }
     
     @NonNull
-    public Mono<Context> trace(
-        final Marker marker,
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.trace(marker, format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> trace(
-        final Marker marker,
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.trace(marker, format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> trace(
-        final Marker marker,
-        final String format,
-        final Object... argArray
-    ) {
+    public Mono<Context> trace(final Marker marker, final String format, final Object... argArray) {
         return wrap(() -> logger.trace(marker, format, argArray));
     }
     
     @NonNull
     public Mono<Context> trace(
-        final Marker marker,
-        final String msg,
-        final Throwable t
+        final Marker marker, final String msg, final Throwable t
     ) {
         return wrap(() -> logger.trace(marker, msg, t));
     }
@@ -155,35 +107,12 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> debug(
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.debug(format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> debug(
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.debug(format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> debug(
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> debug(final String format, final Object... arguments) {
         return wrap(() -> logger.debug(format, arguments));
     }
     
     @NonNull
-    public Mono<Context> debug(
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> debug(final String msg, final Throwable t) {
         return wrap(() -> logger.debug(msg, t));
     }
     
@@ -192,47 +121,17 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> debug(
-        final Marker marker,
-        final String msg
-    ) {
+    public Mono<Context> debug(final Marker marker, final String msg) {
         return wrap(() -> logger.debug(marker, msg));
     }
     
     @NonNull
-    public Mono<Context> debug(
-        final Marker marker,
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.debug(marker, format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> debug(
-        final Marker marker,
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.debug(marker, format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> debug(
-        final Marker marker,
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> debug(final Marker marker, final String format, final Object... arguments) {
         return wrap(() -> logger.debug(marker, format, arguments));
     }
     
     @NonNull
-    public Mono<Context> debug(
-        final Marker marker,
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> debug(final Marker marker, final String msg, final Throwable t) {
         return wrap(() -> logger.debug(marker, msg, t));
     }
     //endregion
@@ -248,35 +147,12 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> info(
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.info(format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> info(
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.info(format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> info(
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> info(final String format, final Object... arguments) {
         return wrap(() -> logger.info(format, arguments));
     }
     
     @NonNull
-    public Mono<Context> info(
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> info(final String msg, final Throwable t) {
         return wrap(() -> logger.info(msg, t));
     }
     
@@ -285,46 +161,18 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> info(
-        final Marker marker,
-        final String msg
-    ) {
+    public Mono<Context> info(final Marker marker, final String msg) {
         return wrap(() -> logger.info(marker, msg));
     }
     
     @NonNull
-    public Mono<Context> info(
-        final Marker marker,
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.info(marker, format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> info(
-        final Marker marker,
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.info(marker, format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> info(
-        final Marker marker,
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> info(final Marker marker, final String format, final Object... arguments) {
         return wrap(() -> logger.info(marker, format, arguments));
     }
     
     @NonNull
     public Mono<Context> info(
-        final Marker marker,
-        final String msg,
-        final Throwable t
+        final Marker marker, final String msg, final Throwable t
     ) {
         return wrap(() -> logger.info(marker, msg, t));
     }
@@ -341,35 +189,12 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> warn(
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.warn(format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> warn(
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> warn(final String format, final Object... arguments) {
         return wrap(() -> logger.warn(format, arguments));
     }
     
     @NonNull
-    public Mono<Context> warn(
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.warn(format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> warn(
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> warn(final String msg, final Throwable t) {
         return wrap(() -> logger.warn(msg, t));
     }
     
@@ -378,47 +203,17 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> warn(
-        final Marker marker,
-        final String msg
-    ) {
+    public Mono<Context> warn(final Marker marker, final String msg) {
         return wrap(() -> logger.warn(marker, msg));
     }
     
     @NonNull
-    public Mono<Context> warn(
-        final Marker marker,
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.warn(marker, format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> warn(
-        final Marker marker,
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.warn(marker, format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> warn(
-        final Marker marker,
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> warn(final Marker marker, final String format, final Object... arguments) {
         return wrap(() -> logger.warn(marker, format, arguments));
     }
     
     @NonNull
-    public Mono<Context> warn(
-        final Marker marker,
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> warn(final Marker marker, final String msg, final Throwable t) {
         return wrap(() -> logger.warn(marker, msg, t));
     }
     //endregion
@@ -434,35 +229,12 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> error(
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.error(format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> error(
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.error(format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> error(
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> error(final String format, final Object... arguments) {
         return wrap(() -> logger.error(format, arguments));
     }
     
     @NonNull
-    public Mono<Context> error(
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> error(final String msg, final Throwable t) {
         return wrap(() -> logger.error(msg, t));
     }
     
@@ -471,55 +243,26 @@ public final class ReactiveLogger {
     }
     
     @NonNull
-    public Mono<Context> error(
-        final Marker marker,
-        final String msg
-    ) {
+    public Mono<Context> error(final Marker marker, final String msg) {
         return wrap(() -> logger.error(marker, msg));
     }
     
     @NonNull
-    public Mono<Context> error(
-        final Marker marker,
-        final String format,
-        final Object arg
-    ) {
-        return wrap(() -> logger.error(marker, format, arg));
-    }
-    
-    @NonNull
-    public Mono<Context> error(
-        final Marker marker,
-        final String format,
-        final Object arg1,
-        final Object arg2
-    ) {
-        return wrap(() -> logger.error(marker, format, arg1, arg2));
-    }
-    
-    @NonNull
-    public Mono<Context> error(
-        final Marker marker,
-        final String format,
-        final Object... arguments
-    ) {
+    public Mono<Context> error(final Marker marker, final String format, final Object... arguments) {
         return wrap(() -> logger.error(marker, format, arguments));
     }
     
     @NonNull
-    public Mono<Context> error(
-        final Marker marker,
-        final String msg,
-        final Throwable t
-    ) {
+    public Mono<Context> error(final Marker marker, final String msg, final Throwable t) {
         return wrap(() -> logger.error(marker, msg, t));
     }
     //endregion
     
-    private MDCSnapshot takeMDCSnapshot(final Context context) {
+    public MDCSnapshot takeMDCSnapshot(final Context context) {
         return readMDC(context).map(MDCSnapshot::of).orElseGet(MDCSnapshot::empty);
     }
     
+    @NonNull
     private Mono<Context> wrap(final Runnable runnable) {
         return Mono.deferContextual(contextView -> {
             Context context = Context.of(contextView);
@@ -540,12 +283,12 @@ public final class ReactiveLogger {
         
         private Builder() {
         }
-    
+        
         public Builder withLogger(@NonNull final Class<?> logger) {
             this.logger = LoggerFactory.getLogger(Objects.requireNonNull(logger, LOGGER_MUST_NOT_BE_NULL));
             return this;
         }
-    
+        
         public Builder withLogger(@NonNull final String logger) {
             this.logger = LoggerFactory.getLogger(Objects.requireNonNull(logger, LOGGER_MUST_NOT_BE_NULL));
             return this;

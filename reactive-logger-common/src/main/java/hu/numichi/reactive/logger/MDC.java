@@ -108,4 +108,21 @@ public class MDC implements Map<String, String> {
     public Set<Entry<String, String>> entrySet() {
         return mdcMap.entrySet();
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MDC mdc = (MDC) o;
+        return mdcMap.equals(mdc.mdcMap) && mdcContextKey.equals(mdc.mdcContextKey);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(mdcMap, mdcContextKey);
+    }
 }

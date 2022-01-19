@@ -22,7 +22,6 @@ public final class MDCContext {
     @NonNull
     public static Context put(@NonNull Context context, @NonNull Map<String, String> mdc) {
         Objects.requireNonNull(context, CTXK_NOT_NULL);
-        Objects.requireNonNull(context, MDC_NOT_NULL);
         
         return context.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc);
     }
@@ -30,10 +29,16 @@ public final class MDCContext {
     @NonNull
     public static Context put(@NonNull Context context, @NonNull String mdcContextKey, @NonNull Map<String, String> mdc) {
         Objects.requireNonNull(context, CTXK_NOT_NULL);
-        Objects.requireNonNull(mdcContextKey, CTXK_NOT_NULL);
-        Objects.requireNonNull(mdc, MDC_NOT_NULL);
         
         return context.put(mdcContextKey, mdc);
+    }
+    
+    @NonNull
+    public static Context put(@NonNull Context context, @NonNull String mdcContextKey, @NonNull MDC mdc) {
+        Objects.requireNonNull(context, CTXK_NOT_NULL);
+        Objects.requireNonNull(mdc, MDC_NOT_NULL);
+        
+        return context.put(mdcContextKey, mdc.getMap());
     }
     
     @NonNull
@@ -55,7 +60,7 @@ public final class MDCContext {
     }
     
     @NonNull
-    public static Mono<MDC> read(@NonNull Context context) {
+    public static Mono<MDC> read(@NonNull ContextView context) {
         return read(context, DEFAULT_REACTOR_CONTEXT_MDC_KEY);
     }
     
@@ -73,7 +78,7 @@ public final class MDCContext {
         try {
             Map<String, String> map = contextView.get(mdcContextKey);
             mdc.putAll(map);
-        } catch (ClassCastException | NullPointerException exception) {
+        } catch (ClassCastException exception) {
             return Mono.error(new InvalidContextDataException(exception));
         }
         
