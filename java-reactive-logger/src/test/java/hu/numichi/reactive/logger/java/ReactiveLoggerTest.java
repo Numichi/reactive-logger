@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -229,7 +230,7 @@ class ReactiveLoggerTest {
         logger.trace(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).trace(message, exceptionCaptor.capture());
+        verify(imperativeLogger).trace(eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -260,7 +261,7 @@ class ReactiveLoggerTest {
         logger.trace(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).trace(marker, message, exceptionCaptor.capture());
+        verify(imperativeLogger).trace(eq(marker), eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -288,7 +289,7 @@ class ReactiveLoggerTest {
         logger.debug(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).debug(message, exceptionCaptor.capture());
+        verify(imperativeLogger).debug(eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -319,7 +320,7 @@ class ReactiveLoggerTest {
         logger.debug(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).debug(marker, message, exceptionCaptor.capture());
+        verify(imperativeLogger).debug(eq(marker), eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -347,7 +348,7 @@ class ReactiveLoggerTest {
         logger.info(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).info(message, exceptionCaptor.capture());
+        verify(imperativeLogger).info(eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -378,7 +379,7 @@ class ReactiveLoggerTest {
         logger.info(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).info(marker, message, exceptionCaptor.capture());
+        verify(imperativeLogger).info(eq(marker), eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -406,7 +407,7 @@ class ReactiveLoggerTest {
         logger.warn(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).warn(message, exceptionCaptor.capture());
+        verify(imperativeLogger).warn(eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -437,7 +438,7 @@ class ReactiveLoggerTest {
         logger.warn(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).warn(marker, message, exceptionCaptor.capture());
+        verify(imperativeLogger).warn(eq(marker), eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -465,7 +466,7 @@ class ReactiveLoggerTest {
         logger.error(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).error(message, exceptionCaptor.capture());
+        verify(imperativeLogger).error(eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -496,7 +497,7 @@ class ReactiveLoggerTest {
         logger.error(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).error(marker, message, exceptionCaptor.capture());
+        verify(imperativeLogger).error(eq(marker), eq(message), exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
