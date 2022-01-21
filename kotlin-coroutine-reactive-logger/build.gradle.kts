@@ -23,6 +23,9 @@ dependencies {
     implementation(project(":java-reactive-logger"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.1")
+    testImplementation("io.mockk:mockk:1.12.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 

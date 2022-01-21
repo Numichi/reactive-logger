@@ -2,9 +2,9 @@ package hu.numichi.reactive.logger.kotlin
 
 import hu.numichi.reactive.logger.java.ReactiveLogger as JReactiveLogger
 import hu.numichi.reactive.logger.Consts
+import hu.numichi.reactive.logger.exception.ContextNotExistException
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import kotlinx.coroutines.reactor.mono
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.Marker
@@ -15,6 +15,7 @@ import reactor.util.context.ContextView
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
+import kotlin.jvm.Throws
 
 class ReactiveLogger private constructor(
     private val reactiveLogger: JReactiveLogger,
@@ -24,11 +25,14 @@ class ReactiveLogger private constructor(
 
     companion object {
         @JvmStatic
-        fun defaultBuilder() = Builder<ReactorContext>()
-            .withContext(ReactorContext) { coroutineContext[it]?.context }
+        fun builder(): Builder<ReactorContext> {
+            return builder(ReactorContext).withContext { coroutineContext[it]?.context }
+        }
 
         @JvmStatic
-        fun <E : CoroutineContext.Element> builder() = Builder<E>()
+        fun <T : CoroutineContext.Element> builder(coroutineKey: CoroutineContext.Key<T>): Builder<T> {
+            return Builder(coroutineKey)
+        }
     }
 
     fun imperative(): Logger = reactiveLogger.imperative()
@@ -210,18 +214,21 @@ class ReactiveLogger private constructor(
         val key = coroutineContext[contextKey] as CoroutineContext.Key<out CoroutineContext.Element>
         val context: ContextView = contextExtractive(key)?.readOnly() ?: Context.empty().readOnly()
 
-        mono { fn(reactiveLogger) }
+        fn(reactiveLogger)
             .contextWrite { it.putAll(context) }
             .awaitSingleOrNull()
     }
 
-    class Builder<T : CoroutineContext.Element> {
+    class Builder<T : CoroutineContext.Element>(private val contextKey: CoroutineContext.Key<T>) {
         private var scheduler = Consts.DEFAULT_SCHEDULER
         private var logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
         private var mdcContextKey = Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY
-        private var contextKey: CoroutineContext.Key<T>? = null
-        private var contextExtractive: suspend (CoroutineContext.Key<out CoroutineContext.Element>) -> Context? = {
-            coroutineContext[ReactorContext]?.context
+        private var contextExtractive: suspend (CoroutineContext.Key<out T>) -> Context? = { null }
+        private var enableError: Boolean = false
+
+        fun enableError(): Builder<T> {
+            enableError = true
+            return this
         }
 
         fun withLogger(logger: Class<*>): Builder<T> {
@@ -251,22 +258,26 @@ class ReactiveLogger private constructor(
             return this
         }
 
-        @Suppress("UNCHECKED_CAST")
-        fun withContext(key: CoroutineContext.Key<T>, extractive: suspend (CoroutineContext.Key<T>) -> Context?): Builder<T> {
-            this.contextExtractive = extractive as suspend (CoroutineContext.Key<out CoroutineContext.Element>) -> Context?
-            this.contextKey = key
+        fun withContext(extractive: suspend (CoroutineContext.Key<out T>) -> Context?): Builder<T> {
+            this.contextExtractive = extractive
             return this
         }
 
+        @Suppress("UNCHECKED_CAST")
         fun build(): ReactiveLogger {
+            val jLogger = JReactiveLogger.builder()
+                .withLogger(logger)
+                .withScheduler(scheduler)
+                .withMDCContextKey(mdcContextKey)
+
+            if (enableError) {
+                jLogger.enableError()
+            }
+
             return ReactiveLogger(
-                JReactiveLogger.builder()
-                    .withLogger(logger)
-                    .withScheduler(scheduler)
-                    .withMDCContextKey(mdcContextKey)
-                    .build(),
-                contextKey ?: ReactorContext,
-                contextExtractive
+                jLogger.build(),
+                contextKey,
+                contextExtractive as suspend (CoroutineContext.Key<out CoroutineContext.Element>) -> Context?,
             )
         }
     }

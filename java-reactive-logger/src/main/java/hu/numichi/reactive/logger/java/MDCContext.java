@@ -34,14 +34,6 @@ public final class MDCContext {
     }
     
     @NonNull
-    public static Context put(@NonNull Context context, @NonNull String mdcContextKey, @NonNull MDC mdc) {
-        Objects.requireNonNull(context, CTXK_NOT_NULL);
-        Objects.requireNonNull(mdc, MDC_NOT_NULL);
-        
-        return context.put(mdcContextKey, mdc.getMap());
-    }
-    
-    @NonNull
     public static Context put(@NonNull Context context, @NonNull MDC mdc) {
         Objects.requireNonNull(context, CTXK_NOT_NULL);
         Objects.requireNonNull(mdc, MDC_NOT_NULL);
@@ -78,7 +70,7 @@ public final class MDCContext {
         try {
             Map<String, String> map = contextView.get(mdcContextKey);
             mdc.putAll(map);
-        } catch (ClassCastException exception) {
+        } catch (Exception exception) {
             return Mono.error(new InvalidContextDataException(exception));
         }
         

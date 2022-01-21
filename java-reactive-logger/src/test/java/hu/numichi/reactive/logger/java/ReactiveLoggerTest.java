@@ -1,5 +1,7 @@
 package hu.numichi.reactive.logger.java;
 
+import hu.numichi.reactive.logger.exception.ContextNotExistException;
+import hu.numichi.reactive.logger.exception.InvalidContextDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -8,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.test.StepVerifier;
 import reactor.util.annotation.NonNull;
 import reactor.util.context.Context;
 
@@ -25,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -35,6 +38,7 @@ class ReactiveLoggerTest {
     
     private final Logger imperativeLogger = mock(Logger.class);
     private final ReactiveLogger logger = ReactiveLogger.builder().withLogger(imperativeLogger).build();
+    private final ReactiveLogger loggerWithError = ReactiveLogger.builder().withLogger(imperativeLogger).enableError().build();
     
     static String randomText() {
         return UUID.randomUUID().toString();
@@ -58,6 +62,7 @@ class ReactiveLoggerTest {
     }
     
     @Test
+    @SuppressWarnings("squid:S5778")
     void builderWithClassLogger() {
         assertThrows(NullPointerException.class, () -> ReactiveLogger.builder().withLogger((Class) null).build());
         assertThrows(NullPointerException.class, () -> ReactiveLogger.builder().withLogger((String) null).build());
@@ -98,11 +103,12 @@ class ReactiveLoggerTest {
     }
     
     @Test
+    @SuppressWarnings("squid:S5778")
     void contextKey() {
         final String contextKey = "another-context-key";
         final ReactiveLogger loggerWithCustomScheduler = ReactiveLogger.builder().withMDCContextKey(contextKey).build();
         assertSame(loggerWithCustomScheduler.mdcContextKey(), contextKey);
-        
+    
         assertThrows(IllegalArgumentException.class, () -> ReactiveLogger.builder().withMDCContextKey("").build());
         assertThrows(IllegalArgumentException.class, () -> ReactiveLogger.builder().withMDCContextKey(" ").build());
     }
@@ -125,7 +131,7 @@ class ReactiveLoggerTest {
     @Test
     void traceEnabledMarker() {
         final Marker marker = MarkerFactory.getMarker(randomText());
-        when(imperativeLogger.isTraceEnabled(eq(marker))).thenReturn(true, false, true);
+        when(imperativeLogger.isTraceEnabled(marker)).thenReturn(true, false, true);
         assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be");
         assertFalse(logger.isTraceEnabled(marker), "trace enabled when it should not be");
         assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be");
@@ -142,7 +148,7 @@ class ReactiveLoggerTest {
     @Test
     void debugEnabledMarker() {
         final Marker marker = MarkerFactory.getMarker(randomText());
-        when(imperativeLogger.isDebugEnabled(eq(marker))).thenReturn(true, false, true);
+        when(imperativeLogger.isDebugEnabled(marker)).thenReturn(true, false, true);
         assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be");
         assertFalse(logger.isDebugEnabled(marker), "debug enabled when it should not be");
         assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be");
@@ -159,7 +165,7 @@ class ReactiveLoggerTest {
     @Test
     void infoEnabledMarker() {
         final Marker marker = MarkerFactory.getMarker(randomText());
-        when(imperativeLogger.isInfoEnabled(eq(marker))).thenReturn(true, false, true);
+        when(imperativeLogger.isInfoEnabled(marker)).thenReturn(true, false, true);
         assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be");
         assertFalse(logger.isInfoEnabled(marker), "info enabled when it should not be");
         assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be");
@@ -176,7 +182,7 @@ class ReactiveLoggerTest {
     @Test
     void warnEnabledMarker() {
         final Marker marker = MarkerFactory.getMarker(randomText());
-        when(imperativeLogger.isWarnEnabled(eq(marker))).thenReturn(true, false, true);
+        when(imperativeLogger.isWarnEnabled(marker)).thenReturn(true, false, true);
         assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be");
         assertFalse(logger.isWarnEnabled(marker), "warn enabled when it should not be");
         assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be");
@@ -193,7 +199,7 @@ class ReactiveLoggerTest {
     @Test
     void errorEnabledMarker() {
         final Marker marker = MarkerFactory.getMarker(randomText());
-        when(imperativeLogger.isErrorEnabled(eq(marker))).thenReturn(true, false, true);
+        when(imperativeLogger.isErrorEnabled(marker)).thenReturn(true, false, true);
         assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be");
         assertFalse(logger.isErrorEnabled(marker), "error enabled when it should not be");
         assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be");
@@ -203,7 +209,7 @@ class ReactiveLoggerTest {
     void traceMessage() {
         final String message = randomText();
         logger.trace(message).block();
-        verify(imperativeLogger).trace(eq(message));
+        verify(imperativeLogger).trace(message);
     }
     
     @Test
@@ -213,7 +219,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.trace(format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).trace(eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).trace(format, argument1, argument2, argument3);
     }
     
     @Test
@@ -223,7 +229,7 @@ class ReactiveLoggerTest {
         logger.trace(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).trace(eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).trace(message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -232,7 +238,7 @@ class ReactiveLoggerTest {
         final Marker marker = MarkerFactory.getMarker(randomText());
         final String message = randomText();
         logger.trace(marker, message).block();
-        verify(imperativeLogger).trace(eq(marker), eq(message));
+        verify(imperativeLogger).trace(marker, message);
     }
     
     @Test
@@ -243,7 +249,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.trace(marker, format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).trace(eq(marker), eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).trace(marker, format, argument1, argument2, argument3);
     }
     
     @Test
@@ -254,7 +260,7 @@ class ReactiveLoggerTest {
         logger.trace(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).trace(eq(marker), eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).trace(marker, message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -262,7 +268,7 @@ class ReactiveLoggerTest {
     void debugMessage() {
         final String message = randomText();
         logger.debug(message).block();
-        verify(imperativeLogger).debug(eq(message));
+        verify(imperativeLogger).debug(message);
     }
     
     @Test
@@ -272,7 +278,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.debug(format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).debug(eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).debug(format, argument1, argument2, argument3);
     }
     
     @Test
@@ -282,7 +288,7 @@ class ReactiveLoggerTest {
         logger.debug(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).debug(eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).debug(message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -291,7 +297,7 @@ class ReactiveLoggerTest {
         final Marker marker = MarkerFactory.getMarker(randomText());
         final String message = randomText();
         logger.debug(marker, message).block();
-        verify(imperativeLogger).debug(eq(marker), eq(message));
+        verify(imperativeLogger).debug(marker, message);
     }
     
     @Test
@@ -302,7 +308,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.debug(marker, format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).debug(eq(marker), eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).debug(marker, format, argument1, argument2, argument3);
     }
     
     @Test
@@ -313,7 +319,7 @@ class ReactiveLoggerTest {
         logger.debug(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).debug(eq(marker), eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).debug(marker, message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -321,7 +327,7 @@ class ReactiveLoggerTest {
     void infoMessage() {
         final String message = randomText();
         logger.info(message).block();
-        verify(imperativeLogger).info(eq(message));
+        verify(imperativeLogger).info(message);
     }
     
     @Test
@@ -331,7 +337,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.info(format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).info(eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).info(format, argument1, argument2, argument3);
     }
     
     @Test
@@ -341,7 +347,7 @@ class ReactiveLoggerTest {
         logger.info(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).info(eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).info(message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -350,7 +356,7 @@ class ReactiveLoggerTest {
         final Marker marker = MarkerFactory.getMarker(randomText());
         final String message = randomText();
         logger.info(marker, message).block();
-        verify(imperativeLogger).info(eq(marker), eq(message));
+        verify(imperativeLogger).info(marker, message);
     }
     
     @Test
@@ -361,7 +367,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.info(marker, format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).info(eq(marker), eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).info(marker, format, argument1, argument2, argument3);
     }
     
     @Test
@@ -372,7 +378,7 @@ class ReactiveLoggerTest {
         logger.info(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).info(eq(marker), eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).info(marker, message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -380,7 +386,7 @@ class ReactiveLoggerTest {
     void warnMessage() {
         final String message = randomText();
         logger.warn(message).block();
-        verify(imperativeLogger).warn(eq(message));
+        verify(imperativeLogger).warn(message);
     }
     
     @Test
@@ -390,7 +396,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.warn(format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).warn(eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).warn(format, argument1, argument2, argument3);
     }
     
     @Test
@@ -400,7 +406,7 @@ class ReactiveLoggerTest {
         logger.warn(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).warn(eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).warn(message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -409,7 +415,7 @@ class ReactiveLoggerTest {
         final Marker marker = MarkerFactory.getMarker(randomText());
         final String message = randomText();
         logger.warn(marker, message).block();
-        verify(imperativeLogger).warn(eq(marker), eq(message));
+        verify(imperativeLogger).warn(marker, message);
     }
     
     @Test
@@ -420,7 +426,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.warn(marker, format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).warn(eq(marker), eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).warn(marker, format, argument1, argument2, argument3);
     }
     
     @Test
@@ -431,7 +437,7 @@ class ReactiveLoggerTest {
         logger.warn(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).warn(eq(marker), eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).warn(marker, message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -439,7 +445,7 @@ class ReactiveLoggerTest {
     void errorMessage() {
         final String message = randomText();
         logger.error(message).block();
-        verify(imperativeLogger).error(eq(message));
+        verify(imperativeLogger).error(message);
     }
     
     @Test
@@ -449,7 +455,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.error(format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).error(eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).error(format, argument1, argument2, argument3);
     }
     
     @Test
@@ -459,7 +465,7 @@ class ReactiveLoggerTest {
         logger.error(message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).error(eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).error(message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
     }
     
@@ -468,7 +474,7 @@ class ReactiveLoggerTest {
         final Marker marker = MarkerFactory.getMarker(randomText());
         final String message = randomText();
         logger.error(marker, message).block();
-        verify(imperativeLogger).error(eq(marker), eq(message));
+        verify(imperativeLogger).error(marker, message);
     }
     
     @Test
@@ -479,7 +485,7 @@ class ReactiveLoggerTest {
         final String argument2 = randomText();
         final String argument3 = randomText();
         logger.error(marker, format, argument1, argument2, argument3).block();
-        verify(imperativeLogger).error(eq(marker), eq(format), eq(argument1), eq(argument2), eq(argument3));
+        verify(imperativeLogger).error(marker, format, argument1, argument2, argument3);
     }
     
     @Test
@@ -490,8 +496,22 @@ class ReactiveLoggerTest {
         logger.error(marker, message, exception).block();
         
         final ArgumentCaptor<SimulatedException> exceptionCaptor = ArgumentCaptor.forClass(SimulatedException.class);
-        verify(imperativeLogger).error(eq(marker), eq(message), exceptionCaptor.capture());
+        verify(imperativeLogger).error(marker, message, exceptionCaptor.capture());
         assertEquals(exceptionCaptor.getValue().getMessage(), exception.getMessage());
+    }
+    
+    @Test
+    void checkEnableErrorFlagDifferent() {
+        final String message = randomText();
+    
+        Mono<Context> process1 = Mono.defer(() ->  logger.error(message))
+            .contextWrite((ctx) -> Context.empty());
+    
+        Mono<Context> process2 = Mono.defer(() ->  loggerWithError.error(message))
+            .contextWrite((ctx) -> Context.empty());
+    
+        StepVerifier.create(process1).expectNextCount(1).verifyComplete();
+        StepVerifier.create(process2).expectError(ContextNotExistException.class).verify();
     }
     
     public static class SimulatedException extends RuntimeException {

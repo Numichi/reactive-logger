@@ -14,14 +14,23 @@ import static hu.numichi.reactive.logger.Consts.MAP_NOT_NULL;
 import static hu.numichi.reactive.logger.Consts.VALUE_NOT_NULL;
 
 public class MDC implements Map<String, String> {
-    private final Map<String, String> mdcMap = new HashMap<>();
-    private final String mdcContextKey;
+    private final Map<String, String> mdcMap;
+    private String mdcContextKey;
     
     public MDC() {
-        this.mdcContextKey = DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+        this(DEFAULT_REACTOR_CONTEXT_MDC_KEY, new HashMap<>());
     }
     
     public MDC(String mdcContextKey) {
+        this(mdcContextKey, new HashMap<>());
+    }
+    
+    public MDC(Map<String, String> mdc) {
+        this(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc);
+    }
+    
+    public MDC(String mdcContextKey, Map<String, String> mdc) {
+        this.mdcMap = mdc;
         this.mdcContextKey = mdcContextKey;
     }
     
@@ -31,15 +40,6 @@ public class MDC implements Map<String, String> {
     
     public String getContextKey() {
         return mdcContextKey;
-    }
-    
-    @NonNull
-    public MDC withPut(@NonNull String key, @NonNull String value) {
-        Objects.requireNonNull(key, KEY_NOT_NULL);
-        Objects.requireNonNull(value, VALUE_NOT_NULL);
-        
-        put(key, value);
-        return this;
     }
     
     @Override
@@ -114,9 +114,11 @@ public class MDC implements Map<String, String> {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        
+        if (!(o instanceof MDC)) {
             return false;
         }
+        
         MDC mdc = (MDC) o;
         return mdcMap.equals(mdc.mdcMap) && mdcContextKey.equals(mdc.mdcContextKey);
     }

@@ -1,5 +1,6 @@
 package hu.numichi.reactive.logger.java;
 
+import hu.numichi.reactive.logger.exception.ContextNotExistException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -21,11 +22,13 @@ public final class ReactiveLogger {
     private final Scheduler scheduler;
     private final Logger logger;
     private final String mdcContextKey;
+    private final boolean enableError;
     
     private ReactiveLogger(@NonNull final Builder builder) {
         this.scheduler = builder.scheduler;
         this.logger = builder.logger;
         this.mdcContextKey = builder.mdcContextKey;
+        this.enableError = builder.enableError;
     }
     
     @NonNull
@@ -259,7 +262,11 @@ public final class ReactiveLogger {
     //endregion
     
     public MDCSnapshot takeMDCSnapshot(final Context context) {
-        return readMDC(context).map(MDCSnapshot::of).orElseGet(MDCSnapshot::empty);
+        if (enableError) {
+            return readMDC(context).map(MDCSnapshot::of).orElseThrow(() -> new ContextNotExistException("\"" + mdcContextKey + "\" context not found") );
+        } else {
+            return readMDC(context).map(MDCSnapshot::of).orElseGet(MDCSnapshot::empty);
+        }
     }
     
     @NonNull
@@ -269,6 +276,8 @@ public final class ReactiveLogger {
             
             try (final MDCSnapshot snapshot = takeMDCSnapshot(context)) {
                 runnable.run();
+            } catch (ContextNotExistException exception) {
+                return Mono.error(exception);
             }
             
             return Mono.just(context);
@@ -280,8 +289,14 @@ public final class ReactiveLogger {
         private Logger logger = DEFAULT_LOGGER;
         private String mdcContextKey = DEFAULT_REACTOR_CONTEXT_MDC_KEY;
         private static final String LOGGER_MUST_NOT_BE_NULL = "logger must not be null";
+        private boolean enableError = false;
         
         private Builder() {
+        }
+        
+        public Builder enableError() {
+            this.enableError = true;
+            return this;
         }
         
         public Builder withLogger(@NonNull final Class<?> logger) {
