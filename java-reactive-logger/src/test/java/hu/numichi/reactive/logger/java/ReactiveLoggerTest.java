@@ -1,7 +1,6 @@
 package hu.numichi.reactive.logger.java;
 
 import hu.numichi.reactive.logger.exception.ContextNotExistException;
-import hu.numichi.reactive.logger.exception.InvalidContextDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -78,15 +77,15 @@ class ReactiveLoggerTest {
     void getName() {
         final String name = randomText();
         when(imperativeLogger.getName()).thenReturn(name);
-        assertEquals(logger.getName(), name);
+        assertEquals(name, logger.getName());
     }
     
     @Test
     void readMDC() {
         final Map<String, String> mdc = randomMap(1);
         final Context context = Context.of(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc);
-        assertEquals(logger.readMDC(context), Optional.of(mdc));
-        assertEquals(logger.readMDC(context).get(), Optional.of(mdc).get());
+        assertEquals(Optional.of(mdc), logger.readMDC(context));
+        assertEquals(Optional.of(mdc).get(), logger.readMDC(context).get());
     }
     
     @Test
@@ -101,10 +100,10 @@ class ReactiveLoggerTest {
     @Test
     void imperative() {
         assertSame(logger.imperative(), imperativeLogger);
+        assertSame(loggerWithError.imperative(), imperativeLogger);
     }
     
     @Test
-    @SuppressWarnings("squid:S5778")
     void contextKey() {
         final String contextKey = "another-context-key";
         final ReactiveLogger loggerWithCustomScheduler = ReactiveLogger.builder().withMDCContextKey(contextKey).build();
@@ -504,15 +503,11 @@ class ReactiveLoggerTest {
     @Test
     void checkEnableErrorFlagDifferent() {
         final String message = randomText();
-    
-        Mono<Context> process1 = Mono.defer(() ->  logger.error(message))
+        
+        Mono<Context> process = Mono.defer(() ->  loggerWithError.error(message))
             .contextWrite((ctx) -> Context.empty());
-    
-        Mono<Context> process2 = Mono.defer(() ->  loggerWithError.error(message))
-            .contextWrite((ctx) -> Context.empty());
-    
-        StepVerifier.create(process1).expectNextCount(1).verifyComplete();
-        StepVerifier.create(process2).expectError(ContextNotExistException.class).verify();
+        
+        StepVerifier.create(process).expectError(ContextNotExistException.class).verify();
     }
     
     public static class SimulatedException extends RuntimeException {

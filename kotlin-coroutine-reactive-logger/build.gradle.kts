@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.6.10"
     java
     jacoco
+    id("com.adarshr.test-logger") version "3.1.0"
 }
 
 group = "org.example"

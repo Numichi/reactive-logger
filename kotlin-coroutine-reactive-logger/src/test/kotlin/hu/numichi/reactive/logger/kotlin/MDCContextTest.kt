@@ -1,6 +1,5 @@
 package hu.numichi.reactive.logger.kotlin
 
-import hu.numichi.reactive.logger.Consts
 import hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import hu.numichi.reactive.logger.MDC
 import hu.numichi.reactive.logger.exception.InvalidContextDataException
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import reactor.util.context.Context
+import java.util.*
 
 @ExperimentalCoroutinesApi
 internal class MDCContextTest {
@@ -26,19 +26,19 @@ internal class MDCContextTest {
         val mdc = MDC()
         mdc["mdcKey"] = "mdcValue"
 
-        MDCContext.withContext(mdc) {
-            val result = MDCContext.read()
+        withMDCContext(mdc) {
+            val result = readMDC()
             assertEquals(mdc, result)
         }
 
-        MDCContext.withContext(mdc) {
-            val result = MDCContext.read(coroutineContext[ReactorContext]?.context)
+        withMDCContext(mdc) {
+            val result = readMDC(coroutineContext[ReactorContext]?.context)
             assertEquals(mdc, result)
         }
 
-        MDCContext.withContext(Context.of(mapOf("1" to "2")), mdc) {
+        withMDCContext(Context.of(mutableMapOf("1" to "2")), mdc) {
             val size = coroutineContext[ReactorContext]?.context?.size()
-            val result = MDCContext.read(coroutineContext[ReactorContext]?.context)
+            val result = readMDC(coroutineContext[ReactorContext]?.context)
             assertEquals(mdc, result)
             assertEquals(2, size)
         }
@@ -50,7 +50,7 @@ internal class MDCContextTest {
         mdcMap["mdcKey"] = "mdcValue"
 
         withContext(Context.of(mapOf(DEFAULT_REACTOR_CONTEXT_MDC_KEY to mdcMap)).asCoroutineContext()) {
-            val result = MDCContext.read(coroutineContext[ReactorContext]?.context)
+            val result = readMDC(coroutineContext[ReactorContext]?.context)
             assertEquals(mdcMap, result)
             assertEquals(mdcMap, result.map)
         }
@@ -61,8 +61,8 @@ internal class MDCContextTest {
         val mdc2 = MDC(ANOTHER_CONTEXT_KEY)
         mdc2["mdcKey"] = "mdcValue"
 
-        MDCContext.withContext(mdc2) {
-            val result = MDCContext.read(ANOTHER_CONTEXT_KEY)
+        withMDCContext(mdc2) {
+            val result = readMDC(ANOTHER_CONTEXT_KEY)
             assertEquals(mdc2, result)
         }
     }
@@ -75,12 +75,12 @@ internal class MDCContextTest {
         val mdc2 = MDC(ANOTHER_CONTEXT_KEY)
         mdc2["mdcKey"] = "mdcValue"
 
-        MDCContext.withContext(mdc1, mdc2) {
-            val result1 = MDCContext.read(coroutineContext[ReactorContext]?.context)
-            val result2 = MDCContext.read(coroutineContext[ReactorContext]?.context, DEFAULT_REACTOR_CONTEXT_MDC_KEY)
-            val result3 = MDCContext.read(DEFAULT_REACTOR_CONTEXT_MDC_KEY)
-            val result4 = MDCContext.read(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY)
-            val result5 = MDCContext.read(ANOTHER_CONTEXT_KEY)
+        withMDCContext(mdc1, mdc2) {
+            val result1 = readMDC(coroutineContext[ReactorContext]?.context)
+            val result2 = readMDC(coroutineContext[ReactorContext]?.context, DEFAULT_REACTOR_CONTEXT_MDC_KEY)
+            val result3 = readMDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY)
+            val result4 = readMDC(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY)
+            val result5 = readMDC(ANOTHER_CONTEXT_KEY)
 
             assertEquals(mdc1, result1)
             assertEquals(mdc1, result2)
@@ -95,13 +95,13 @@ internal class MDCContextTest {
         val mdcMap = mutableMapOf<String, String>()
         mdcMap["mdcKey"] = "mdcValue"
 
-        MDCContext.withContext(MDC(mdcMap)) {
-            val result = MDCContext.read(coroutineContext[ReactorContext]?.context).map
+        withMDCContext(MDC(mdcMap)) {
+            val result = readMDC(coroutineContext[ReactorContext]?.context).map
             assertEquals(mdcMap, result)
         }
 
-        MDCContext.withContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
-            val result = MDCContext.read(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY).map
+        withMDCContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
+            val result = readMDC(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY).map
             assertEquals(mdcMap, result)
         }
     }
@@ -111,36 +111,32 @@ internal class MDCContextTest {
         val mdcMap = mutableMapOf<String, String>()
         mdcMap["mdcKey"] = "mdcValue"
 
-        MDCContext.withContext(MDC(mdcMap)) {
-            val result = MDCContext.read(coroutineContext[ReactorContext]?.context).map
+        withMDCContext(MDC(mdcMap)) {
+            val result = readMDC(coroutineContext[ReactorContext]?.context).map
             assertEquals(mdcMap, result)
         }
 
-        MDCContext.withContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
-            val result = MDCContext.read(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY).map
+        withMDCContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
+            val result = readMDC(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY).map
             assertEquals(mdcMap, result)
-        }
-    }
-
-    @Test
-    fun `should throw NullPointerException if any parameter is NULL`() = runTest {
-        assertThrows<NullPointerException> {
-            MDCContext.read(null)
-        }
-
-        assertThrows<NullPointerException> {
-            MDCContext.read(null, ANOTHER_CONTEXT_KEY)
         }
     }
 
     @Test
     fun `should throw InvalidContextDataException if context data is invalid`() = runTest {
-        withContext(Context.of(mapOf(Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY to 10)).asCoroutineContext()) {
-            assertThrows<InvalidContextDataException> { MDCContext.read() }
+        withContext(Context.of(mapOf(DEFAULT_REACTOR_CONTEXT_MDC_KEY to 10)).asCoroutineContext()) {
+            assertThrows<InvalidContextDataException> { readMDC() }
         }
 
-        withContext(Context.of(mapOf(Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY to "any")).asCoroutineContext()) {
-            assertThrows<InvalidContextDataException> { MDCContext.read() }
+        withContext(Context.of(mapOf(DEFAULT_REACTOR_CONTEXT_MDC_KEY to "any")).asCoroutineContext()) {
+            assertThrows<InvalidContextDataException> { readMDC() }
         }
+    }
+
+    @Test
+    fun `should throw IllegalArgumentException if any parameter is NULL`() = runTest {
+        assertThrows<IllegalArgumentException> { withMDCContext(null, MDC()) {} }
+        assertThrows<IllegalArgumentException> { readMDC(null) }
+        assertThrows<IllegalArgumentException> { readMDC(null, "any-key") }
     }
 }

@@ -261,7 +261,7 @@ public final class ReactiveLogger {
     }
     //endregion
     
-    public MDCSnapshot takeMDCSnapshot(final Context context) {
+    MDCSnapshot takeMDCSnapshot(final Context context) {
         if (enableError) {
             return readMDC(context).map(MDCSnapshot::of).orElseThrow(() -> new ContextNotExistException("\"" + mdcContextKey + "\" context not found") );
         } else {

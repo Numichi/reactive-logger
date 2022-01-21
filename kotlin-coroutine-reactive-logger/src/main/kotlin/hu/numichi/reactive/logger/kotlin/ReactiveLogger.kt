@@ -2,7 +2,6 @@ package hu.numichi.reactive.logger.kotlin
 
 import hu.numichi.reactive.logger.java.ReactiveLogger as JReactiveLogger
 import hu.numichi.reactive.logger.Consts
-import hu.numichi.reactive.logger.exception.ContextNotExistException
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
@@ -15,7 +14,6 @@ import reactor.util.context.ContextView
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
-import kotlin.jvm.Throws
 
 class ReactiveLogger private constructor(
     private val reactiveLogger: JReactiveLogger,
@@ -26,7 +24,7 @@ class ReactiveLogger private constructor(
     companion object {
         @JvmStatic
         fun builder(): Builder<ReactorContext> {
-            return builder(ReactorContext).withContext { coroutineContext[it]?.context }
+            return builder(ReactorContext).withContext { coroutineContext[it]?.context ?: Context.empty() }
         }
 
         @JvmStatic
@@ -35,15 +33,23 @@ class ReactiveLogger private constructor(
         }
     }
 
-    fun imperative(): Logger = reactiveLogger.imperative()
-    fun scheduler(): Scheduler = reactiveLogger.scheduler()
     fun readMDC(context: Context): Optional<Map<String, String>> = reactiveLogger.readMDC(context)
-    fun getName(): String? = reactiveLogger.name
+
+    val imperative: Logger
+        get() = reactiveLogger.imperative()
+
+    val scheduler: Scheduler
+        get() = reactiveLogger.scheduler()
+
+    val name: String
+        get() = reactiveLogger.name
+
+    val mdcContextKey: String
+        get() = reactiveLogger.mdcContextKey()
 
     //region Trace
-    fun isTraceEnabled(): Boolean {
-        return reactiveLogger.isTraceEnabled
-    }
+    val isTraceEnabled: Boolean
+        get() = reactiveLogger.isTraceEnabled
 
     suspend fun trace(msg: String) {
         return wrap { logger -> logger.trace(msg) }
@@ -75,9 +81,8 @@ class ReactiveLogger private constructor(
     //endregion
 
     //region Debug
-    fun isDebugEnabled(): Boolean {
-        return reactiveLogger.isDebugEnabled
-    }
+    val isDebugEnabled: Boolean
+        get() = reactiveLogger.isDebugEnabled
 
     suspend fun debug(msg: String) {
         return wrap { logger -> logger.debug(msg) }
@@ -109,9 +114,8 @@ class ReactiveLogger private constructor(
     //endregion
 
     //region Info
-    fun isInfoEnabled(): Boolean {
-        return reactiveLogger.isInfoEnabled
-    }
+    val isInfoEnabled: Boolean
+        get() = reactiveLogger.isInfoEnabled
 
     suspend fun info(msg: String) {
         return wrap { logger -> logger.info(msg) }
@@ -143,16 +147,15 @@ class ReactiveLogger private constructor(
     //endregion
 
     //region Warn
-    fun isWarnEnabled(): Boolean {
-        return reactiveLogger.isWarnEnabled
-    }
+    val isWarnEnabled: Boolean
+        get() = reactiveLogger.isWarnEnabled
 
     suspend fun warn(msg: String) {
         return wrap { logger -> logger.warn(msg) }
     }
 
-    suspend fun warn(format: String, arg1: Any, arg2: Any) {
-        return wrap { logger -> logger.warn(format, arg1, arg2) }
+    suspend fun warn(format: String, vararg arguments: Any) {
+        return wrap { logger -> logger.warn(format, *arguments) }
     }
 
     suspend fun warn(msg: String, t: Throwable) {
@@ -177,9 +180,8 @@ class ReactiveLogger private constructor(
     //endregion
 
     //region Error
-    fun isErrorEnabled(): Boolean {
-        return reactiveLogger.isErrorEnabled
-    }
+    val isErrorEnabled: Boolean
+        get() = reactiveLogger.isErrorEnabled
 
     suspend fun error(msg: String) {
         return wrap { logger -> logger.error(msg) }
@@ -211,11 +213,12 @@ class ReactiveLogger private constructor(
     //endregion
 
     private suspend fun wrap(fn: (JReactiveLogger) -> Mono<Context>) {
-        val key = coroutineContext[contextKey] as CoroutineContext.Key<out CoroutineContext.Element>
-        val context: ContextView = contextExtractive(key)?.readOnly() ?: Context.empty().readOnly()
+        val context = contextExtractive(contextKey)
+
+        requireNotNull(context) { "Context configuration is null! The resulting context is null. Use withContext via Builder." }
 
         fn(reactiveLogger)
-            .contextWrite { it.putAll(context) }
+            .contextWrite { it.putAll(context.readOnly()) }
             .awaitSingleOrNull()
     }
 
@@ -252,7 +255,7 @@ class ReactiveLogger private constructor(
         }
 
         fun withMDCContextKey(mdcContextKey: String): Builder<T> {
-            require(mdcContextKey.trim { it <= ' ' }.isNotEmpty()) { "MDC context key must not be blank" }
+            require(mdcContextKey.trim().isNotEmpty()) { "MDC context key must not be blank" }
 
             this.mdcContextKey = mdcContextKey
             return this

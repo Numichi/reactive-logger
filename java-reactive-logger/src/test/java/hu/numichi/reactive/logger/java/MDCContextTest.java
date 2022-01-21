@@ -126,39 +126,41 @@ class MDCContextTest {
     }
     
     @Test
-    @DisplayName("should throw NullPointerException if any parameter is NULL")
-    void shouldThrowNullPointerExceptionTest() {
+    @DisplayName("should throw IllegalArgumentException if any parameter is NULL")
+    void shouldThrowIllegalArgumentExceptionTest() {
         Map<String, String> emptyMap = new HashMap<>();
-        Context emptyContext = Context.empty();
         
-        assertThrows(NullPointerException.class, () -> MDCContext.put(null, "", emptyMap));
-        assertThrows(NullPointerException.class, () -> MDCContext.put(emptyContext, null, emptyMap));
-        
+        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(null, "", emptyMap));
+        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(Context.empty(), null, emptyMap));
+        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(Context.empty(), "", null));
+    
         StepVerifier.create(MDCContext.read((String) null))
-            .expectError(NullPointerException.class)
+            .expectError(IllegalArgumentException.class)
             .verify();
-        
+    
         StepVerifier.create(MDCContext.read(null, ""))
-            .expectError(NullPointerException.class)
+            .expectError(IllegalArgumentException.class)
             .verify();
-        
+    
         StepVerifier.create(MDCContext.read(Context.of("", ""), null))
-            .expectError(NullPointerException.class)
+            .expectError(IllegalArgumentException.class)
             .verify();
     }
     
     @Test
     @DisplayName("should throw InvalidContextDataException if context data is invalid")
     void shouldThrowInvalidContextDataException() {
+        // ANOTHER_CONTEXT_KEY is not DEFAULT_REACTOR_CONTEXT_MDC_KEY
         MDC mdc = new MDC(ANOTHER_CONTEXT_KEY);
         mdc.put("mdcKey2", "mdcValue2");
-        
-        
         Mono<MDC> result1 = Mono.defer(MDCContext::read)
             .contextWrite(it -> MDCContext.put(it, mdc));
         StepVerifier.create(result1)
             .expectError(InvalidContextDataException.class)
             .verify();
+    
+        
+       
         
         
         Mono<MDC> result2 = Mono.defer(() -> MDCContext.read("not-exist-context-id"))
