@@ -91,6 +91,14 @@ internal class ReactiveLoggerTest {
         assertThrows<ContextNotExistException> {
             loggerWithError.snapshot(context2)
         }
+
+        assertThrows<IllegalArgumentException> {
+            logger.snapshot(null)
+        }
+
+        assertThrows<IllegalArgumentException> {
+            loggerWithError.snapshot(null)
+        }
     }
 
     @Test

@@ -37,7 +37,11 @@ class ReactiveLogger private constructor(
 
     fun readMDC(context: Context): Optional<Map<String, String>> = reactiveLogger.readMDC(context)
 
-    suspend fun snapshot(context: Context): MDC = reactiveLogger.snapshot(context).awaitSingle()
+    suspend fun snapshot(context: Context? = null): MDC {
+        val ctx = context ?: coroutineContext[ReactorContext]?.context
+        requireNotNull(ctx) { "Context configuration is null!" }
+        return reactiveLogger.snapshot(context).awaitSingle()
+    }
 
     val imperative: Logger
         get() = reactiveLogger.imperative()
