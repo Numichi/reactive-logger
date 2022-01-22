@@ -15,7 +15,7 @@ import static hu.numichi.reactive.logger.Consts.VALUE_NOT_NULL;
 
 public class MDC implements Map<String, String> {
     private final Map<String, String> mdcMap;
-    private String mdcContextKey;
+    private final String mdcContextKey;
     
     public MDC() {
         this(DEFAULT_REACTOR_CONTEXT_MDC_KEY, new HashMap<>());

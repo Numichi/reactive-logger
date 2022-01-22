@@ -1,24 +1,101 @@
 version: 2
 
+defaults: &defaults
+  docker:
+    - image: circleci/openjdk:8-jdk
+  working_directory: ~/repo
+  environment:
+    JVM_OPTS: -Xmx512m
+    TERM: dumb
+
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:8-jdk
-    working_directory: ~/repo
+    <<: *defaults
+    steps:
+      - run:
+          name: Download cc-test-reporter
+          command: |
+            mkdir -p tmp/
+            curl -L https:/codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
+            chmod +x ./tmp/cc-test-reporter
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - cc-test-reporter
+  java-reactive-logger:
+    <<: *defaults
     environment:
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
+      JACOCO_SOURCE_PATH: ./java-reactive-logger/src/main/java
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/repo/tmp
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "java-reactive-logger/build.gradle.kts" }}-{{ checksum "kotlin-coroutine-reactive-logger/build.gradle.kts" }}
-            - v1-dependencies-
-      - run: gradle :reactive-logger-common:build
-      - run: gradle :java-reactive-logger:test
-      - run: gradle :kotlin-coroutine-reactive-logger:test
+            - java-v1-dependencies-{{ checksum "java-reactive-logger/build.gradle.kts" }}
+            - java-v1-dependencies-
+      - run:
+          name: Run test and coverate report format
+          command: |
+            gradle :java-reactive-logger:test
+            ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.java.json ./java-reactive-logger/build/reports/jacoco/test/jacocoTestReport.xml
       - save_cache:
           paths:
-            - ~/java-reactive-logger/.gradle
-            - ~/kotlin-coroutine-reactive-logger/.gradle
-          key: v1-dependencies-{{ checksum "java-reactive-logger/build.gradle.kts" }}-{{ checksum "kotlin-coroutine-reactive-logger/build.gradle.kts" }}
+            - java-reactive-logger/.gradle
+          key: java-v1-dependencies-{{ checksum "java-reactive-logger/build.gradle.kts" }}
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - codeclimate.java.json
+  kotlin-coroutine-reactive-logger:
+    <<: *defaults
+    environment:
+      JACOCO_SOURCE_PATH: ./kotlin-coroutine-reactive-logger/src/main/kotlin
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo/tmp
+      - restore_cache:
+          keys:
+            - kotlin-v1-dependencies-{{ checksum "kotlin-coroutine-reactive-logger/build.gradle.kts" }}
+            - kotlin-v1-dependencies-
+      - run:
+          name: Run test and coverate report format
+          command: |
+            gradle :kotlin-coroutine-reactive-logger:test
+            ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.kotlin.json ./kotlin-coroutine-reactive-logger/build/reports/jacoco/test/jacocoTestReport.xml
+      - save_cache:
+          paths:
+            - kotlin-coroutine-reactive-logger/.gradle
+          key: kotlin-v1-dependencies-{{ checksum "kotlin-coroutine-reactive-logger/build.gradle.kts" }}
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - codeclimate.kotlin.json
+  upload-coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./tmp
+      - run:
+          name: Upload coverage results to Code Climate
+          command: |
+            ./tmp/cc-test-reporter sum-coverage ./tmp/codeclimate.*.json -p 2 -o ./tmp/codeclimate.total.json
+            ./tmp/cc-test-reporter upload-coverage -i ./tmp/codeclimate.total.json
+
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+      - java-reactive-logger:
+          requires:
+            - build
+      - kotlin-coroutine-reactive-logger:
+          requires:
+            - build
+      - upload-coverage:
+          requires:
+            - java-reactive-logger
+            - kotlin-coroutine-reactive-logger
