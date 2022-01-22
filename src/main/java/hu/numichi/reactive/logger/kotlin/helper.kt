@@ -1,11 +1,17 @@
 package hu.numichi.reactive.logger.kotlin
 
+import hu.numichi.reactive.logger.JacocoSkipGeneratedReport
 import hu.numichi.reactive.logger.MDC
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.asCoroutineContext
 import reactor.util.context.Context
 import kotlin.coroutines.coroutineContext
+
+@JacocoSkipGeneratedReport
+internal suspend fun reactorContextOrEmpty(): Context {
+    return rectorContext() ?: Context.empty()
+}
 
 internal suspend fun rectorContext(): Context? {
     return coroutineContext[ReactorContext]?.context

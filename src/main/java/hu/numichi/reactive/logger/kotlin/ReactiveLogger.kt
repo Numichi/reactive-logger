@@ -27,7 +27,7 @@ class ReactiveLogger private constructor(
     companion object {
         @JvmStatic
         fun builder(): Builder<ReactorContext> {
-            return builder(ReactorContext).withContext { coroutineContext[it]?.context ?: Context.empty() }
+            return builder(ReactorContext).withContext { reactorContextOrEmpty() }
         }
 
         @JvmStatic

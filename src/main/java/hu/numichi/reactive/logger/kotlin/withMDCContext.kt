@@ -6,8 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import reactor.util.context.Context
 
 suspend fun <T> withMDCContext(vararg mdc: MDC, block: suspend CoroutineScope.() -> T): T {
-    val readableContext = rectorContext() ?: Context.empty()
-    return withContextBlock(readableContext, mdc.iterator(), block)
+    return withContextBlock(reactorContextOrEmpty(), mdc.iterator(), block)
 }
 
 suspend fun <T> withMDCContext(context: Context?, vararg mdc: MDC, block: suspend CoroutineScope.() -> T): T {
