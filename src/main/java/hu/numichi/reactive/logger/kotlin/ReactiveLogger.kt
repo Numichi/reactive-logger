@@ -4,6 +4,7 @@ import hu.numichi.reactive.logger.java.ReactiveLogger as JReactiveLogger
 import hu.numichi.reactive.logger.Consts
 import hu.numichi.reactive.logger.JacocoSkipGeneratedReport
 import hu.numichi.reactive.logger.MDC
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -37,10 +38,9 @@ class ReactiveLogger private constructor(
 
     fun readMDC(context: Context): Optional<Map<String, String>> = reactiveLogger.readMDC(context)
 
-    suspend fun snapshot(context: Context? = null): MDC {
+    suspend fun snapshot(context: Context? = null): MDC? {
         val ctx = context ?: coroutineContext[ReactorContext]?.context
-        requireNotNull(ctx) { "Context configuration is null!" }
-        return reactiveLogger.snapshot(context).awaitSingle()
+        return reactiveLogger.snapshot(ctx).awaitSingleOrNull()
     }
 
     val imperative: Logger

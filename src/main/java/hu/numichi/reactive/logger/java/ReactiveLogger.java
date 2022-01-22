@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static hu.numichi.reactive.logger.Consts.CTX_NOT_NULL;
 import static hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
 import static hu.numichi.reactive.logger.Consts.DEFAULT_SCHEDULER;
 
@@ -47,6 +48,10 @@ public final class ReactiveLogger {
     
     public String mdcContextKey() {
         return mdcContextKey;
+    }
+    
+    public boolean isEnableError() {
+        return enableError;
     }
     
     @NonNull
@@ -273,12 +278,16 @@ public final class ReactiveLogger {
     @NonNull
     public Mono<MDC> snapshot(final Context context) {
         try {
+            if (context == null) {
+                throw new IllegalArgumentException(CTX_NOT_NULL);
+            }
+            
             MDC mdc;
             try (final MDCSnapshot snapshot = takeMDCSnapshot(context)) {
                 mdc = new MDC(this.mdcContextKey, snapshot.getCopyOfContextMap());
             }
             return Mono.just(mdc);
-        } catch (ContextNotExistException exception) {
+        } catch (Exception exception) {
             return Mono.error(exception);
         }
     }

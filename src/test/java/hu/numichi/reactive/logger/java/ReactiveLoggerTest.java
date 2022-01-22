@@ -131,6 +131,11 @@ class ReactiveLoggerTest {
         StepVerifier.create(snapshot3)
             .expectError(ContextNotExistException.class)
             .verify();
+    
+        Mono<MDC> snapshot4 = loggerWithError.snapshot(null);
+        StepVerifier.create(snapshot4)
+            .expectError(IllegalArgumentException.class)
+            .verify();
     }
     
     @Test
