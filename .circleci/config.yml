@@ -22,56 +22,31 @@ jobs:
           root: tmp
           paths:
             - cc-test-reporter
-  java-reactive-logger:
+  test:
     <<: *defaults
     environment:
-      JACOCO_SOURCE_PATH: ./java-reactive-logger/src/main/java
+      JACOCO_SOURCE_PATH: ./src/main/java
     steps:
       - checkout
       - attach_workspace:
           at: ~/repo/tmp
       - restore_cache:
           keys:
-            - java-v1-dependencies-{{ checksum "java-reactive-logger/build.gradle.kts" }}
-            - java-v1-dependencies-
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            - v1-dependencies-
       - run:
           name: Run test and coverate report format
           command: |
-            gradle :java-reactive-logger:test
-            ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.java.json ./java-reactive-logger/build/reports/jacoco/test/jacocoTestReport.xml
+            gradle :test
+            ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.jacoco.json ./build/reports/jacoco/test/jacocoTestReport.xml
       - save_cache:
           paths:
-            - java-reactive-logger/.gradle
-          key: java-v1-dependencies-{{ checksum "java-reactive-logger/build.gradle.kts" }}
+            - .gradle
+          key: java-v1-dependencies-{{ checksum "build.gradle.kts" }}
       - persist_to_workspace:
           root: tmp
           paths:
-            - codeclimate.java.json
-  kotlin-coroutine-reactive-logger:
-    <<: *defaults
-    environment:
-      JACOCO_SOURCE_PATH: ./kotlin-coroutine-reactive-logger/src/main/kotlin
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/repo/tmp
-      - restore_cache:
-          keys:
-            - kotlin-v1-dependencies-{{ checksum "kotlin-coroutine-reactive-logger/build.gradle.kts" }}
-            - kotlin-v1-dependencies-
-      - run:
-          name: Run test and coverate report format
-          command: |
-            gradle :kotlin-coroutine-reactive-logger:test
-            ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.kotlin.json ./kotlin-coroutine-reactive-logger/build/reports/jacoco/test/jacocoTestReport.xml
-      - save_cache:
-          paths:
-            - kotlin-coroutine-reactive-logger/.gradle
-          key: kotlin-v1-dependencies-{{ checksum "kotlin-coroutine-reactive-logger/build.gradle.kts" }}
-      - persist_to_workspace:
-          root: tmp
-          paths:
-            - codeclimate.kotlin.json
+            - codeclimate.jacoco.json
   upload-coverage:
     <<: *defaults
     steps:
@@ -80,22 +55,16 @@ jobs:
       - run:
           name: Upload coverage results to Code Climate
           command: |
-            ./tmp/cc-test-reporter sum-coverage ./tmp/codeclimate.*.json -p 2 -o ./tmp/codeclimate.total.json
-            ./tmp/cc-test-reporter upload-coverage -i ./tmp/codeclimate.total.json
-
+            ./tmp/cc-test-reporter upload-coverage -i ./tmp/codeclimate.jacoco.json
 
 workflows:
   version: 2
   commit:
     jobs:
       - build
-      - java-reactive-logger:
-          requires:
-            - build
-      - kotlin-coroutine-reactive-logger:
+      - test:
           requires:
             - build
       - upload-coverage:
           requires:
-            - java-reactive-logger
-            - kotlin-coroutine-reactive-logger
+            - test
