@@ -1,18 +1,23 @@
+import kotlin.text.Regex
+
 plugins {
     java
     jacoco
     id("com.adarshr.test-logger") version "3.1.0"
     kotlin("jvm") version "1.6.10"
+    id("java-library")
+    id("maven-publish")
+    id("signing")
 }
 
-group = "org.example"
-version = "1.1.2-SNAPSHOT"
+group = project.property("group") as String
+version = project.property("version") as String as String
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
-
-repositories {
-    mavenCentral()
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
 }
 
 dependencies {
@@ -31,6 +36,82 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
     testImplementation("io.mockk:mockk:1.12.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+}
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("main") {
+            groupId = project.property("group") as String
+            artifactId = "reactive-logger"
+            version = project.property("version") as String
+            from(components["java"])
+
+            pom {
+                name.set("Reactive logger layer for slf4j")
+                description.set("A Java & Korlin library adapting slf4j for reactive applications")
+                url.set("https://github.com/Numichi/reactive-logger")
+                inceptionYear.set("2022")
+
+                developers {
+                    developer {
+                        id.set(project.property("developerId") as String)
+                        name.set(project.property("developerName") as String)
+                        email.set(project.property("developerEmail") as String)
+                    }
+                }
+
+                licenses {
+                    license {
+                        name.set("Apache License 2.0")
+                        url.set("https://opensource.org/licenses/Apache-2.0")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:git:github.com/Numichi/reactive-logger.git")
+                    developerConnection.set("scm:git:ssh://github.com/Numichi/reactive-logger.git")
+                    url.set("https://github.com/Numichi/reactive-logger")
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "OSSRH"
+            credentials {
+                username = if (project.hasProperty("ossrhUsername")) {
+                    project.property("ossrhUsername") as String
+                } else {
+                    "N/A"
+                }
+
+                password = if (project.hasProperty("ossrhPassword")) {
+                    project.property("ossrhPassword") as String
+                } else {
+                    "N/A"
+                }
+            }
+
+            val releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            val isReleaseVersion = !version.toString().contains(Regex("(SNAPSHOT|BETA|ALPHA|DEVELOP|DEV)"))
+
+            url = if (isReleaseVersion) {
+                uri(releasesRepoUrl)
+            } else {
+                uri(snapshotsRepoUrl)
+            }
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["main"])
 }
 
 tasks.getByName<Test>("test") {
