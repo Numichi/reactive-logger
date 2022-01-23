@@ -1,6 +1,6 @@
 package hu.numichi.reactive.logger.kotlin
 
-import hu.numichi.reactive.logger.JacocoSkipGeneratedReport
+import hu.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport
 import hu.numichi.reactive.logger.MDC
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactor.ReactorContext

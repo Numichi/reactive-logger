@@ -1,5 +1,6 @@
 package hu.numichi.reactive.logger;
 
+import hu.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport;
 import reactor.util.annotation.NonNull;
 
 import java.util.Collection;
@@ -8,10 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
-import static hu.numichi.reactive.logger.Consts.KEY_NOT_NULL;
-import static hu.numichi.reactive.logger.Consts.MAP_NOT_NULL;
-import static hu.numichi.reactive.logger.Consts.VALUE_NOT_NULL;
+import static hu.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+import static hu.numichi.reactive.logger.exception.Messages.KEY_NOT_NULL;
+import static hu.numichi.reactive.logger.exception.Messages.MAP_NOT_NULL;
+import static hu.numichi.reactive.logger.exception.Messages.VALUE_NOT_NULL;
 
 @JacocoSkipGeneratedReport
 public class MDC implements Map<String, String> {

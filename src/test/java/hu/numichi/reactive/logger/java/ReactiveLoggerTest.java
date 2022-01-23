@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+import static hu.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
 import static hu.numichi.reactive.logger.java.MDCContextTest.ANOTHER_CONTEXT_KEY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

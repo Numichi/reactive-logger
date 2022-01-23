@@ -10,12 +10,12 @@ import reactor.util.context.ContextView;
 import java.util.Map;
 import java.util.Objects;
 
-import static hu.numichi.reactive.logger.Consts.CTXK_NOT_NULL;
-import static hu.numichi.reactive.logger.Consts.CTXW_NOT_NULL;
-import static hu.numichi.reactive.logger.Consts.CTX_NOT_NULL;
-import static hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
-import static hu.numichi.reactive.logger.Consts.MAP_NOT_NULL;
-import static hu.numichi.reactive.logger.Consts.MDC_NOT_NULL;
+import static hu.numichi.reactive.logger.exception.Messages.CTXK_NOT_NULL;
+import static hu.numichi.reactive.logger.exception.Messages.CTXW_NOT_NULL;
+import static hu.numichi.reactive.logger.exception.Messages.CTX_NOT_NULL;
+import static hu.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+import static hu.numichi.reactive.logger.exception.Messages.MAP_NOT_NULL;
+import static hu.numichi.reactive.logger.exception.Messages.MDC_NOT_NULL;
 
 public final class MDCContext {
     private MDCContext() {

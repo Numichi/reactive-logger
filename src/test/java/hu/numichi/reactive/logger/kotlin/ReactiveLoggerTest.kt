@@ -1,7 +1,7 @@
 package hu.numichi.reactive.logger.kotlin
 
-import hu.numichi.reactive.logger.Consts
-import hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+import hu.numichi.reactive.logger.Values
+import hu.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import hu.numichi.reactive.logger.MDC
 import hu.numichi.reactive.logger.exception.ContextNotExistException
 import hu.numichi.reactive.logger.kotlin.MDCContextTest.Companion.ANOTHER_CONTEXT_KEY
@@ -128,7 +128,7 @@ internal class ReactiveLoggerTest {
     @Test
     fun readMDC() {
         val mdc: Map<String, String> = randomMap(1)
-        val context = Context.of(Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc)
+        val context = Context.of(Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc)
         assertEquals(Optional.of(mdc), logger.readMDC(context))
         assertEquals(Optional.of(mdc).get(), logger.readMDC(context).get())
     }

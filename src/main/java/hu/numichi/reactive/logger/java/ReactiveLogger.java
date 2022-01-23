@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static hu.numichi.reactive.logger.Consts.CTX_NOT_NULL;
-import static hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
-import static hu.numichi.reactive.logger.Consts.DEFAULT_SCHEDULER;
+import static hu.numichi.reactive.logger.exception.Messages.CTX_NOT_NULL;
+import static hu.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+import static hu.numichi.reactive.logger.Values.DEFAULT_SCHEDULER;
 
 public final class ReactiveLogger {
     

@@ -1,6 +1,6 @@
 package hu.numichi.reactive.logger.kotlin
 
-import hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+import hu.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import hu.numichi.reactive.logger.MDC
 import hu.numichi.reactive.logger.exception.InvalidContextDataException
 import kotlinx.coroutines.ExperimentalCoroutinesApi

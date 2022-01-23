@@ -1,12 +1,10 @@
 package hu.numichi.reactive.logger.kotlin
 
 import hu.numichi.reactive.logger.java.ReactiveLogger as JReactiveLogger
-import hu.numichi.reactive.logger.Consts
-import hu.numichi.reactive.logger.JacocoSkipGeneratedReport
+import hu.numichi.reactive.logger.Values
+import hu.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport
 import hu.numichi.reactive.logger.MDC
-import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.ReactorContext
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -261,9 +259,9 @@ class ReactiveLogger private constructor(
     }
 
     class Builder<T : CoroutineContext.Element>(private val contextKey: CoroutineContext.Key<T>) {
-        private var scheduler = Consts.DEFAULT_SCHEDULER
+        private var scheduler = Values.DEFAULT_SCHEDULER
         private var logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
-        private var mdcContextKey = Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+        private var mdcContextKey = Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY
         private var contextExtractive: suspend (CoroutineContext.Key<out T>) -> Context?
         private var enableError: Boolean = false
 

@@ -11,7 +11,7 @@ import reactor.util.context.Context;
 import java.util.HashMap;
 import java.util.Map;
 
-import static hu.numichi.reactive.logger.Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+import static hu.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MDCContextTest {

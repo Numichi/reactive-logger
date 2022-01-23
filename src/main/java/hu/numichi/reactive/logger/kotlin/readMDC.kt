@@ -1,12 +1,12 @@
 package hu.numichi.reactive.logger.kotlin
 
-import hu.numichi.reactive.logger.Consts
+import hu.numichi.reactive.logger.Values
 import hu.numichi.reactive.logger.exception.InvalidContextDataException
 import hu.numichi.reactive.logger.MDC
 import reactor.util.context.ContextView
 
 suspend fun readMDC(): MDC {
-    return readMDC(Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY)
+    return readMDC(Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY)
 }
 
 suspend fun readMDC(mdcContextKey: String): MDC {
@@ -14,7 +14,7 @@ suspend fun readMDC(mdcContextKey: String): MDC {
 }
 
 fun readMDC(contextView: ContextView?): MDC {
-    return readMDC(contextView, Consts.DEFAULT_REACTOR_CONTEXT_MDC_KEY)
+    return readMDC(contextView, Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY)
 }
 
 fun readMDC(contextView: ContextView?, mdcContextKey: String): MDC {
