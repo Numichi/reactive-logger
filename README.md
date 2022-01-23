@@ -9,7 +9,7 @@
 ### Supported:
 Java and Kotlin
 
-## Documentation
+## Overview
 _Part of the documentation and description comes from: [README.md](https://github.com/johncfranco/reactive-logger/blob/develop/README.md)_
 
 `reactive-logger` is a Java and Kotlin library adapting the `slf4j` logging library for reactive applications.
@@ -21,7 +21,10 @@ The library has many goals:
 * Obey the rule restricting blocking I/O to bounded elastic schedulers without requiring a specific logging configuration to do so.
 * Provide the appropriate language approach for Java Reactor or Kotlin Coroutine code.
 
-## Dependency:
+## Documentation
+[Wiki](https://github.com/Numichi/reactive-logger/wiki/Documentation)
+
+## Dependency
 
 ### Maven
 ```xml
