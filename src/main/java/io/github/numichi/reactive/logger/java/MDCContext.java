@@ -13,8 +13,6 @@ import java.util.Objects;
 
 import static io.github.numichi.reactive.logger.exception.Messages.CTXK_NOT_NULL;
 import static io.github.numichi.reactive.logger.exception.Messages.CTXW_NOT_NULL;
-import static io.github.numichi.reactive.logger.exception.Messages.CTX_NOT_NULL;
-import static io.github.numichi.reactive.logger.exception.Messages.MAP_NOT_NULL;
 import static io.github.numichi.reactive.logger.exception.Messages.MDC_NOT_NULL;
 
 public final class MDCContext {
@@ -22,7 +20,7 @@ public final class MDCContext {
     }
     
     @NonNull
-    public static Context put(Context context, Map<String, String> mdc) {
+    public static Context put(Context context, MDC... mdc) {
         try {
             Objects.requireNonNull(context, CTXK_NOT_NULL);
             Objects.requireNonNull(mdc, MDC_NOT_NULL);
@@ -30,32 +28,15 @@ public final class MDCContext {
             throw new IllegalArgumentException(exception);
         }
         
-        return context.put(Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc);
-    }
-    
-    @NonNull
-    public static Context put(Context context, String mdcContextKey, Map<String, String> mdc) {
-        try {
-            Objects.requireNonNull(context, CTX_NOT_NULL);
-            Objects.requireNonNull(mdcContextKey, CTXK_NOT_NULL);
-            Objects.requireNonNull(mdc, MAP_NOT_NULL);
-        } catch (NullPointerException exception) {
-            throw new IllegalArgumentException(exception);
+        for (MDC m : mdc) {
+            if (m == null) {
+                continue;
+            }
+            
+            context = context.put(m.getContextKey(), m.asMap());
         }
         
-        return context.put(mdcContextKey, mdc);
-    }
-    
-    @NonNull
-    public static Context put(Context context, MDC mdc) {
-        try {
-            Objects.requireNonNull(context, CTXK_NOT_NULL);
-            Objects.requireNonNull(mdc, MDC_NOT_NULL);
-        } catch (NullPointerException exception) {
-            throw new IllegalArgumentException(exception);
-        }
-        
-        return context.put(mdc.getContextKey(), mdc.asMap());
+        return context;
     }
     
     @NonNull

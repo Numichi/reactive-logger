@@ -74,7 +74,6 @@ class MDCContextTest {
         Mono<MDC> resultDefault = Mono.defer(MDCContext::read)
             .contextWrite(it -> MDCContext.put(it, defaultMdc))
             .contextWrite(it -> MDCContext.put(it, anotherMdc));
-        
         StepVerifier.create(resultDefault)
             .expectNext(defaultMdc)
             .verifyComplete();
@@ -83,57 +82,37 @@ class MDCContextTest {
         Mono<MDC> resultAnother = Mono.defer(() -> MDCContext.read(ANOTHER_CONTEXT_KEY))
             .contextWrite(it -> MDCContext.put(it, defaultMdc))
             .contextWrite(it -> MDCContext.put(it, anotherMdc));
-        
         StepVerifier.create(resultAnother)
             .expectNext(anotherMdc)
             .verifyComplete();
-    }
     
-    @Test
-    @DisplayName("should need to be able to store a map")
-    void shouldNeedToBeAbleToStoreAMap() {
-        Map<String, String> mdcMap = new HashMap<>();
-        mdcMap.put("mdcKey", "mdcValue");
-        
-        
-        Mono<MDC> resultDefault = Mono.defer(MDCContext::read)
-            .contextWrite(it -> MDCContext.put(it, mdcMap));
-        
-        StepVerifier.create(resultDefault)
-            .expectNextMatches(mdc1 -> mdc1.asMap().equals(mdcMap) && mdc1.getContextKey().equals(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
+        Mono<Integer> contextSize1 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
+            .contextWrite(it -> MDCContext.put(it, defaultMdc))
+            .contextWrite(it -> MDCContext.put(it, anotherMdc));
+        StepVerifier.create(contextSize1)
+            .expectNext(2)
             .verifyComplete();
-        
-        
-        Mono<MDC> resultAnother = Mono.defer(() -> MDCContext.read(ANOTHER_CONTEXT_KEY))
-            .contextWrite(it -> MDCContext.put(it, ANOTHER_CONTEXT_KEY, mdcMap));
-        
-        StepVerifier.create(resultAnother)
-            .expectNextMatches(mdc1 -> mdc1.asMap().equals(mdcMap) && mdc1.getContextKey().equals(ANOTHER_CONTEXT_KEY))
-            .verifyComplete();
-    }
     
-    @Test
-    @DisplayName("should be MDC stored with the overridden context ID")
-    void shouldBeStoredWithTheOverriddenContextIDTest() {
-        MDC mdc = new MDC();
-        mdc.put("mdcKey", "mdcValue");
+    
+        Mono<Integer> contextSize2 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
+            .contextWrite(it -> MDCContext.put(it, defaultMdc, anotherMdc));
+        StepVerifier.create(contextSize2)
+            .expectNext(2)
+            .verifyComplete();
+    
         
-        Mono<MDC> result = Mono.defer(() -> MDCContext.read(ANOTHER_CONTEXT_KEY))
-            .contextWrite(it -> MDCContext.put(it, ANOTHER_CONTEXT_KEY, mdc));
-        
-        StepVerifier.create(result)
-            .expectNextMatches(mdc1 -> mdc1.asMap().equals(mdc.asMap()) && mdc1.getContextKey().equals(ANOTHER_CONTEXT_KEY))
+        Mono<Integer> contextSize3 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
+            .contextWrite(it -> MDCContext.put(it, defaultMdc, null));
+        StepVerifier.create(contextSize3)
+            .expectNext(1)
             .verifyComplete();
     }
     
     @Test
     @DisplayName("should throw IllegalArgumentException if any parameter is NULL")
     void shouldThrowIllegalArgumentExceptionTest() {
-        Map<String, String> emptyMap = new HashMap<>();
-        
-        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(null, "", emptyMap));
-        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(Context.empty(), null, emptyMap));
-        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(Context.empty(), "", null));
+        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(null, new MDC()));
+        assertThrows(IllegalArgumentException.class, () -> MDCContext.put(Context.empty(), null));
     
         StepVerifier.create(MDCContext.read((String) null))
             .expectError(IllegalArgumentException.class)
