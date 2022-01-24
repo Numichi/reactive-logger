@@ -62,6 +62,45 @@ class MDCContextTest {
     }
     
     @Test
+    @DisplayName("should return the appropriate contexts count")
+    void shouldReturnTheAppropriateContextsCount() {
+        MDC defaultMdc = new MDC();
+        defaultMdc.put("mdcKey", "mdcValue");
+    
+        MDC anotherMdc = new MDC(ANOTHER_CONTEXT_KEY);
+        anotherMdc.put("mdcKey", "mdcValue");
+    
+        Mono<Integer> contextSize1 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
+            .contextWrite(it -> MDCContext.put(it, defaultMdc))
+            .contextWrite(it -> MDCContext.put(it, anotherMdc));
+        StepVerifier.create(contextSize1)
+            .expectNext(2)
+            .verifyComplete();
+    
+    
+        Mono<Integer> contextSize2 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
+            .contextWrite(it -> MDCContext.put(it, defaultMdc, anotherMdc));
+        StepVerifier.create(contextSize2)
+            .expectNext(2)
+            .verifyComplete();
+    
+    
+        Mono<Integer> contextSize3 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
+            .contextWrite(it -> MDCContext.put(it, defaultMdc, null));
+        StepVerifier.create(contextSize3)
+            .expectNext(1)
+            .verifyComplete();
+    
+        
+        Mono<Integer> contextSize4 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
+            .contextWrite(it -> MDCContext.put(it, defaultMdc, null))
+            .contextWrite(it -> it.put("A", "B"));
+        StepVerifier.create(contextSize4)
+            .expectNext(2)
+            .verifyComplete();
+    }
+    
+    @Test
     @DisplayName("should give the MDC you are looking for (more MDC Context)")
     void shouldGiveTheMDCWithMoreMdcContext() {
         MDC defaultMdc = new MDC();
@@ -84,27 +123,6 @@ class MDCContextTest {
             .contextWrite(it -> MDCContext.put(it, anotherMdc));
         StepVerifier.create(resultAnother)
             .expectNext(anotherMdc)
-            .verifyComplete();
-    
-        Mono<Integer> contextSize1 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
-            .contextWrite(it -> MDCContext.put(it, defaultMdc))
-            .contextWrite(it -> MDCContext.put(it, anotherMdc));
-        StepVerifier.create(contextSize1)
-            .expectNext(2)
-            .verifyComplete();
-    
-    
-        Mono<Integer> contextSize2 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
-            .contextWrite(it -> MDCContext.put(it, defaultMdc, anotherMdc));
-        StepVerifier.create(contextSize2)
-            .expectNext(2)
-            .verifyComplete();
-    
-        
-        Mono<Integer> contextSize3 = Mono.deferContextual(ctx -> Mono.just(ctx.size()))
-            .contextWrite(it -> MDCContext.put(it, defaultMdc, null));
-        StepVerifier.create(contextSize3)
-            .expectNext(1)
             .verifyComplete();
     }
     
@@ -139,9 +157,6 @@ class MDCContextTest {
             .expectError(InvalidContextDataException.class)
             .verify();
     
-        
-       
-        
         
         Mono<MDC> result2 = Mono.defer(() -> MDCContext.read("not-exist-context-id"))
             .contextWrite(it -> MDCContext.put(it, mdc));
