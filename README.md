@@ -8,6 +8,8 @@
 ![Tested on](https://img.shields.io/badge/tested%20on-jvm8-blue)
 [![Reactor Project](https://img.shields.io/badge/supported-Java%20and%20Kotlin%20Coroutine%20with%20Reactor-blue)](https://projectreactor.io/)
 
+_After releases, SonaType or mvnrepostiroy may not appear. Regardless, the package is available._
+
 ## Overview
 _Part of the documentation and description comes from: [README.md](https://github.com/johncfranco/reactive-logger/blob/develop/README.md)_
 
