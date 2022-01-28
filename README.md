@@ -14,7 +14,7 @@ I think this description approaches the [What Is a Good Pattern for Contextual L
 
 The lifting solution runs a hook for each reactor event. This generates a lot of unnecessary events and class creation. I have [tested](https://github.com/Numichi/reactive-java-mdc-investigation) the lifting solution with a minimal controller with Spring Boot _(see: GET /counter)_. MDC map copy had run about 129 times for only one request. Then let's count, how many times will run on one of the more complex applications? 
 
-Another question: This lifting work with coroutine? Answer: not really, if you use Reactor API, It breaks the contents of the MDC so next time an slf4j logger will not see MDC contents again in a coroutine. MDC and CoroutineContext are two different universes. Lifting will not be triggered by any event of coroutine.
+Another question: This lifting work with coroutine? Answer: not really, if you use Reactor API, It breaks the contents of the MDC so next time an slf4j logger will not see MDC contents again in a coroutine. MDC and CoroutineContext are two different universes. Lifting will not be triggered by any event of coroutine. I was surprised by the multiple parallel requests, and a suspended delay resulted in MDC context data slipping to another request, which is unhealthy.
 
 ## Overview
 _Part of the documentation and description comes from: [README.md](https://github.com/johncfranco/reactive-logger/blob/develop/README.md)_
