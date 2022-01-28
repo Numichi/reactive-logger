@@ -1,113 +1,48 @@
 package io.github.numichi.reactive.logger;
 
-import io.github.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport;
-import reactor.util.annotation.NonNull;
-
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static io.github.numichi.reactive.logger.exception.Messages.KEY_NOT_NULL;
-import static io.github.numichi.reactive.logger.exception.Messages.MAP_NOT_NULL;
-import static io.github.numichi.reactive.logger.exception.Messages.VALUE_NOT_NULL;
-
-@JacocoSkipGeneratedReport
-public class MDC implements Map<String, String> {
-    private final Map<String, String> mdcMap;
-    private final String mdcContextKey;
+public class MDC extends ConcurrentHashMap<String, String> {
+    private final String assignedContextKey;
     
     public MDC() {
-        this(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), new HashMap<>());
+        this(null, null);
     }
     
-    public MDC(String mdcContextKey) {
-        this(mdcContextKey, new HashMap<>());
+    public MDC(String assignedContextKey) {
+        this(assignedContextKey, null);
     }
     
-    public MDC(Map<String, String> mdc) {
-        this(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc);
+    public MDC(Map<String, String> mdcMap) {
+        this(null, mdcMap);
     }
     
-    public MDC(String mdcContextKey, Map<String, String> mdc) {
-        this.mdcMap = mdc;
-        this.mdcContextKey = mdcContextKey;
-    }
-    
-    public Map<String, String> asMap() {
-        return mdcMap;
-    }
-    
-    public String getContextKey() {
-        return mdcContextKey;
-    }
-    
-    @Override
-    public int size() {
-        return mdcMap.size();
-    }
-    
-    @Override
-    public boolean isEmpty() {
-        return mdcMap.isEmpty();
-    }
-    
-    @Override
-    public boolean containsKey(Object key) {
-        return mdcMap.containsKey(key);
-    }
-    
-    @Override
-    public boolean containsValue(Object value) {
-        return mdcMap.containsValue(value);
-    }
-    
-    @Override
-    public String get(Object key) {
-        return mdcMap.get(key);
-    }
-    
-    @Override
-    public String put(@NonNull String key, @NonNull String value) {
-        Objects.requireNonNull(key, KEY_NOT_NULL);
-        Objects.requireNonNull(value, VALUE_NOT_NULL);
-        
-        return mdcMap.put(key, value);
-    }
-    
-    @Override
-    public String remove(Object key) {
-        return mdcMap.remove(key);
-    }
-    
-    @Override
-    public void putAll(@NonNull Map<? extends String, ? extends String> map) {
-        if (map.containsKey(null) || map.containsValue(null)) {
-            throw new NullPointerException(MAP_NOT_NULL);
+    public MDC(String assignedContextKey, Map<String, String> mdcMap) {
+        if (mdcMap != null) {
+            this.putAll(mdcMap);
         }
-        
-        mdcMap.putAll(map);
+    
+        if (assignedContextKey != null) {
+            this.assignedContextKey = assignedContextKey;
+        } else {
+            this.assignedContextKey = DefaultValues.getInstance().getDefaultReactorContextMdcKey();
+        }
     }
     
-    @Override
-    public void clear() {
-        mdcMap.clear();
+    public String getAssignedContextKey() {
+        return assignedContextKey;
     }
     
-    @Override
-    public Set<String> keySet() {
-        return mdcMap.keySet();
+    @Deprecated
+    public Map<String, String> asMap() {
+        return this;
     }
     
-    @Override
-    public Collection<String> values() {
-        return mdcMap.values();
-    }
-    
-    @Override
-    public Set<Entry<String, String>> entrySet() {
-        return mdcMap.entrySet();
+    @Deprecated
+    public String getContextKey() {
+        return assignedContextKey;
     }
     
     @Override
@@ -115,17 +50,18 @@ public class MDC implements Map<String, String> {
         if (this == o) {
             return true;
         }
-        
         if (!(o instanceof MDC)) {
             return false;
         }
-        
+        if (!super.equals(o)) {
+            return false;
+        }
         MDC mdc = (MDC) o;
-        return mdcMap.equals(mdc.mdcMap) && mdcContextKey.equals(mdc.mdcContextKey);
+        return getAssignedContextKey().equals(mdc.getAssignedContextKey());
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(mdcMap, mdcContextKey);
+        return Objects.hash(super.hashCode(), getAssignedContextKey());
     }
 }

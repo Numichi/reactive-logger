@@ -31,12 +31,12 @@ internal class MDCContextTest {
         assertEquals(0, result0.size())
 
         val result1 = putMdc(Context.empty(), mdc1)
-        assertEquals(mdc1.asMap(), result1.getOrEmpty<Map<*, *>>(DefaultValues.getInstance().defaultReactorContextMdcKey).orElse(null))
+        assertEquals(mdc1, result1.getOrEmpty<Map<*, *>>(DefaultValues.getInstance().defaultReactorContextMdcKey).orElse(null))
         assertEquals(1, result1.size())
 
         val result2 = putMdc(Context.empty(), mdc1, mdc2)
-        assertEquals(mdc1.asMap(), result2.getOrEmpty<Map<*, *>>(DefaultValues.getInstance().defaultReactorContextMdcKey).orElse(null))
-        assertEquals(mdc2.asMap(), result2.getOrEmpty<Map<*, *>>(ANOTHER_CONTEXT_KEY).orElse(null))
+        assertEquals(mdc1, result2.getOrEmpty<Map<*, *>>(DefaultValues.getInstance().defaultReactorContextMdcKey).orElse(null))
+        assertEquals(mdc2, result2.getOrEmpty<Map<*, *>>(ANOTHER_CONTEXT_KEY).orElse(null))
         assertEquals(2, result2.size())
     }
 
@@ -71,7 +71,7 @@ internal class MDCContextTest {
         withContext(Context.of(mapOf(DefaultValues.getInstance().defaultReactorContextMdcKey to mdcMap)).asCoroutineContext()) {
             val result = readMDC(coroutineContext[ReactorContext]?.context)
             assertEquals(mdcMap, result)
-            assertEquals(mdcMap, result.asMap())
+            assertEquals(mdcMap, result)
         }
     }
 
@@ -115,12 +115,12 @@ internal class MDCContextTest {
         mdcMap["mdcKey"] = "mdcValue"
 
         withMDCContext(MDC(mdcMap)) {
-            val result = readMDC(coroutineContext[ReactorContext]?.context).asMap()
+            val result = readMDC(coroutineContext[ReactorContext]?.context)
             assertEquals(mdcMap, result)
         }
 
         withMDCContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
-            val result = readMDC(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY).asMap()
+            val result = readMDC(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY)
             assertEquals(mdcMap, result)
         }
     }
@@ -131,12 +131,12 @@ internal class MDCContextTest {
         mdcMap["mdcKey"] = "mdcValue"
 
         withMDCContext(MDC(mdcMap)) {
-            val result = readMDC(coroutineContext[ReactorContext]?.context).asMap()
+            val result = readMDC(coroutineContext[ReactorContext]?.context)
             assertEquals(mdcMap, result)
         }
 
         withMDCContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
-            val result = readMDC(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY).asMap()
+            val result = readMDC(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY)
             assertEquals(mdcMap, result)
         }
     }

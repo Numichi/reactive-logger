@@ -75,15 +75,15 @@ internal class ReactiveLoggerTest {
         val mdc = MDC()
         mdc[randomText()] = randomText()
         var context1 = Context.empty()
-        context1 = context1.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc.asMap())
+        context1 = context1.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc)
         var context2 = Context.empty()
-        context2 = context2.put(ANOTHER_CONTEXT_KEY, mdc.asMap())
+        context2 = context2.put(ANOTHER_CONTEXT_KEY, mdc)
 
         var mdcResult = logger.snapshot(context1)
-        assertEquals(mdc.asMap(), mdcResult?.asMap())
+        assertEquals(mdc, mdcResult)
 
         mdcResult = logger.snapshot(context2)
-        assertEquals(mapOf<String, String>(), mdcResult?.asMap())
+        assertEquals(mapOf<String, String>(), mdcResult)
 
         assertThrows<IllegalArgumentException> {
             loggerWithError.snapshot(null)
@@ -91,7 +91,7 @@ internal class ReactiveLoggerTest {
 
         withMDCContext(context1) {
             mdcResult = logger.snapshot(null)
-            assertEquals(mdc.asMap(), mdcResult?.asMap())
+            assertEquals(mdc, mdcResult)
         }
 
         withMDCContext(context2) {
@@ -101,7 +101,7 @@ internal class ReactiveLoggerTest {
 
         withMDCContext(context1) {
             mdcResult = logger.snapshot()
-            assertEquals(mdc.asMap(), mdcResult?.asMap())
+            assertEquals(mdc, mdcResult)
         }
 
         withMDCContext(context2) {

@@ -109,20 +109,20 @@ class ReactiveLoggerTest {
         mdc.put(randomText(), randomText());
     
         Context context1 = Context.empty();
-        context1 = context1.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc.asMap());
+        context1 = context1.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc);
         Mono<MDC> snapshot1 = logger.snapshot(context1);
         StepVerifier.create(snapshot1)
-            .expectNextMatches(mdc1 -> mdc1.asMap().equals(mdc.asMap()))
+            .expectNextMatches(mdc1 -> mdc1.equals(mdc))
             .verifyComplete();
     
         
         Context context2 = Context.empty();
-        context2 = context2.put(MDCContextTest.ANOTHER_CONTEXT_KEY, mdc.asMap());
+        context2 = context2.put(MDCContextTest.ANOTHER_CONTEXT_KEY, mdc);
         
         
         Mono<MDC> snapshot2 = logger.snapshot(context2);
         StepVerifier.create(snapshot2)
-            .expectNextMatches(mdc1 -> mdc1.asMap().size() == 0)
+            .expectNextMatches(mdc1 -> mdc1.size() == 0)
             .verifyComplete();
     
     

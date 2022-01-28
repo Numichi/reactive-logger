@@ -10,6 +10,7 @@ import reactor.util.context.ContextView;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentMap;
 
 import static io.github.numichi.reactive.logger.exception.Messages.CTXK_NOT_NULL;
 import static io.github.numichi.reactive.logger.exception.Messages.CTXW_NOT_NULL;
@@ -33,7 +34,7 @@ public final class MDCContext {
                 continue;
             }
             
-            context = context.put(m.getContextKey(), m.asMap());
+            context = context.put(m.getAssignedContextKey(), m);
         }
         
         return context;

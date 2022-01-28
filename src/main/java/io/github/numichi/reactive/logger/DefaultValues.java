@@ -1,13 +1,11 @@
 package io.github.numichi.reactive.logger;
 
-import io.github.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport;
 import io.github.numichi.reactive.logger.exception.AlreadyConfigurationException;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
-@JacocoSkipGeneratedReport
 public class DefaultValues {
-    private static final String DEFAULT_REACTOR_CONTEXT_MDC_KEY = "EFAULT_REACTOR_CONTEXT_MDC_KEY";
+    private static final String DEFAULT_REACTOR_CONTEXT_MDC_KEY = "DEFAULT_REACTOR_CONTEXT_MDC_KEY";
     private static final Scheduler DEFAULT_SCHEDULER = Schedulers.boundedElastic();
     private static DefaultValues instance = null;
     private final String defaultReactorContextMdcKey;
@@ -28,6 +26,10 @@ public class DefaultValues {
     private DefaultValues(String defaultReactorContextMdcKey, Scheduler defaultScheduler) {
         this.defaultReactorContextMdcKey = defaultReactorContextMdcKey;
         this.defaultScheduler = defaultScheduler;
+    }
+    
+    public static void reset() {
+        instance = null;
     }
     
     public static DefaultValues getInstance() {

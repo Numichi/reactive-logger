@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger as JReactiveLogger
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport
 import io.github.numichi.reactive.logger.MDC
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -57,17 +56,17 @@ class ReactiveLogger private constructor(
     val isTraceEnabled: Boolean
         get() = reactiveLogger.isTraceEnabled
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun trace(msg: String) {
         return wrap { logger -> logger.trace(msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun trace(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.trace(format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun trace(msg: String, t: Throwable) {
         return wrap { logger -> logger.trace(msg, t) }
     }
@@ -76,17 +75,17 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isTraceEnabled(marker)
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun trace(marker: Marker, msg: String) {
         return wrap { logger -> logger.trace(marker, msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun trace(marker: Marker, format: String, vararg argArray: Any) {
         return wrap { logger -> logger.trace(marker, format, *argArray) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun trace(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.trace(marker, msg, t) }
     }
@@ -96,17 +95,17 @@ class ReactiveLogger private constructor(
     val isDebugEnabled: Boolean
         get() = reactiveLogger.isDebugEnabled
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun debug(msg: String) {
         return wrap { logger -> logger.debug(msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun debug(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.debug(format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun debug(msg: String, t: Throwable) {
         return wrap { logger -> logger.debug(msg, t) }
     }
@@ -115,17 +114,17 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isDebugEnabled(marker)
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun debug(marker: Marker, msg: String) {
         return wrap { logger -> logger.debug(marker, msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun debug(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.debug(marker, format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun debug(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.debug(marker, msg, t) }
     }
@@ -135,17 +134,17 @@ class ReactiveLogger private constructor(
     val isInfoEnabled: Boolean
         get() = reactiveLogger.isInfoEnabled
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun info(msg: String) {
         return wrap { logger -> logger.info(msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun info(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.info(format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun info(msg: String, t: Throwable) {
         return wrap { logger -> logger.info(msg, t) }
     }
@@ -154,17 +153,17 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isInfoEnabled(marker)
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun info(marker: Marker, msg: String) {
         return wrap { logger -> logger.info(marker, msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun info(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.info(marker, format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun info(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.info(marker, msg, t) }
     }
@@ -174,17 +173,17 @@ class ReactiveLogger private constructor(
     val isWarnEnabled: Boolean
         get() = reactiveLogger.isWarnEnabled
 
-    @JacocoSkipGeneratedReport
+
     suspend fun warn(msg: String) {
         return wrap { logger -> logger.warn(msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun warn(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.warn(format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun warn(msg: String, t: Throwable) {
         return wrap { logger -> logger.warn(msg, t) }
     }
@@ -193,17 +192,17 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isWarnEnabled(marker)
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun warn(marker: Marker, msg: String) {
         return wrap { logger -> logger.warn(marker, msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun warn(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.warn(marker, format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun warn(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.warn(marker, msg, t) }
     }
@@ -213,17 +212,17 @@ class ReactiveLogger private constructor(
     val isErrorEnabled: Boolean
         get() = reactiveLogger.isErrorEnabled
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun error(msg: String) {
         return wrap { logger -> logger.error(msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun error(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.error(format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun error(msg: String, t: Throwable) {
         return wrap { logger -> logger.error(msg, t) }
     }
@@ -232,17 +231,17 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isErrorEnabled(marker)
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun error(marker: Marker, msg: String) {
         return wrap { logger -> logger.error(marker, msg) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun error(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.error(marker, format, *arguments) }
     }
 
-    @JacocoSkipGeneratedReport
+    
     suspend fun error(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.error(marker, msg, t) }
     }
