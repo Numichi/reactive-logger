@@ -1,8 +1,8 @@
-package io.github.numichi.reactive.logger.java;
+package io.github.numichi.reactive.logger.reactor;
 
 import io.github.numichi.reactive.logger.MDC;
-import io.github.numichi.reactive.logger.exception.ContextNotExistException;
 import io.github.numichi.reactive.logger.Values;
+import io.github.numichi.reactive.logger.exception.ContextNotExistException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -17,10 +17,6 @@ import java.util.Optional;
 
 import static io.github.numichi.reactive.logger.exception.Messages.CTX_NOT_NULL;
 
-/**
- * Use from: io.github.numichi.reactive.logger.reactor;
- */
-@Deprecated
 public final class ReactiveLogger {
     
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(ReactiveLogger.class);

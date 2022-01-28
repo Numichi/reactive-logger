@@ -1,6 +1,6 @@
-package io.github.numichi.reactive.logger.kotlin
+package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.java.ReactiveLogger as JReactiveLogger
+import io.github.numichi.reactive.logger.reactor.ReactiveLogger as JReactiveLogger
 import io.github.numichi.reactive.logger.Values
 import io.github.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport
 import io.github.numichi.reactive.logger.MDC
@@ -16,10 +16,6 @@ import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
-@Deprecated(
-    "we are going to replace from coroutine package",
-    ReplaceWith("ReactiveLogger", "io.github.numichi.reactive.logger.coroutine")
-)
 class ReactiveLogger private constructor(
     private val reactiveLogger: JReactiveLogger,
     private val contextKey: CoroutineContext.Key<out CoroutineContext.Element>,

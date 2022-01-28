@@ -1,8 +1,8 @@
-package io.github.numichi.reactive.logger.java;
+package io.github.numichi.reactive.logger.reactor;
 
-import io.github.numichi.reactive.logger.exception.InvalidContextDataException;
 import io.github.numichi.reactive.logger.MDC;
 import io.github.numichi.reactive.logger.Values;
+import io.github.numichi.reactive.logger.exception.InvalidContextDataException;
 import reactor.core.publisher.Mono;
 import reactor.util.annotation.NonNull;
 import reactor.util.context.Context;
@@ -15,10 +15,6 @@ import static io.github.numichi.reactive.logger.exception.Messages.CTXK_NOT_NULL
 import static io.github.numichi.reactive.logger.exception.Messages.CTXW_NOT_NULL;
 import static io.github.numichi.reactive.logger.exception.Messages.MDC_NOT_NULL;
 
-/**
- * Use from: io.github.numichi.reactive.logger.reactor;
- */
-@Deprecated
 public final class MDCContext {
     private MDCContext() {
     }

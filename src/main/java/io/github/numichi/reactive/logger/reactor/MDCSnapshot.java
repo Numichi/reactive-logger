@@ -1,4 +1,4 @@
-package io.github.numichi.reactive.logger.java;
+package io.github.numichi.reactive.logger.reactor;
 
 import org.slf4j.MDC;
 import reactor.util.annotation.NonNull;
@@ -6,10 +6,6 @@ import reactor.util.annotation.Nullable;
 
 import java.util.Map;
 
-/**
- * Use from: io.github.numichi.reactive.logger.reactor;
- */
-@Deprecated
 public final class MDCSnapshot implements AutoCloseable {
     private MDCSnapshot(@Nullable final Map<String, String> context) {
         if (context == null) {
