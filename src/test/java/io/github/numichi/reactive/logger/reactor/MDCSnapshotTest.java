@@ -1,6 +1,5 @@
 package io.github.numichi.reactive.logger.reactor;
 
-import io.github.numichi.reactive.logger.java.MDCSnapshot;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 

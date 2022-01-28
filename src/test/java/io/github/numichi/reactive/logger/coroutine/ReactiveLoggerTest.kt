@@ -1,7 +1,6 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.Values
-import io.github.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+import io.github.numichi.reactive.logger.DefaultValues
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest.Companion.ANOTHER_CONTEXT_KEY
@@ -76,7 +75,7 @@ internal class ReactiveLoggerTest {
         val mdc = MDC()
         mdc[randomText()] = randomText()
         var context1 = Context.empty()
-        context1 = context1.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc.asMap())
+        context1 = context1.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc.asMap())
         var context2 = Context.empty()
         context2 = context2.put(ANOTHER_CONTEXT_KEY, mdc.asMap())
 
@@ -128,7 +127,7 @@ internal class ReactiveLoggerTest {
     @Test
     fun readMDC() {
         val mdc: Map<String, String> = randomMap(1)
-        val context = Context.of(Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc)
+        val context = Context.of(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc)
         assertEquals(Optional.of(mdc), logger.readMDC(context))
         assertEquals(Optional.of(mdc).get(), logger.readMDC(context).get())
     }

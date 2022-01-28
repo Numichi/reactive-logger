@@ -1,15 +1,14 @@
 package io.github.numichi.reactive.logger.reactor;
 
+import io.github.numichi.reactive.logger.DefaultValues;
 import io.github.numichi.reactive.logger.MDC;
 import io.github.numichi.reactive.logger.exception.InvalidContextDataException;
-import io.github.numichi.reactive.logger.java.MDCContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.util.context.Context;
 
-import static io.github.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MDCContextTest {
@@ -145,7 +144,7 @@ class MDCContextTest {
     @Test
     @DisplayName("should throw InvalidContextDataException if context data is invalid")
     void shouldThrowInvalidContextDataException() {
-        // ANOTHER_CONTEXT_KEY is not DEFAULT_REACTOR_CONTEXT_MDC_KEY
+        // ANOTHER_CONTEXT_KEY is not DefaultValues.getInstance().getDefaultReactorContextMdcKey()
         MDC mdc = new MDC(ANOTHER_CONTEXT_KEY);
         mdc.put("mdcKey2", "mdcValue2");
         Mono<MDC> result1 = Mono.defer(MDCContext::read)
@@ -163,14 +162,14 @@ class MDCContextTest {
         
         
         Mono<MDC> result3 = Mono.defer(MDCContext::read)
-            .contextWrite(it -> it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, ""));
+            .contextWrite(it -> it.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), ""));
         StepVerifier.create(result3)
             .expectError(InvalidContextDataException.class)
             .verify();
         
         
         Mono<MDC> result4 = Mono.defer(MDCContext::read)
-            .contextWrite(it -> it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, 100));
+            .contextWrite(it -> it.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), 100));
         StepVerifier.create(result4)
             .expectError(InvalidContextDataException.class)
             .verify();

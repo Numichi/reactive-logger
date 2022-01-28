@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger.reactor;
 
 import io.github.numichi.reactive.logger.MDC;
-import io.github.numichi.reactive.logger.Values;
+import io.github.numichi.reactive.logger.DefaultValues;
 import io.github.numichi.reactive.logger.exception.InvalidContextDataException;
 import reactor.core.publisher.Mono;
 import reactor.util.annotation.NonNull;
@@ -41,7 +41,7 @@ public final class MDCContext {
     
     @NonNull
     public static Mono<MDC> read() {
-        return read(Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY);
+        return read(DefaultValues.getInstance().getDefaultReactorContextMdcKey());
     }
     
     @NonNull
@@ -51,7 +51,7 @@ public final class MDCContext {
     
     @NonNull
     public static Mono<MDC> read(ContextView context) {
-        return read(context, Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY);
+        return read(context, DefaultValues.getInstance().getDefaultReactorContextMdcKey());
     }
     
     @NonNull

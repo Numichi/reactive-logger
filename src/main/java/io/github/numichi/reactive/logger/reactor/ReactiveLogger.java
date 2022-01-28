@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger.reactor;
 
 import io.github.numichi.reactive.logger.MDC;
-import io.github.numichi.reactive.logger.Values;
+import io.github.numichi.reactive.logger.DefaultValues;
 import io.github.numichi.reactive.logger.exception.ContextNotExistException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -307,9 +307,9 @@ public final class ReactiveLogger {
     }
     
     public static class Builder {
-        private Scheduler scheduler = Values.DEFAULT_SCHEDULER;
+        private Scheduler scheduler = DefaultValues.getInstance().getDefaultScheduler();
         private Logger logger = DEFAULT_LOGGER;
-        private String mdcContextKey = Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
+        private String mdcContextKey = DefaultValues.getInstance().getDefaultReactorContextMdcKey();
         private static final String LOGGER_MUST_NOT_BE_NULL = "logger must not be null";
         private boolean enableError = false;
         

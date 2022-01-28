@@ -10,6 +10,6 @@ suspend fun <T> withMDCContext(vararg mdc: MDC, block: suspend CoroutineScope.()
 }
 
 suspend fun <T> withMDCContext(context: Context?, vararg mdc: MDC, block: suspend CoroutineScope.() -> T): T {
-    requireNotNull(context) { "context must not be null"}
+    requireNotNull(context) { "context must not be null" }
     return withContextBlock(context, mdc.iterator(), block)
 }

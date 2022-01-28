@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger as JReactiveLogger
-import io.github.numichi.reactive.logger.Values
+import io.github.numichi.reactive.logger.DefaultValues
 import io.github.numichi.reactive.logger.annotations.JacocoSkipGeneratedReport
 import io.github.numichi.reactive.logger.MDC
 import kotlinx.coroutines.reactor.ReactorContext
@@ -259,9 +259,9 @@ class ReactiveLogger private constructor(
     }
 
     class Builder<T : CoroutineContext.Element>(private val contextKey: CoroutineContext.Key<T>) {
-        private var scheduler = Values.DEFAULT_SCHEDULER
+        private var scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler
         private var logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
-        private var mdcContextKey = Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+        private var mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey!!
         private var contextExtractive: suspend (CoroutineContext.Key<out T>) -> Context?
         private var enableError: Boolean = false
 

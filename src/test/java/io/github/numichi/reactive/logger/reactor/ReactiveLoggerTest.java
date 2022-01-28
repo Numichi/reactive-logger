@@ -1,5 +1,6 @@
 package io.github.numichi.reactive.logger.reactor;
 
+import io.github.numichi.reactive.logger.DefaultValues;
 import io.github.numichi.reactive.logger.MDC;
 import io.github.numichi.reactive.logger.exception.ContextNotExistException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static io.github.numichi.reactive.logger.Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -83,7 +83,7 @@ class ReactiveLoggerTest {
     @Test
     void readMDC() {
         final Map<String, String> mdc = randomMap(1);
-        final Context context = Context.of(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc);
+        final Context context = Context.of(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc);
         assertEquals(Optional.of(mdc), logger.readMDC(context));
         assertEquals(Optional.of(mdc).get(), logger.readMDC(context).get());
     }
@@ -91,7 +91,7 @@ class ReactiveLoggerTest {
     @Test
     void takeMDCSnapshot() {
         final Map<String, String> mdc = randomMap(1);
-        final Context context = Context.of(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc);
+        final Context context = Context.of(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc);
         try (final MDCSnapshot snapshot = logger.takeMDCSnapshot(context)) {
             assertEquals(org.slf4j.MDC.getCopyOfContextMap(), mdc);
         }
@@ -109,7 +109,7 @@ class ReactiveLoggerTest {
         mdc.put(randomText(), randomText());
     
         Context context1 = Context.empty();
-        context1 = context1.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc.asMap());
+        context1 = context1.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc.asMap());
         Mono<MDC> snapshot1 = logger.snapshot(context1);
         StepVerifier.create(snapshot1)
             .expectNextMatches(mdc1 -> mdc1.asMap().equals(mdc.asMap()))

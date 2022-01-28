@@ -19,7 +19,7 @@ public class MDC implements Map<String, String> {
     private final String mdcContextKey;
     
     public MDC() {
-        this(Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY, new HashMap<>());
+        this(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), new HashMap<>());
     }
     
     public MDC(String mdcContextKey) {
@@ -27,7 +27,7 @@ public class MDC implements Map<String, String> {
     }
     
     public MDC(Map<String, String> mdc) {
-        this(Values.DEFAULT_REACTOR_CONTEXT_MDC_KEY, mdc);
+        this(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc);
     }
     
     public MDC(String mdcContextKey, Map<String, String> mdc) {
