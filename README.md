@@ -16,7 +16,7 @@ I think this description approaches the [What Is a Good Pattern for Contextual L
 It runs a hook for each reactor API. It generates a lot of unnecessary events and class creation. I have [tested](https://github.com/Numichi/reactive-java-mdc-investigation) it with a minimal controller with Spring Boot (see: GET /counter). MDC map copy had run about 129 times for only one request. Then let's count how many times will run on one of the more complex applications?
 
 **My second problem on Kotlin Coroutine with lifting.**
-It does not work. When you call a Reactor API, Hooks will activate hook, and MDC ThreadLocal will be overridden. After it, coroutine gets run point back. Hooks are not taken effect in coroutine areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is not.
+It does not work. When you call a Reactor API, API will activate hook, and MDC ThreadLocal will be overridden. After it, coroutine gets run point back. Hooks are not taken effect in coroutine areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is not.
 
 **Another side effect I have experienced.**
 When I created a parallel request, my first request ended later than my second request. I have used a suspended delay in code, and I noticed the following: MDC context data slipping to another request. I think it is unhealthy and misinforms when you review logs.
