@@ -10,11 +10,19 @@
 _After releases, SonaType or mvnrepostiroy may not appear. Regardless, the package is available._
 
 ## What is the source of motivation?
-I think this description approaches the [What Is a Good Pattern for Contextual Logging? (MDC)](https://projectreactor.io/docs/core/release/reference/#faq.mdc) well. Furthermore, there is the so-called [lifting solution](https://www.novatec-gmbh.de/en/blog/how-can-the-mdc-context-be-used-in-the-reactive-spring-applications/), which I think is overkill. In this (lifing) example, he/she is using Kotlin, but with a Reactor API, not a coroutine. This will cause problems, see later. If you stay with Reactor API, there is no problem with lifting. I mean, I didn't experience it.
+I think this description approaches the [What Is a Good Pattern for Contextual Logging? (MDC)](https://projectreactor.io/docs/core/release/reference/#faq.mdc) well. Furthermore, there is the so-called [lifting solution](https://www.novatec-gmbh.de/en/blog/how-can-the-mdc-context-be-used-in-the-reactive-spring-applications/), which I think is overkill. In this (lifting) example, he uses Kotlin, but with a Reactor API, not a coroutine. If you stay with Reactor API, there is no problem with lifting and working. I mean, I didn't experience any pain, regardless of I used Kotlin or Java. But it is not valid for Kotlin Coroutine.
 
-The lifting solution runs a hook for each reactor event. This generates a lot of unnecessary events and class creation. I have [tested](https://github.com/Numichi/reactive-java-mdc-investigation) the lifting solution with a minimal controller with Spring Boot _(see: GET /counter)_. MDC map copy had run about 129 times for only one request. Then let's count, how many times will run on one of the more complex applications? 
+**My first problem with the lifting solution.**
+It runs a hook for each reactor API. It generates a lot of unnecessary events and class creation. I have [tested](https://github.com/Numichi/reactive-java-mdc-investigation) it with a minimal controller with Spring Boot (see: GET /counter). MDC map copy had run about 129 times for only one request. Then let's count how many times will run on one of the more complex applications?
 
-Another question: This lifting work with coroutine? Answer: not really, if you use Reactor API, It breaks the contents of the MDC so next time an slf4j logger will not see MDC contents again in a coroutine. MDC and CoroutineContext are two different universes. Lifting will not be triggered by any event of coroutine. I was surprised by the multiple parallel requests, and a suspended delay resulted in MDC context data slipping to another request, which is unhealthy.
+**My second problem on Kotlin Coroutine with lifting.**
+It does not work. When you call a Reactor API, Hooks will activate hook, and MDC ThreadLocal will be overridden. After it, coroutine gets run point back. Hooks are not taken effect in coroutine areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is not.
+
+**Another side effect I have experienced.**
+When I created a parallel request, my first request ended later than my second request. I have used a suspended delay in code, and I noticed the following: MDC context data slipping to another request. I think it is unhealthy and misinforms when you review logs.
+
+**Goal:**
+So, I have been working to create an API for Reactor and Coroutine what solve the above problems. It provides the same interfaces to both environments and follows Reactor MDC documentation.
 
 ## Overview
 _Part of the documentation and description comes from: [README.md](https://github.com/johncfranco/reactive-logger/blob/develop/README.md)_
