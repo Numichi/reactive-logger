@@ -23,13 +23,39 @@ class ReactiveLogger private constructor(
 
     companion object {
         @JvmStatic
-        fun builder(): Builder<ReactorContext> {
-            return builder(ReactorContext).withContext { reactorContextOrEmpty() }
+        fun create(): ReactiveLogger {
+            return Builder(
+                contextKey = ReactorContext,
+                contextExtractive = { reactorContextOrEmpty() }
+            ).build()
         }
 
         @JvmStatic
-        fun <T : CoroutineContext.Element> builder(coroutineKey: CoroutineContext.Key<T>): Builder<T> {
-            return Builder(coroutineKey)
+        fun create(logger: Logger): ReactiveLogger {
+            return Builder(
+                contextKey = ReactorContext,
+                logger = logger,
+                contextExtractive = { reactorContextOrEmpty() }
+            ).build()
+        }
+
+        @JvmStatic
+        fun builder(): Builder<ReactorContext> {
+            return Builder(
+                contextKey = ReactorContext,
+                contextExtractive = { reactorContextOrEmpty() }
+            )
+        }
+
+        @JvmStatic
+        fun <T : CoroutineContext.Element> builder(
+            coroutineKey: CoroutineContext.Key<T>,
+            contextExtractive: suspend (CoroutineContext.Key<out T>) -> Context? = { null }
+        ): Builder<T> {
+            return Builder(
+                contextKey = coroutineKey,
+                contextExtractive = contextExtractive
+            )
         }
     }
 
@@ -56,17 +82,14 @@ class ReactiveLogger private constructor(
     val isTraceEnabled: Boolean
         get() = reactiveLogger.isTraceEnabled
 
-    
     suspend fun trace(msg: String) {
         return wrap { logger -> logger.trace(msg) }
     }
 
-    
     suspend fun trace(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.trace(format, *arguments) }
     }
 
-    
     suspend fun trace(msg: String, t: Throwable) {
         return wrap { logger -> logger.trace(msg, t) }
     }
@@ -75,17 +98,14 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isTraceEnabled(marker)
     }
 
-    
     suspend fun trace(marker: Marker, msg: String) {
         return wrap { logger -> logger.trace(marker, msg) }
     }
 
-    
     suspend fun trace(marker: Marker, format: String, vararg argArray: Any) {
         return wrap { logger -> logger.trace(marker, format, *argArray) }
     }
 
-    
     suspend fun trace(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.trace(marker, msg, t) }
     }
@@ -95,17 +115,14 @@ class ReactiveLogger private constructor(
     val isDebugEnabled: Boolean
         get() = reactiveLogger.isDebugEnabled
 
-    
     suspend fun debug(msg: String) {
         return wrap { logger -> logger.debug(msg) }
     }
 
-    
     suspend fun debug(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.debug(format, *arguments) }
     }
 
-    
     suspend fun debug(msg: String, t: Throwable) {
         return wrap { logger -> logger.debug(msg, t) }
     }
@@ -114,17 +131,14 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isDebugEnabled(marker)
     }
 
-    
     suspend fun debug(marker: Marker, msg: String) {
         return wrap { logger -> logger.debug(marker, msg) }
     }
 
-    
     suspend fun debug(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.debug(marker, format, *arguments) }
     }
 
-    
     suspend fun debug(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.debug(marker, msg, t) }
     }
@@ -134,17 +148,14 @@ class ReactiveLogger private constructor(
     val isInfoEnabled: Boolean
         get() = reactiveLogger.isInfoEnabled
 
-    
     suspend fun info(msg: String) {
         return wrap { logger -> logger.info(msg) }
     }
 
-    
     suspend fun info(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.info(format, *arguments) }
     }
 
-    
     suspend fun info(msg: String, t: Throwable) {
         return wrap { logger -> logger.info(msg, t) }
     }
@@ -153,17 +164,14 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isInfoEnabled(marker)
     }
 
-    
     suspend fun info(marker: Marker, msg: String) {
         return wrap { logger -> logger.info(marker, msg) }
     }
 
-    
     suspend fun info(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.info(marker, format, *arguments) }
     }
 
-    
     suspend fun info(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.info(marker, msg, t) }
     }
@@ -178,12 +186,10 @@ class ReactiveLogger private constructor(
         return wrap { logger -> logger.warn(msg) }
     }
 
-    
     suspend fun warn(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.warn(format, *arguments) }
     }
 
-    
     suspend fun warn(msg: String, t: Throwable) {
         return wrap { logger -> logger.warn(msg, t) }
     }
@@ -192,17 +198,14 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isWarnEnabled(marker)
     }
 
-    
     suspend fun warn(marker: Marker, msg: String) {
         return wrap { logger -> logger.warn(marker, msg) }
     }
 
-    
     suspend fun warn(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.warn(marker, format, *arguments) }
     }
 
-    
     suspend fun warn(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.warn(marker, msg, t) }
     }
@@ -212,17 +215,14 @@ class ReactiveLogger private constructor(
     val isErrorEnabled: Boolean
         get() = reactiveLogger.isErrorEnabled
 
-    
     suspend fun error(msg: String) {
         return wrap { logger -> logger.error(msg) }
     }
 
-    
     suspend fun error(format: String, vararg arguments: Any) {
         return wrap { logger -> logger.error(format, *arguments) }
     }
 
-    
     suspend fun error(msg: String, t: Throwable) {
         return wrap { logger -> logger.error(msg, t) }
     }
@@ -231,17 +231,14 @@ class ReactiveLogger private constructor(
         return reactiveLogger.isErrorEnabled(marker)
     }
 
-    
     suspend fun error(marker: Marker, msg: String) {
         return wrap { logger -> logger.error(marker, msg) }
     }
 
-    
     suspend fun error(marker: Marker, format: String, vararg arguments: Any) {
         return wrap { logger -> logger.error(marker, format, *arguments) }
     }
 
-    
     suspend fun error(marker: Marker, msg: String, t: Throwable) {
         return wrap { logger -> logger.error(marker, msg, t) }
     }
@@ -250,61 +247,21 @@ class ReactiveLogger private constructor(
     private suspend fun wrap(fn: (JReactiveLogger) -> Mono<Context>) {
         val context = contextExtractive(contextKey)
 
-        requireNotNull(context) { "Context configuration is null! The resulting context is null. Use withContext via Builder." }
+        requireNotNull(context) { "Context configuration is null! The resulting context is null. Use contextExtractive via Builder." }
 
         fn(reactiveLogger)
             .contextWrite { it.putAll(context.readOnly()) }
             .awaitSingleOrNull()
     }
 
-    class Builder<T : CoroutineContext.Element>(private val contextKey: CoroutineContext.Key<T>) {
-        private var scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler
-        private var logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
-        private var mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey!!
-        private var contextExtractive: suspend (CoroutineContext.Key<out T>) -> Context?
-        private var enableError: Boolean = false
-
-        init {
-            contextExtractive = { null }
-        }
-
-        fun enableError(): Builder<T> {
-            enableError = true
-            return this
-        }
-
-        fun withLogger(logger: Class<*>): Builder<T> {
-            this.logger = LoggerFactory.getLogger(logger)
-            return this
-        }
-
-        fun withLogger(logger: String): Builder<T> {
-            this.logger = LoggerFactory.getLogger(logger)
-            return this
-        }
-
-        fun withLogger(logger: Logger): Builder<T> {
-            this.logger = logger
-            return this
-        }
-
-        fun withScheduler(scheduler: Scheduler): Builder<T> {
-            this.scheduler = scheduler
-            return this
-        }
-
-        fun withMDCContextKey(mdcContextKey: String): Builder<T> {
-            require(mdcContextKey.trim().isNotEmpty()) { "MDC context key must not be blank" }
-
-            this.mdcContextKey = mdcContextKey
-            return this
-        }
-
-        fun withContext(extractive: suspend (CoroutineContext.Key<out T>) -> Context?): Builder<T> {
-            this.contextExtractive = extractive
-            return this
-        }
-
+    class Builder<T : CoroutineContext.Element>(
+        private var contextKey: CoroutineContext.Key<T>,
+        private var contextExtractive: suspend (CoroutineContext.Key<out T>) -> Context?,
+        var logger: Logger = LoggerFactory.getLogger(ReactiveLogger::class.java)!!,
+        var scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler,
+        var mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey!!,
+        var enableError: Boolean = false
+    ) {
         @Suppress("UNCHECKED_CAST")
         fun build(): ReactiveLogger {
             val jLogger = JReactiveLogger.builder()

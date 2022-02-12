@@ -28,13 +28,20 @@ import org.slf4j.MarkerFactory
 import reactor.core.scheduler.Schedulers
 import reactor.util.context.Context
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 @ExperimentalCoroutinesApi
 internal class ReactiveLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
-    private val logger = ReactiveLogger.builder().withLogger(imperativeLogger).build()
-    private val loggerScheduled = ReactiveLogger.builder().withScheduler(Schedulers.parallel()).withLogger(imperativeLogger).build()
-    private val loggerWithError = ReactiveLogger.builder().withLogger(imperativeLogger).enableError().build()
+    private val logger = ReactiveLogger.create(imperativeLogger)
+    private val loggerScheduled = ReactiveLogger.builder().apply {
+        scheduler = Schedulers.parallel()
+        logger = imperativeLogger
+    }.build()
+    private val loggerWithError = ReactiveLogger.builder().apply {
+        logger = imperativeLogger
+        enableError = true
+    }.build()
 
     companion object {
         @JvmStatic
@@ -57,17 +64,6 @@ internal class ReactiveLoggerTest {
     @BeforeEach
     fun beforeEach() {
         clearMocks(imperativeLogger)
-    }
-
-    @Test
-    fun contextExtractiveOfReactiveLogger() = runTest {
-        assertThrows<IllegalArgumentException> {
-            ReactiveLogger.builder(ReactorContext).withLogger(imperativeLogger).build().info("")
-        }
-
-        assertThrows<IllegalArgumentException> {
-            ReactiveLogger.builder(ReactorContext).withContext { null }.withLogger(imperativeLogger).build().info("")
-        }
     }
 
     @Test
@@ -111,10 +107,41 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun builderWithClassLogger() {
-        assertNotNull(ReactiveLogger.builder().withLogger(this.javaClass).build())
-        assertNotNull(ReactiveLogger.builder().withLogger("any").build())
-        assertNotNull(ReactiveLogger.builder().withLogger(LoggerFactory.getLogger(this.javaClass)).build())
+    fun builderWithClassLogger() = runTest {
+        val instance1 = ReactiveLogger.builder(ReactorContext).apply {
+            logger = imperativeLogger
+        }.build()
+
+        val instance2 = ReactiveLogger.builder(ReactorContext) { null }.apply {
+            logger = imperativeLogger
+        }.build()
+
+        val instance3 = ReactiveLogger.builder(ReactorContext) { Context.empty() }.apply {
+            logger = imperativeLogger
+        }.build()
+
+        assertThrows<IllegalArgumentException> {
+            instance1.info("")
+        }
+
+        assertThrows<IllegalArgumentException> {
+            instance2.info("")
+        }
+
+        instance3.info("")
+    }
+
+    @Test
+    fun createReactiveLogger() = runTest {
+        val instance1 = ReactiveLogger.create()
+        val instance2 = ReactiveLogger.create(LoggerFactory.getLogger("xxx"))
+
+        instance1.info("")
+
+        assertNotNull(instance1)
+        assertEquals(DefaultValues.getInstance().defaultReactorContextMdcKey, instance1.mdcContextKey)
+        assertNotNull(instance2)
+        assertEquals(DefaultValues.getInstance().defaultReactorContextMdcKey, instance2.mdcContextKey)
     }
 
     @Test
@@ -147,17 +174,9 @@ internal class ReactiveLoggerTest {
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = ReactiveLogger.builder().withMDCContextKey(contextKey).build()
+        val loggerWithCustomScheduler = ReactiveLogger.builder().apply { mdcContextKey = contextKey }.build()
 
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
-
-        assertThrows(IllegalArgumentException::class.java) {
-            ReactiveLogger.builder().withMDCContextKey("").build()
-        }
-
-        assertThrows(IllegalArgumentException::class.java) {
-            ReactiveLogger.builder().withMDCContextKey(" ").build()
-        }
     }
 
     @Test
