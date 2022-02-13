@@ -1,22 +1,22 @@
-package io.github.numichi.reactive.logger.coroutine
+package io.github.numichi.reactive.logger.reactor
 
+import org.slf4j.MDC as Slf4jMDC
 import io.github.numichi.reactive.logger.DefaultValues
 import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.coroutine.MDCContextTest
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
-import io.github.numichi.reactive.logger.coroutine.MDCContextTest.Companion.ANOTHER_CONTEXT_KEY
-import io.mockk.clearMocks
+import io.github.numichi.reactive.logger.reactor.ReactiveLogger.Companion.builder
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertSame
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,32 +25,26 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.Marker
 import org.slf4j.MarkerFactory
+import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import reactor.test.StepVerifier
+import reactor.util.annotation.NonNull
 import reactor.util.context.Context
 import java.util.*
-import kotlin.coroutines.coroutineContext
 
 @ExperimentalCoroutinesApi
 internal class ReactiveLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
-    private val logger = ReactiveLogger.create(imperativeLogger)
-    private val loggerScheduled = ReactiveLogger.builder().apply {
-        scheduler = Schedulers.parallel()
-        logger = imperativeLogger
-    }.build()
-    private val loggerWithError = ReactiveLogger.builder().apply {
-        logger = imperativeLogger
-        enableError = true
-    }.build()
+    private val logger = builder().withLogger(imperativeLogger).build()
+    private val loggerWithError = builder().withLogger(imperativeLogger).withEnableError(true).build()
 
     companion object {
-        @JvmStatic
         fun randomText(): String {
             return UUID.randomUUID().toString()
         }
 
-        @JvmStatic
-        fun randomMap(i: Int): MutableMap<String, String> {
+        @NonNull
+        fun randomMap(i: Int): Map<String, String> {
             var index = i
             val expected: MutableMap<String, String> = HashMap()
             while (0 < index) {
@@ -59,124 +53,101 @@ internal class ReactiveLoggerTest {
             }
             return expected
         }
+
+        fun step(logger: () -> Mono<Context>) {
+            StepVerifier.create(logger()).expectNextCount(1).verifyComplete()
+        }
     }
 
     @BeforeEach
-    fun beforeEach() {
-        clearMocks(imperativeLogger)
+    fun afterEach() {
+        clearAllMocks()
     }
 
     @Test
-    fun snapshot() = runTest {
-        val mdc = MDC()
-        mdc[randomText()] = randomText()
-        var context1 = Context.empty()
-        context1 = context1.put(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc)
-        var context2 = Context.empty()
-        context2 = context2.put(ANOTHER_CONTEXT_KEY, mdc)
-
-        var mdcResult = logger.snapshot(context1)
-        assertEquals(mdc, mdcResult)
-
-        mdcResult = logger.snapshot(context2)
-        assertEquals(mapOf<String, String>(), mdcResult)
-
-        assertThrows<IllegalArgumentException> {
-            loggerWithError.snapshot(null)
-        }
-
-        withMDCContext(context1) {
-            mdcResult = logger.snapshot(null)
-            assertEquals(mdc, mdcResult)
-        }
-
-        withMDCContext(context2) {
-            mdcResult = logger.snapshot(null)
-            assertEquals(mapOf<String, String>(), logger.snapshot())
-        }
-
-        withMDCContext(context1) {
-            mdcResult = logger.snapshot()
-            assertEquals(mdc, mdcResult)
-        }
-
-        withMDCContext(context2) {
-            mdcResult = logger.snapshot()
-            assertEquals(mapOf<String, String>(), logger.snapshot())
-        }
+    fun builderWithClassLogger() {
+        assertNotNull(builder().withLogger(LoggerFactory.getLogger(this.javaClass)).build())
     }
 
     @Test
-    fun builderWithClassLogger() = runTest {
-        val instance1 = ReactiveLogger.builder(ReactorContext).apply {
-            logger = imperativeLogger
-        }.build()
-
-        val instance2 = ReactiveLogger.builder(ReactorContext) { null }.apply {
-            logger = imperativeLogger
-        }.build()
-
-        val instance3 = ReactiveLogger.builder(ReactorContext) { Context.empty() }.apply {
-            logger = imperativeLogger
-        }.build()
-
-        assertThrows<IllegalArgumentException> {
-            instance1.info("")
-        }
-
-        assertThrows<IllegalArgumentException> {
-            instance2.info("")
-        }
-
-        instance3.info("")
-    }
-
-    @Test
-    fun createReactiveLogger() = runTest {
-        val instance1 = ReactiveLogger.create()
-        val instance2 = ReactiveLogger.create(LoggerFactory.getLogger("xxx"))
-
-        instance1.info("")
-
-        assertNotNull(instance1)
-        assertEquals(DefaultValues.getInstance().defaultReactorContextMdcKey, instance1.mdcContextKey)
-        assertNotNull(instance2)
-        assertEquals(DefaultValues.getInstance().defaultReactorContextMdcKey, instance2.mdcContextKey)
-    }
-
-    @Test
-    fun getName() {
-        val name: String = randomText()
+    fun nameTest() {
+        val name = randomText()
         every { imperativeLogger.name } returns name
+
         assertEquals(name, logger.name)
     }
 
     @Test
     fun readMDC() {
-        val mdc: Map<String, String> = randomMap(1)
-        val context = Context.of(DefaultValues.getInstance().getDefaultReactorContextMdcKey(), mdc)
+        val mdc = randomMap(1)
+        val context = Context.of(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+
         assertEquals(Optional.of(mdc), logger.readMDC(context))
         assertEquals(Optional.of(mdc).get(), logger.readMDC(context).get())
     }
 
     @Test
-    fun imperative() {
-        assertSame(logger.imperative, imperativeLogger)
-        assertSame(loggerWithError.imperative, imperativeLogger)
+    fun takeMDCSnapshot() {
+        val mdc = randomMap(1)
+        val context = Context.of(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+
+        logger.takeMDCSnapshot(context).use {
+            assertEquals(Slf4jMDC.getCopyOfContextMap(), mdc)
+        }
     }
 
     @Test
-    fun scheduled() {
-        assertSame(Schedulers.boundedElastic(), logger.scheduler)
-        assertSame(Schedulers.parallel(), loggerScheduled.scheduler)
+    fun imperative() {
+        assertSame(logger.logger, imperativeLogger)
+        assertSame(loggerWithError.logger, imperativeLogger)
+    }
+
+    @Test
+    fun snapshot() {
+        val mdc = MDC()
+        mdc[randomText()] = randomText()
+
+        var context1 = Context.empty()
+        context1 = context1.put(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+        val snapshot1: Mono<MDC> = logger.snapshot(context1)
+        StepVerifier.create(snapshot1)
+            .expectNextMatches { mdc1 -> mdc1 == mdc }
+            .verifyComplete()
+
+        var context2 = Context.empty()
+        context2 = context2.put(MDCContextTest.ANOTHER_CONTEXT_KEY, mdc)
+        val snapshot2: Mono<MDC> = logger.snapshot(context2)
+        StepVerifier.create(snapshot2)
+            .expectNextMatches { mdc1 -> mdc1.size == 0 }
+            .verifyComplete()
+
+
+        val snapshot3: Mono<MDC> = loggerWithError.snapshot(context2)
+        StepVerifier.create(snapshot3)
+            .expectError(ContextNotExistException::class.java)
+            .verify()
     }
 
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = ReactiveLogger.builder().apply { mdcContextKey = contextKey }.build()
-
+        val loggerWithCustomScheduler = builder().withMDCContextKey(contextKey).build()
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
+
+        assertThrows<IllegalStateException> {
+            builder().withMDCContextKey("").build()
+        }
+
+        assertThrows<IllegalStateException> {
+            builder().withMDCContextKey(" ").build()
+        }
+    }
+
+    @Test
+    fun scheduler() {
+        val customScheduler = Schedulers.newBoundedElastic(10, 10, randomText())
+        val loggerWithCustomScheduler = builder().withScheduler(customScheduler).build()
+        assertSame(loggerWithCustomScheduler.scheduler, customScheduler)
     }
 
     @Test
@@ -264,12 +235,28 @@ internal class ReactiveLoggerTest {
         assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
     }
 
-    //region Trace
     @Test
     fun traceMessage() = runTest {
         val message: String = randomText()
-        logger.trace(message)
+        step { logger.trace(message) }
         verify { imperativeLogger.trace(message) }
+    }
+
+    @Test
+    fun traceFormatArgument1Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.trace(format, argument1) }
+        verify { imperativeLogger.trace(format, argument1) }
+    }
+
+    @Test
+    fun traceFormatArgument2Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.trace(format, argument1, argument2) }
+        verify { imperativeLogger.trace(format, argument1, argument2) }
     }
 
     @Test
@@ -278,7 +265,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.trace(format, argument1, argument2, argument3)
+        step { logger.trace(format, argument1, argument2, argument3) }
         verify { imperativeLogger.trace(format, argument1, argument2, argument3) }
     }
 
@@ -289,7 +276,7 @@ internal class ReactiveLoggerTest {
         val exceptionCaptor = slot<SimulatedException>()
         val stringCaptor = slot<String>()
         every { imperativeLogger.trace(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.trace(message, exception)
+        step { logger.trace(message, exception) }
         assertEquals(exceptionCaptor.captured.message, exception.message)
         assertEquals(stringCaptor.captured, message)
     }
@@ -298,8 +285,27 @@ internal class ReactiveLoggerTest {
     fun traceMessageMarker() = runTest {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
-        logger.trace(marker, message)
+        step { logger.trace(marker, message) }
         verify { imperativeLogger.trace(marker, message) }
+    }
+
+    @Test
+    fun traceFormatArgument1ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.trace(marker, format, argument1) }
+        verify { imperativeLogger.trace(marker, format, argument1) }
+    }
+
+    @Test
+    fun traceFormatArgument2ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.trace(marker, format, argument1, argument2) }
+        verify { imperativeLogger.trace(marker, format, argument1, argument2) }
     }
 
     @Test
@@ -309,7 +315,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.trace(marker, format, argument1, argument2, argument3)
+        step { logger.trace(marker, format, argument1, argument2, argument3) }
         verify { imperativeLogger.trace(marker, format, argument1, argument2, argument3) }
     }
 
@@ -322,7 +328,7 @@ internal class ReactiveLoggerTest {
         val messageCaptor = slot<String>()
         val exceptionCaptor = slot<SimulatedException>()
         every { imperativeLogger.trace(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.trace(marker, message, exception)
+        step { logger.trace(marker, message, exception) }
         assertEquals(markerCaptor.captured, marker)
         assertEquals(messageCaptor.captured, message)
         assertEquals(exceptionCaptor.captured, exception)
@@ -333,8 +339,25 @@ internal class ReactiveLoggerTest {
     @Test
     fun debugMessage() = runTest {
         val message: String = randomText()
-        logger.debug(message)
+        step { logger.debug(message) }
         verify { imperativeLogger.debug(message) }
+    }
+
+    @Test
+    fun debugFormatArgument1Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.debug(format, argument1) }
+        verify { imperativeLogger.debug(format, argument1) }
+    }
+
+    @Test
+    fun debugFormatArgument2Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.debug(format, argument1, argument2) }
+        verify { imperativeLogger.debug(format, argument1, argument2) }
     }
 
     @Test
@@ -343,7 +366,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.debug(format, argument1, argument2, argument3)
+        step { logger.debug(format, argument1, argument2, argument3) }
         verify { imperativeLogger.debug(format, argument1, argument2, argument3) }
     }
 
@@ -354,7 +377,7 @@ internal class ReactiveLoggerTest {
         val exceptionCaptor = slot<SimulatedException>()
         val stringCaptor = slot<String>()
         every { imperativeLogger.debug(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.debug(message, exception)
+        step { logger.debug(message, exception) }
         assertEquals(exceptionCaptor.captured.message, exception.message)
         assertEquals(stringCaptor.captured, message)
     }
@@ -363,8 +386,27 @@ internal class ReactiveLoggerTest {
     fun debugMessageMarker() = runTest {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
-        logger.debug(marker, message)
+        step { logger.debug(marker, message) }
         verify { imperativeLogger.debug(marker, message) }
+    }
+
+    @Test
+    fun debugFormatArgument1ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.debug(marker, format, argument1) }
+        verify { imperativeLogger.debug(marker, format, argument1) }
+    }
+
+    @Test
+    fun debugFormatArgument2ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.debug(marker, format, argument1, argument2) }
+        verify { imperativeLogger.debug(marker, format, argument1, argument2) }
     }
 
     @Test
@@ -374,7 +416,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.debug(marker, format, argument1, argument2, argument3)
+        step { logger.debug(marker, format, argument1, argument2, argument3) }
         verify { imperativeLogger.debug(marker, format, argument1, argument2, argument3) }
     }
 
@@ -387,7 +429,7 @@ internal class ReactiveLoggerTest {
         val messageCaptor = slot<String>()
         val exceptionCaptor = slot<SimulatedException>()
         every { imperativeLogger.debug(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.debug(marker, message, exception)
+        step { logger.debug(marker, message, exception) }
         assertEquals(markerCaptor.captured, marker)
         assertEquals(messageCaptor.captured, message)
         assertEquals(exceptionCaptor.captured, exception)
@@ -398,8 +440,25 @@ internal class ReactiveLoggerTest {
     @Test
     fun infoMessage() = runTest {
         val message: String = randomText()
-        logger.info(message)
+        step { logger.info(message) }
         verify { imperativeLogger.info(message) }
+    }
+
+    @Test
+    fun infoFormatArgument1Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.info(format, argument1) }
+        verify { imperativeLogger.info(format, argument1) }
+    }
+
+    @Test
+    fun infoFormatArgument2Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.info(format, argument1, argument2) }
+        verify { imperativeLogger.info(format, argument1, argument2) }
     }
 
     @Test
@@ -408,7 +467,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.info(format, argument1, argument2, argument3)
+        step { logger.info(format, argument1, argument2, argument3) }
         verify { imperativeLogger.info(format, argument1, argument2, argument3) }
     }
 
@@ -419,7 +478,7 @@ internal class ReactiveLoggerTest {
         val exceptionCaptor = slot<SimulatedException>()
         val stringCaptor = slot<String>()
         every { imperativeLogger.info(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.info(message, exception)
+        step { logger.info(message, exception) }
         assertEquals(exceptionCaptor.captured.message, exception.message)
         assertEquals(stringCaptor.captured, message)
     }
@@ -428,8 +487,27 @@ internal class ReactiveLoggerTest {
     fun infoMessageMarker() = runTest {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
-        logger.info(marker, message)
+        step { logger.info(marker, message) }
         verify { imperativeLogger.info(marker, message) }
+    }
+
+    @Test
+    fun infoFormatArgument1ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.info(marker, format, argument1, argument2) }
+        verify { imperativeLogger.info(marker, format, argument1, argument2) }
+    }
+
+    @Test
+    fun infoFormatArgument2ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.info(marker, format, argument1) }
+        verify { imperativeLogger.info(marker, format, argument1) }
     }
 
     @Test
@@ -439,7 +517,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.info(marker, format, argument1, argument2, argument3)
+        step { logger.info(marker, format, argument1, argument2, argument3) }
         verify { imperativeLogger.info(marker, format, argument1, argument2, argument3) }
     }
 
@@ -452,7 +530,7 @@ internal class ReactiveLoggerTest {
         val messageCaptor = slot<String>()
         val exceptionCaptor = slot<SimulatedException>()
         every { imperativeLogger.info(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.info(marker, message, exception)
+        step { logger.info(marker, message, exception) }
         assertEquals(markerCaptor.captured, marker)
         assertEquals(messageCaptor.captured, message)
         assertEquals(exceptionCaptor.captured, exception)
@@ -463,8 +541,25 @@ internal class ReactiveLoggerTest {
     @Test
     fun warnMessage() = runTest {
         val message: String = randomText()
-        logger.warn(message)
+        StepVerifier.create(logger.warn(message)).expectNextCount(1).verifyComplete()
         verify { imperativeLogger.warn(message) }
+    }
+
+    @Test
+    fun warnFormatArgument1Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.warn(format, argument1) }
+        verify { imperativeLogger.warn(format, argument1) }
+    }
+
+    @Test
+    fun warnFormatArgument2Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.warn(format, argument1, argument2) }
+        verify { imperativeLogger.warn(format, argument1, argument2) }
     }
 
     @Test
@@ -473,7 +568,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.warn(format, argument1, argument2, argument3)
+        step { logger.warn(format, argument1, argument2, argument3) }
         verify { imperativeLogger.warn(format, argument1, argument2, argument3) }
     }
 
@@ -484,7 +579,7 @@ internal class ReactiveLoggerTest {
         val exceptionCaptor = slot<SimulatedException>()
         val stringCaptor = slot<String>()
         every { imperativeLogger.warn(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.warn(message, exception)
+        step { logger.warn(message, exception) }
         assertEquals(exceptionCaptor.captured.message, exception.message)
         assertEquals(stringCaptor.captured, message)
     }
@@ -493,8 +588,27 @@ internal class ReactiveLoggerTest {
     fun warnMessageMarker() = runTest {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
-        logger.warn(marker, message)
+        step { logger.warn(marker, message) }
         verify { imperativeLogger.warn(marker, message) }
+    }
+
+    @Test
+    fun warnFormatArgument1ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.warn(marker, format, argument1) }
+        verify { imperativeLogger.warn(marker, format, argument1) }
+    }
+
+    @Test
+    fun warnFormatArgument2ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.warn(marker, format, argument1, argument2) }
+        verify { imperativeLogger.warn(marker, format, argument1, argument2) }
     }
 
     @Test
@@ -504,7 +618,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.warn(marker, format, argument1, argument2, argument3)
+        step { logger.warn(marker, format, argument1, argument2, argument3) }
         verify { imperativeLogger.warn(marker, format, argument1, argument2, argument3) }
     }
 
@@ -517,7 +631,7 @@ internal class ReactiveLoggerTest {
         val messageCaptor = slot<String>()
         val exceptionCaptor = slot<SimulatedException>()
         every { imperativeLogger.warn(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.warn(marker, message, exception)
+        step { logger.warn(marker, message, exception) }
         assertEquals(markerCaptor.captured, marker)
         assertEquals(messageCaptor.captured, message)
         assertEquals(exceptionCaptor.captured, exception)
@@ -528,8 +642,25 @@ internal class ReactiveLoggerTest {
     @Test
     fun errorMessage() = runTest {
         val message: String = randomText()
-        logger.error(message)
+        step { logger.error(message) }
         verify { imperativeLogger.error(message) }
+    }
+
+    @Test
+    fun errorFormatArgument1Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.error(format, argument1) }
+        verify { imperativeLogger.error(format, argument1) }
+    }
+
+    @Test
+    fun errorFormatArgument2Array() = runTest {
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.error(format, argument1, argument2) }
+        verify { imperativeLogger.error(format, argument1, argument2) }
     }
 
     @Test
@@ -538,7 +669,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.error(format, argument1, argument2, argument3)
+        step { logger.error(format, argument1, argument2, argument3) }
         verify { imperativeLogger.error(format, argument1, argument2, argument3) }
     }
 
@@ -549,7 +680,7 @@ internal class ReactiveLoggerTest {
         val exceptionCaptor = slot<SimulatedException>()
         val stringCaptor = slot<String>()
         every { imperativeLogger.error(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.error(message, exception)
+        step { logger.error(message, exception) }
         assertEquals(exceptionCaptor.captured.message, exception.message)
         assertEquals(stringCaptor.captured, message)
     }
@@ -558,8 +689,27 @@ internal class ReactiveLoggerTest {
     fun errorMessageMarker() = runTest {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
-        logger.error(marker, message)
+        step { logger.error(marker, message) }
         verify { imperativeLogger.error(marker, message) }
+    }
+
+    @Test
+    fun errorFormatArgument1ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        step { logger.error(marker, format, argument1) }
+        verify { imperativeLogger.error(marker, format, argument1) }
+    }
+
+    @Test
+    fun errorFormatArgument2ArrayMarker() = runTest {
+        val marker = MarkerFactory.getMarker(randomText())
+        val format: String = randomText()
+        val argument1: String = randomText()
+        val argument2: String = randomText()
+        step { logger.error(marker, format, argument1, argument2) }
+        verify { imperativeLogger.error(marker, format, argument1, argument2) }
     }
 
     @Test
@@ -569,7 +719,7 @@ internal class ReactiveLoggerTest {
         val argument1: String = randomText()
         val argument2: String = randomText()
         val argument3: String = randomText()
-        logger.error(marker, format, argument1, argument2, argument3)
+        step { logger.error(marker, format, argument1, argument2, argument3) }
         verify { imperativeLogger.error(marker, format, argument1, argument2, argument3) }
     }
 
@@ -582,7 +732,7 @@ internal class ReactiveLoggerTest {
         val messageCaptor = slot<String>()
         val exceptionCaptor = slot<SimulatedException>()
         every { imperativeLogger.error(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.error(marker, message, exception)
+        step { logger.error(marker, message, exception) }
         assertEquals(markerCaptor.captured, marker)
         assertEquals(messageCaptor.captured, message)
         assertEquals(exceptionCaptor.captured, exception)
@@ -590,10 +740,10 @@ internal class ReactiveLoggerTest {
     //endregion
 
     @Test
-    fun checkEnableErrorFlagDifferent() = runTest {
-        assertThrows<ContextNotExistException> {
-            loggerWithError.info(randomText())
-        }
+    fun checkEnableErrorFlagDifferent() {
+        val message = randomText()
+        val process = Mono.defer { loggerWithError.error(message) }.contextWrite { Context.empty() }
+        StepVerifier.create(process).expectError(ContextNotExistException::class.java).verify()
     }
 
     class SimulatedException(message: String?) : RuntimeException(message)

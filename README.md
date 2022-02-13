@@ -9,6 +9,9 @@
 
 _After releases, SonaType or mvnrepostiroy may not appear. Regardless, the package is available._
 
+## Important
+This is just a hobby project driven by my own personal motivation. There is no external sponsor behind the project.
+
 ## What is the source of motivation?
 I think this description approaches the [What Is a Good Pattern for Contextual Logging? (MDC)](https://projectreactor.io/docs/core/release/reference/#faq.mdc) well. Furthermore, there is the so-called [lifting solution](https://www.novatec-gmbh.de/en/blog/how-can-the-mdc-context-be-used-in-the-reactive-spring-applications/), which I think is overkill. In this (lifting) example, he uses Kotlin, but with a Reactor API, not a coroutine. If you stay with Reactor API, there is no problem with lifting and it work. I mean, I didn't experience any pain, regardless of I used Kotlin or Java. But it is not valid for Kotlin Coroutine.
 

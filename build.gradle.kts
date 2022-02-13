@@ -27,6 +27,7 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.20")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation("io.projectreactor:reactor-test:3.4.14")
@@ -52,7 +53,7 @@ publishing {
 
             pom {
                 name.set("Reactive logger layer for slf4j")
-                description.set("A Java & Korlin library adapting slf4j for reactive applications")
+                description.set("A Java & Kotlin library adapting slf4j for reactive applications")
                 url.set("https://github.com/Numichi/reactive-logger")
                 inceptionYear.set("2022")
 

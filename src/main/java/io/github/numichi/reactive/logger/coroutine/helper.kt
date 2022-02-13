@@ -19,7 +19,7 @@ internal suspend fun rectorContext(): Context? {
 internal fun mdcCollectionIntoContext(context: Context, iterator: Iterator<MDC>): Context {
     var writableContext = context
     iterator.forEach {
-        writableContext = writableContext.put(it.assignedContextKey, it)
+        writableContext = writableContext.put(it.contextKey, it)
     }
     return writableContext
 }
