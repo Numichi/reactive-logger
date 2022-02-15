@@ -1,5 +1,3 @@
-import kotlin.text.Regex
-
 plugins {
     java
     jacoco

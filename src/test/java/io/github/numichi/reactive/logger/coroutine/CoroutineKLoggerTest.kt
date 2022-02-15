@@ -25,7 +25,6 @@ import org.junit.jupiter.api.assertThrows
 import org.slf4j.Marker
 import org.slf4j.MarkerFactory
 import reactor.core.scheduler.Schedulers
-import reactor.test.StepVerifier
 import reactor.util.context.Context
 import java.util.*
 
@@ -33,11 +32,11 @@ import java.util.*
 internal class CoroutineKLoggerTest {
     private val imperativeLogger: KLogger =
         mockk(relaxed = true)
-    private val logger =
+    private val logger: ICoroutineKLogger =
         CoroutineKLogger.reactorBuilder().withLogger(imperativeLogger).build()
-    private val loggerScheduled =
+    private val loggerScheduled: ICoroutineKLogger =
         CoroutineKLogger.reactorBuilder().withLogger(imperativeLogger).withScheduler(Schedulers.parallel()).build()
-    private val loggerWithError =
+    private val loggerWithError: ICoroutineKLogger =
         CoroutineKLogger.reactorBuilder().withLogger(imperativeLogger).withEnableError(true).build()
 
     companion object {
@@ -141,8 +140,8 @@ internal class CoroutineKLoggerTest {
 
     @Test
     fun imperative() {
-        assertSame(logger.reactiveKLogger.logger, imperativeLogger)
-        assertSame(loggerWithError.reactiveKLogger.logger, imperativeLogger)
+        assertSame(logger.reactorLogger.logger, imperativeLogger)
+        assertSame(loggerWithError.reactorLogger.logger, imperativeLogger)
     }
 
     @Test
@@ -167,7 +166,7 @@ internal class CoroutineKLoggerTest {
     }
 
     @Test
-    fun traceEnabledMarker() {
+    suspend fun traceEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isTraceEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
@@ -184,7 +183,7 @@ internal class CoroutineKLoggerTest {
     }
 
     @Test
-    fun debugEnabledMarker() {
+    suspend fun debugEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
@@ -201,7 +200,7 @@ internal class CoroutineKLoggerTest {
     }
 
     @Test
-    fun infoEnabledMarker() {
+    suspend fun infoEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
@@ -218,7 +217,7 @@ internal class CoroutineKLoggerTest {
     }
 
     @Test
-    fun warnEnabledMarker() {
+    suspend fun warnEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
@@ -235,7 +234,7 @@ internal class CoroutineKLoggerTest {
     }
 
     @Test
-    fun errorEnabledMarker() {
+    suspend fun errorEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
@@ -440,7 +439,7 @@ internal class CoroutineKLoggerTest {
         assertEquals(exception, exceptionCaptor.captured)
         assertEquals(message, supplierCaptor.captured())
     }
-    
+
     @Test
     fun debugMessage() = runTest {
         val message: String = randomText()
@@ -589,7 +588,7 @@ internal class CoroutineKLoggerTest {
         assertEquals(exception, exceptionCaptor.captured)
         assertEquals(message, supplierCaptor.captured())
     }
-    
+
     @Test
     fun infoMessage() = runTest {
         val message: String = randomText()
@@ -738,7 +737,7 @@ internal class CoroutineKLoggerTest {
         assertEquals(exception, exceptionCaptor.captured)
         assertEquals(message, supplierCaptor.captured())
     }
-    
+
     @Test
     fun warnMessage() = runTest {
         val message: String = randomText()
@@ -887,7 +886,7 @@ internal class CoroutineKLoggerTest {
         assertEquals(exception, exceptionCaptor.captured)
         assertEquals(message, supplierCaptor.captured())
     }
-    
+
     @Test
     fun errorMessage() = runTest {
         val message: String = randomText()

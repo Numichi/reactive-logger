@@ -5,7 +5,6 @@ import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.exception.InvalidContextDataException
 import io.github.numichi.reactive.logger.reactor.MDCContext.put
 import io.github.numichi.reactive.logger.reactor.MDCContext.read
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier

@@ -6,11 +6,12 @@ import reactor.core.scheduler.Scheduler
 import reactor.util.context.Context
 import java.util.*
 
-abstract class MainAbstract(
-    val isEnableError: Boolean,
-    val mdcContextKey: String,
+interface ICore {
+    val isEnableError: Boolean
+    val mdcContextKey: String
     val scheduler: Scheduler
-) {
+    val name: String
+
     fun readMDC(context: Context): Optional<Map<String, String>> {
         return context.getOrEmpty(mdcContextKey)
     }

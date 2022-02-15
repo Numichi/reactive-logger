@@ -135,8 +135,8 @@ internal class CoroutineLoggerTest {
 
     @Test
     fun imperative() {
-        assertSame(logger.reactiveLogger.logger, imperativeLogger)
-        assertSame(loggerWithError.reactiveLogger.logger, imperativeLogger)
+        assertSame(logger.reactorLogger.logger, imperativeLogger)
+        assertSame(loggerWithError.reactorLogger.logger, imperativeLogger)
     }
 
     @Test
@@ -161,7 +161,7 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun traceEnabledMarker() {
+    suspend fun traceEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isTraceEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
@@ -178,7 +178,7 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun debugEnabledMarker() {
+    suspend fun debugEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
@@ -195,7 +195,7 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun infoEnabledMarker() {
+    suspend fun infoEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
@@ -212,7 +212,7 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun warnEnabledMarker() {
+    suspend fun warnEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
@@ -229,7 +229,7 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun errorEnabledMarker() {
+    suspend fun errorEnabledMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
         assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
@@ -243,6 +243,12 @@ internal class CoroutineLoggerTest {
         val message: String = randomText()
         logger.trace(message)
         verify { imperativeLogger.trace(message) }
+    }
+
+    @Test
+    fun traceMessageNull() = runTest {
+        logger.trace(null)
+        verify { imperativeLogger.trace(null) }
     }
 
     @Test

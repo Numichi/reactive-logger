@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import reactor.core.scheduler.Schedulers
-import reactor.util.context.Context
-import java.util.function.Function
 
 @ExperimentalCoroutinesApi
 internal class CoroutineOtherTest {
@@ -32,7 +30,7 @@ internal class CoroutineOtherTest {
         assertEquals("other-key", loggerK.mdcContextKey)
         assertEquals(false, loggerK.isEnableError)
         assertSame(Schedulers.boundedElastic(), loggerK.scheduler)
-        assertEquals(mockKLogger, loggerK.reactiveKLogger.logger)
+        assertEquals(mockKLogger, loggerK.reactorLogger.logger)
 
         val mockLogger: Logger = mockk(relaxed = true)
         val loggerL = CoroutineLogger.reactorBuilder()
@@ -47,7 +45,7 @@ internal class CoroutineOtherTest {
         assertEquals("other-key", loggerL.mdcContextKey)
         assertEquals(false, loggerL.isEnableError)
         assertSame(Schedulers.boundedElastic(), loggerL.scheduler)
-        assertEquals(mockLogger, loggerL.reactiveLogger.logger)
+        assertEquals(mockLogger, loggerL.logger)
     }
 
     @Test
@@ -92,6 +90,6 @@ internal class CoroutineOtherTest {
         assertEquals("other-key", loggerL.mdcContextKey)
         assertEquals(false, loggerL.isEnableError)
         assertSame(Schedulers.boundedElastic(), loggerL.scheduler)
-        assertEquals(mockLogger, loggerL.reactiveLogger.logger)
+        assertEquals(mockLogger, loggerL.logger)
     }
 }
