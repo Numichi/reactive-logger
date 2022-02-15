@@ -1,0 +1,5 @@
+exclude_patterns:
+- "src/main/java/io/github/numichi/reactive/logger/coroutine/ICoroutineKLogger.kt"
+- "src/main/java/io/github/numichi/reactive/logger/coroutine/ICoroutineLogger.kt"
+- "src/main/java/io/github/numichi/reactive/logger/reactor/IReactorKLogger.kt"
+- "src/main/java/io/github/numichi/reactive/logger/reactor/IReactorLogger.kt"
