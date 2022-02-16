@@ -12,7 +12,7 @@ _After releases, SonaType or mvnrepostiroy may not appear. Regardless, the packa
 
 ## Important
 
-This is just a hobby project driven by my own personal motivation. There is no external sponsor behind the project.
+This is just a hobby project driven by self motivation. There is no external sponsor behind the project.
 
 ## What is the source of motivation?
 
