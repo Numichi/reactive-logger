@@ -1,6 +1,5 @@
-package io.github.numichi.reactive.logger.abstracts
+package io.github.numichi.reactive.logger.reactor
 
-import io.github.numichi.reactive.logger.reactor.IReactorCore
 import org.slf4j.Logger
 import reactor.core.scheduler.Scheduler
 

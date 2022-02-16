@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.MDC
-import io.github.numichi.reactive.logger.abstracts.ICore
+import io.github.numichi.reactive.logger.ICore
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import org.slf4j.Logger
 import reactor.core.publisher.Mono
@@ -14,7 +14,7 @@ interface IReactorCore : ICore {
     override val name: String
         get() = logger.name
 
-    fun snapshot(context: Context): Mono<MDC> {
+    fun snapshot(context: ContextView): Mono<MDC> {
         return try {
             var mdc: MDC
             takeMDCSnapshot(context).use {

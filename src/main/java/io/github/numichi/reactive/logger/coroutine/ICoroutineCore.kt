@@ -1,13 +1,16 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.MDC
-import io.github.numichi.reactive.logger.abstracts.ICore
+import io.github.numichi.reactive.logger.ICore
+import io.github.numichi.reactive.logger.exception.ContextNotExistException
+import io.github.numichi.reactive.logger.exception.InvalidContextDataException
 import io.github.numichi.reactive.logger.reactor.IReactorLogger
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
+import reactor.util.context.ContextView
 import kotlin.coroutines.coroutineContext
 
 interface ICoroutineCore<T : IReactorLogger> : ICore {
@@ -18,7 +21,8 @@ interface ICoroutineCore<T : IReactorLogger> : ICore {
     override val name: String
         get() = reactorLogger.name
 
-    suspend fun snapshot(context: Context? = null): MDC? {
+    @Throws(ContextNotExistException::class, InvalidContextDataException::class)
+    suspend fun snapshot(context: ContextView? = null): MDC? {
         val ctx = context ?: coroutineContext[ReactorContext]?.context
         return ctx?.let { reactorLogger.snapshot(it).awaitSingleOrNull() }
     }

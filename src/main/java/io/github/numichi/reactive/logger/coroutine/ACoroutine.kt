@@ -1,9 +1,5 @@
-package io.github.numichi.reactive.logger.abstracts
+package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.coroutine.CCElement
-import io.github.numichi.reactive.logger.coroutine.CCKey
-import io.github.numichi.reactive.logger.coroutine.CCResolveFn
-import io.github.numichi.reactive.logger.coroutine.ICoroutineCore
 import io.github.numichi.reactive.logger.reactor.IReactorLogger
 import org.slf4j.Logger
 import reactor.core.scheduler.Scheduler

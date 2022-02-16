@@ -1,7 +1,6 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.abstracts.ACoroutine
 import io.github.numichi.reactive.logger.reactor.IReactorKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger

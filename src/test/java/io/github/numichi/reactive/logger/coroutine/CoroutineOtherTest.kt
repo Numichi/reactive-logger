@@ -1,22 +1,30 @@
 package io.github.numichi.reactive.logger.coroutine
 
+import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.exception.ContextNotExistException
+import io.github.numichi.reactive.logger.exception.InvalidContextDataException
+import io.github.numichi.reactive.logger.reactor.MDCContext
+import io.github.numichi.reactive.logger.reactor.MDCSnapshot
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.reactor.ReactorContext
+import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
 import mu.KLogger
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
+import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import reactor.test.StepVerifier
+import kotlin.math.log
 
 @ExperimentalCoroutinesApi
 internal class CoroutineOtherTest {
 
-
     @Test
-    fun `test11`() = runTest {
+    fun `configuration with chain`() = runTest {
         val mockKLogger: KLogger = mockk(relaxed = true)
         val loggerK = CoroutineKLogger.reactorBuilder()
             .withContextKey(ReactorContext)
@@ -49,7 +57,7 @@ internal class CoroutineOtherTest {
     }
 
     @Test
-    fun `test12`() = runTest {
+    fun `configuration with attributes`() = runTest {
         val mockKLogger: KLogger = mockk(relaxed = true)
         val kBuilder = CoroutineKLogger.reactorBuilder()
         kBuilder.contextKey = ReactorContext
@@ -91,5 +99,100 @@ internal class CoroutineOtherTest {
         assertEquals(false, loggerL.isEnableError)
         assertSame(Schedulers.boundedElastic(), loggerL.scheduler)
         assertEquals(mockLogger, loggerL.logger)
+    }
+
+    @Test
+    fun `should get MDC data from snapshot (KLogger)`() {
+        val logger = CoroutineKLogger.reactorBuilder()
+            .withLogger(mockk(relaxed = true))
+            .build()
+
+        val x = mono { logger.snapshot()?.get("foo") }
+            .contextWrite {
+                val mdc = MDC()
+                mdc["foo"] = "bar"
+                MDCContext.put(it, mdc)
+            }
+
+        StepVerifier.create(x)
+            .expectNext("bar")
+            .verifyComplete()
+
+    }
+
+    @Test
+    fun `should get MDC data from snapshot (Logger)`() {
+        val logger = CoroutineLogger.reactorBuilder()
+            .withLogger(mockk(relaxed = true))
+            .build()
+
+        val x = mono { logger.snapshot()?.get("foo") }
+            .contextWrite {
+                val mdc = MDC()
+                mdc["foo"] = "bar"
+                MDCContext.put(it, mdc)
+            }
+
+        StepVerifier.create(x)
+            .expectNext("bar")
+            .verifyComplete()
+
+    }
+
+    @Test
+    fun `snapshot and direct export matching`() {
+        val logger = CoroutineLogger.reactorBuilder()
+            .withLogger(mockk(relaxed = true))
+            .build()
+
+        val mdcContextKey = logger.mdcContextKey;
+
+        val mdc = MDC()
+        mdc["foo"] = "bar"
+
+        val x = mono { logger.snapshot() }
+            .contextWrite { MDCContext.put(it, mdc) }
+
+        val y = Mono.deferContextual { context ->
+            var mdcData: MDC? = null
+            try {
+                val temp: MDCSnapshot? = context.getOrEmpty<Map<String, String>>(mdcContextKey)
+                    .map { MDCSnapshot.of(it) }
+                    .orElse(null)
+
+                temp?.use {
+                    mdcData = MDC(mdcContextKey, it.copyOfContextMap)
+                }
+
+                return@deferContextual Mono.justOrEmpty(mdcData)
+            } catch (exception: Exception) {
+                return@deferContextual Mono.error<MDC>(exception)
+            }
+        }.contextWrite { MDCContext.put(it, mdc) }
+
+        StepVerifier.create(Mono.zip(x, y))
+            .expectNextMatches { it.t1 == it.t2 }
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should throw exception from snapshot`() {
+        val logger = CoroutineLogger.reactorBuilder()
+            .withEnableError(true)
+            .withLogger(mockk(relaxed = true))
+            .build()
+
+        val contextNotExistException = mono { logger.snapshot() }
+
+        StepVerifier.create(contextNotExistException)
+            .expectError(ContextNotExistException::class.java)
+            .verify()
+
+        val invalidContextDataException = mono { logger.snapshot() }
+            .contextWrite { it.put(logger.mdcContextKey, 10) }
+
+        StepVerifier.create(invalidContextDataException)
+            .expectError(InvalidContextDataException::class.java)
+            .verify()
     }
 }

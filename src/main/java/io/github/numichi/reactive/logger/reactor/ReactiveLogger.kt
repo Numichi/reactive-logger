@@ -1,7 +1,6 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.abstracts.AReactive
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Scheduler

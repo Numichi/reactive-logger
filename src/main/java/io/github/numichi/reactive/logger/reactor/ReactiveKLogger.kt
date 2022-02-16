@@ -1,7 +1,6 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.abstracts.AReactive
 import mu.KLogger
 import mu.KotlinLogging
 import org.slf4j.LoggerFactory
