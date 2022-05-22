@@ -26,17 +26,15 @@ interface IReactorCore : ICore {
         }
     }
 
-    fun wrap(runnable: Runnable): Mono<Context> {
+    fun wrap(runnable: Runnable): Mono<ContextView> {
         return Mono.deferContextual { contextView: ContextView ->
-            val context = Context.of(contextView)
-
             try {
-                takeMDCSnapshot(context).use { runnable.run() }
+                takeMDCSnapshot(contextView).use { runnable.run() }
             } catch (exception: ContextNotExistException) {
                 return@deferContextual Mono.error<Context>(exception)
             }
 
-            Mono.just(context)
+            Mono.just(contextView)
         }.subscribeOn(scheduler)
     }
 }

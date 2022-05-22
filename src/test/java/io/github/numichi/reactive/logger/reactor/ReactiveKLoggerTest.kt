@@ -30,6 +30,7 @@ import reactor.core.scheduler.Schedulers
 import reactor.test.StepVerifier
 import reactor.util.annotation.NonNull
 import reactor.util.context.Context
+import reactor.util.context.ContextView
 import java.util.*
 
 @ExperimentalCoroutinesApi
@@ -54,7 +55,7 @@ internal class ReactiveKLoggerTest {
             return expected
         }
 
-        fun step(logger: () -> Mono<Context>) {
+        fun step(logger: () -> Mono<ContextView>) {
             StepVerifier.create(logger()).expectNextCount(1).verifyComplete()
         }
     }

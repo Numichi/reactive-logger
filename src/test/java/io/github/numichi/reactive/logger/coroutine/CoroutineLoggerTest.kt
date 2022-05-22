@@ -58,64 +58,70 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun snapshot() = runTest {
-        val mdc = MDC()
-        mdc[randomText()] = randomText()
-        var context1 = Context.empty()
-        context1 = context1.put(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
-        var context2 = Context.empty()
-        context2 = context2.put(ANOTHER_CONTEXT_KEY, mdc)
+    fun snapshot() {
+        runTest {
+            val mdc = MDC()
+            mdc[randomText()] = randomText()
+            var context1 = Context.empty()
+            context1 = context1.put(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+            var context2 = Context.empty()
+            context2 = context2.put(ANOTHER_CONTEXT_KEY, mdc)
 
-        var mdcResult = logger.snapshot(context1)
-        assertEquals(mdc, mdcResult)
-
-        mdcResult = logger.snapshot(context2)
-        assertEquals(mapOf<String, String>(), mdcResult)
-
-        assertEquals(null, loggerWithError.snapshot(null))
-
-        withMDCContext(context1) {
-            mdcResult = logger.snapshot(null)
+            var mdcResult = logger.snapshot(context1)
             assertEquals(mdc, mdcResult)
-        }
 
-        withMDCContext(context2) {
-            mdcResult = logger.snapshot(null)
-            assertEquals(mapOf<String, String>(), logger.snapshot())
-        }
+            mdcResult = logger.snapshot(context2)
+            assertEquals(mapOf<String, String>(), mdcResult)
 
-        withMDCContext(context1) {
-            mdcResult = logger.snapshot()
-            assertEquals(mdc, mdcResult)
-        }
+            assertEquals(null, loggerWithError.snapshot(null))
 
-        withMDCContext(context2) {
-            mdcResult = logger.snapshot()
-            assertEquals(mapOf<String, String>(), logger.snapshot())
+            withMDCContext(context1) {
+                mdcResult = logger.snapshot(null)
+                assertEquals(mdc, mdcResult)
+            }
+
+            withMDCContext(context2) {
+                mdcResult = logger.snapshot(null)
+                assertEquals(mapOf<String, String>(), logger.snapshot())
+            }
+
+            withMDCContext(context1) {
+                mdcResult = logger.snapshot()
+                assertEquals(mdc, mdcResult)
+            }
+
+            withMDCContext(context2) {
+                mdcResult = logger.snapshot()
+                assertEquals(mapOf<String, String>(), logger.snapshot())
+            }
         }
     }
 
     @Test
-    fun `should configure empty context if not exist context or null`() = runTest {
-        val instance1 =
-            CoroutineLogger.builder(ReactorContext) { coroutineContext[it]?.context }.withLogger(imperativeLogger).build()
+    fun `should configure empty context if not exist context or null`() {
+        runTest {
+            val instance1 =
+                CoroutineLogger.builder(ReactorContext) { coroutineContext[it]?.context }.withLogger(imperativeLogger).build()
 
-        val instance2 =
-            CoroutineLogger.builder(ReactorContext) { null }.withLogger(imperativeLogger).build()
+            val instance2 =
+                CoroutineLogger.builder(ReactorContext) { null }.withLogger(imperativeLogger).build()
 
-        val instance3 =
-            CoroutineLogger.builder(ReactorContext) { Context.empty() }.withLogger(imperativeLogger).build()
+            val instance3 =
+                CoroutineLogger.builder(ReactorContext) { Context.empty() }.withLogger(imperativeLogger).build()
 
-        instance1.info("")
-        instance2.info("")
-        instance3.info("")
+            instance1.info("")
+            instance2.info("")
+            instance3.info("")
+        }
     }
 
     @Test
-    fun createReactiveLogger() = runTest {
-        val instance1 = CoroutineLogger.reactorBuilder().build()
-        assertNotNull(instance1)
-        assertEquals(DefaultValues.getInstance().defaultReactorContextMdcKey, instance1.mdcContextKey)
+    fun createReactiveLogger() {
+        runTest {
+            val instance1 = CoroutineLogger.reactorBuilder().build()
+            assertNotNull(instance1)
+            assertEquals(DefaultValues.getInstance().defaultReactorContextMdcKey, instance1.mdcContextKey)
+        }
     }
 
     @Test
@@ -239,519 +245,623 @@ internal class CoroutineLoggerTest {
 
     //region Trace
     @Test
-    fun traceMessage() = runTest {
-        val message: String = randomText()
-        logger.trace(message)
-        verify { imperativeLogger.trace(message) }
+    fun traceMessage() {
+        runTest {
+            val message: String = randomText()
+            logger.trace(message)
+            verify { imperativeLogger.trace(message) }
+        }
     }
 
     @Test
-    fun traceMessageNull() = runTest {
-        logger.trace(null)
-        verify { imperativeLogger.trace(null) }
+    fun traceMessageNull() {
+        runTest {
+            logger.trace(null)
+            verify { imperativeLogger.trace(null) }
+        }
     }
 
     @Test
-    fun traceFormatArgument1Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.trace(format, argument1)
-        verify { imperativeLogger.trace(format, argument1) }
+    fun traceFormatArgument1Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.trace(format, argument1)
+            verify { imperativeLogger.trace(format, argument1) }
+        }
     }
 
     @Test
-    fun traceFormatArgument2Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.trace(format, argument1, argument2)
-        verify { imperativeLogger.trace(format, argument1, argument2) }
+    fun traceFormatArgument2Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.trace(format, argument1, argument2)
+            verify { imperativeLogger.trace(format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun traceFormatArgumentArray() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.trace(format, argument1, argument2, argument3)
-        verify { imperativeLogger.trace(format, argument1, argument2, argument3) }
+    fun traceFormatArgumentArray() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.trace(format, argument1, argument2, argument3)
+            verify { imperativeLogger.trace(format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun traceMessageThrowable() = runTest {
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val exceptionCaptor = slot<SimulatedException>()
-        val stringCaptor = slot<String>()
-        every { imperativeLogger.trace(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.trace(message, exception)
-        assertEquals(exceptionCaptor.captured.message, exception.message)
-        assertEquals(stringCaptor.captured, message)
+    fun traceMessageThrowable() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val exceptionCaptor = slot<SimulatedException>()
+            val stringCaptor = slot<String>()
+            every { imperativeLogger.trace(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.trace(message, exception)
+            assertEquals(exceptionCaptor.captured.message, exception.message)
+            assertEquals(stringCaptor.captured, message)
+        }
     }
 
     @Test
-    fun traceMessageMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        logger.trace(marker, message)
-        verify { imperativeLogger.trace(marker, message) }
+    fun traceMessageMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            logger.trace(marker, message)
+            verify { imperativeLogger.trace(marker, message) }
+        }
     }
 
     @Test
-    fun traceFormatArgument1ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.trace(marker, format, argument1)
-        verify { imperativeLogger.trace(marker, format, argument1) }
+    fun traceFormatArgument1ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.trace(marker, format, argument1)
+            verify { imperativeLogger.trace(marker, format, argument1) }
+        }
     }
 
     @Test
-    fun traceFormatArgument2ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.trace(marker, format, argument1, argument2)
-        verify { imperativeLogger.trace(marker, format, argument1, argument2) }
+    fun traceFormatArgument2ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.trace(marker, format, argument1, argument2)
+            verify { imperativeLogger.trace(marker, format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun traceFormatArgumentArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.trace(marker, format, argument1, argument2, argument3)
-        verify { imperativeLogger.trace(marker, format, argument1, argument2, argument3) }
+    fun traceFormatArgumentArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.trace(marker, format, argument1, argument2, argument3)
+            verify { imperativeLogger.trace(marker, format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun traceMessageThrowableMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val markerCaptor = slot<Marker>()
-        val messageCaptor = slot<String>()
-        val exceptionCaptor = slot<SimulatedException>()
-        every { imperativeLogger.trace(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.trace(marker, message, exception)
-        assertEquals(markerCaptor.captured, marker)
-        assertEquals(messageCaptor.captured, message)
-        assertEquals(exceptionCaptor.captured, exception)
+    fun traceMessageThrowableMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val markerCaptor = slot<Marker>()
+            val messageCaptor = slot<String>()
+            val exceptionCaptor = slot<SimulatedException>()
+            every { imperativeLogger.trace(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.trace(marker, message, exception)
+            assertEquals(markerCaptor.captured, marker)
+            assertEquals(messageCaptor.captured, message)
+            assertEquals(exceptionCaptor.captured, exception)
+        }
     }
     //endregion
 
     //region Debug
     @Test
-    fun debugMessage() = runTest {
-        val message: String = randomText()
-        logger.debug(message)
-        verify { imperativeLogger.debug(message) }
+    fun debugMessage() {
+        runTest {
+            val message: String = randomText()
+            logger.debug(message)
+            verify { imperativeLogger.debug(message) }
+        }
     }
 
     @Test
-    fun debugFormatArgument1Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.debug(format, argument1)
-        verify { imperativeLogger.debug(format, argument1) }
+    fun debugFormatArgument1Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.debug(format, argument1)
+            verify { imperativeLogger.debug(format, argument1) }
+        }
     }
 
     @Test
-    fun debugFormatArgument2Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.debug(format, argument1, argument2)
-        verify { imperativeLogger.debug(format, argument1, argument2) }
+    fun debugFormatArgument2Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.debug(format, argument1, argument2)
+            verify { imperativeLogger.debug(format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun debugFormatArgumentArray() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.debug(format, argument1, argument2, argument3)
-        verify { imperativeLogger.debug(format, argument1, argument2, argument3) }
+    fun debugFormatArgumentArray() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.debug(format, argument1, argument2, argument3)
+            verify { imperativeLogger.debug(format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun debugMessageThrowable() = runTest {
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val exceptionCaptor = slot<SimulatedException>()
-        val stringCaptor = slot<String>()
-        every { imperativeLogger.debug(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.debug(message, exception)
-        assertEquals(exceptionCaptor.captured.message, exception.message)
-        assertEquals(stringCaptor.captured, message)
+    fun debugMessageThrowable() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val exceptionCaptor = slot<SimulatedException>()
+            val stringCaptor = slot<String>()
+            every { imperativeLogger.debug(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.debug(message, exception)
+            assertEquals(exceptionCaptor.captured.message, exception.message)
+            assertEquals(stringCaptor.captured, message)
+        }
     }
 
     @Test
-    fun debugMessageMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        logger.debug(marker, message)
-        verify { imperativeLogger.debug(marker, message) }
+    fun debugMessageMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            logger.debug(marker, message)
+            verify { imperativeLogger.debug(marker, message) }
+        }
     }
 
     @Test
-    fun debugFormatArgument1ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.debug(marker, format, argument1)
-        verify { imperativeLogger.debug(marker, format, argument1) }
+    fun debugFormatArgument1ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.debug(marker, format, argument1)
+            verify { imperativeLogger.debug(marker, format, argument1) }
+        }
     }
 
     @Test
-    fun debugFormatArgument2ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.debug(marker, format, argument1, argument2)
-        verify { imperativeLogger.debug(marker, format, argument1, argument2) }
+    fun debugFormatArgument2ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.debug(marker, format, argument1, argument2)
+            verify { imperativeLogger.debug(marker, format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun debugFormatArgumentArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.debug(marker, format, argument1, argument2, argument3)
-        verify { imperativeLogger.debug(marker, format, argument1, argument2, argument3) }
+    fun debugFormatArgumentArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.debug(marker, format, argument1, argument2, argument3)
+            verify { imperativeLogger.debug(marker, format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun debugMessageThrowableMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val markerCaptor = slot<Marker>()
-        val messageCaptor = slot<String>()
-        val exceptionCaptor = slot<SimulatedException>()
-        every { imperativeLogger.debug(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.debug(marker, message, exception)
-        assertEquals(markerCaptor.captured, marker)
-        assertEquals(messageCaptor.captured, message)
-        assertEquals(exceptionCaptor.captured, exception)
+    fun debugMessageThrowableMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val markerCaptor = slot<Marker>()
+            val messageCaptor = slot<String>()
+            val exceptionCaptor = slot<SimulatedException>()
+            every { imperativeLogger.debug(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.debug(marker, message, exception)
+            assertEquals(markerCaptor.captured, marker)
+            assertEquals(messageCaptor.captured, message)
+            assertEquals(exceptionCaptor.captured, exception)
+        }
     }
     //endregion
 
     //region Info
     @Test
-    fun infoMessage() = runTest {
-        val message: String = randomText()
-        logger.info(message)
-        verify { imperativeLogger.info(message) }
+    fun infoMessage() {
+        runTest {
+            val message: String = randomText()
+            logger.info(message)
+            verify { imperativeLogger.info(message) }
+        }
     }
 
     @Test
-    fun infoFormatArgument1Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.info(format, argument1)
-        verify { imperativeLogger.info(format, argument1) }
+    fun infoFormatArgument1Array(){
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.info(format, argument1)
+            verify { imperativeLogger.info(format, argument1) }
+        }
     }
 
     @Test
-    fun infoFormatArgument2Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.info(format, argument1, argument2)
-        verify { imperativeLogger.info(format, argument1, argument2) }
+    fun infoFormatArgument2Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.info(format, argument1, argument2)
+            verify { imperativeLogger.info(format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun infoFormatArgumentArray() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.info(format, argument1, argument2, argument3)
-        verify { imperativeLogger.info(format, argument1, argument2, argument3) }
+    fun infoFormatArgumentArray() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.info(format, argument1, argument2, argument3)
+            verify { imperativeLogger.info(format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun infoMessageThrowable() = runTest {
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val exceptionCaptor = slot<SimulatedException>()
-        val stringCaptor = slot<String>()
-        every { imperativeLogger.info(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.info(message, exception)
-        assertEquals(exceptionCaptor.captured.message, exception.message)
-        assertEquals(stringCaptor.captured, message)
+    fun infoMessageThrowable() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val exceptionCaptor = slot<SimulatedException>()
+            val stringCaptor = slot<String>()
+            every { imperativeLogger.info(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.info(message, exception)
+            assertEquals(exceptionCaptor.captured.message, exception.message)
+            assertEquals(stringCaptor.captured, message)
+        }
     }
 
     @Test
-    fun infoMessageMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        logger.info(marker, message)
-        verify { imperativeLogger.info(marker, message) }
+    fun infoMessageMarker(){
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            logger.info(marker, message)
+            verify { imperativeLogger.info(marker, message) }
+        }
     }
 
     @Test
-    fun infoFormatArgument1ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.info(marker, format, argument1)
-        verify { imperativeLogger.info(marker, format, argument1) }
+    fun infoFormatArgument1ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.info(marker, format, argument1)
+            verify { imperativeLogger.info(marker, format, argument1) }
+        }
     }
 
     @Test
-    fun infoFormatArgument2ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.info(marker, format, argument1, argument2)
-        verify { imperativeLogger.info(marker, format, argument1, argument2) }
+    fun infoFormatArgument2ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.info(marker, format, argument1, argument2)
+            verify { imperativeLogger.info(marker, format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun infoFormatArgumentArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.info(marker, format, argument1, argument2, argument3)
-        verify { imperativeLogger.info(marker, format, argument1, argument2, argument3) }
+    fun infoFormatArgumentArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.info(marker, format, argument1, argument2, argument3)
+            verify { imperativeLogger.info(marker, format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun infoMessageThrowableMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val markerCaptor = slot<Marker>()
-        val messageCaptor = slot<String>()
-        val exceptionCaptor = slot<SimulatedException>()
-        every { imperativeLogger.info(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.info(marker, message, exception)
-        assertEquals(markerCaptor.captured, marker)
-        assertEquals(messageCaptor.captured, message)
-        assertEquals(exceptionCaptor.captured, exception)
+    fun infoMessageThrowableMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val markerCaptor = slot<Marker>()
+            val messageCaptor = slot<String>()
+            val exceptionCaptor = slot<SimulatedException>()
+            every { imperativeLogger.info(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.info(marker, message, exception)
+            assertEquals(markerCaptor.captured, marker)
+            assertEquals(messageCaptor.captured, message)
+            assertEquals(exceptionCaptor.captured, exception)
+        }
     }
     //endregion
 
     //region Warn
     @Test
-    fun warnMessage() = runTest {
-        val message: String = randomText()
-        logger.warn(message)
-        verify { imperativeLogger.warn(message) }
+    fun warnMessage() {
+        runTest {
+            val message: String = randomText()
+            logger.warn(message)
+            verify { imperativeLogger.warn(message) }
+        }
     }
 
     @Test
-    fun warnFormatArgument1Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.warn(format, argument1)
-        verify { imperativeLogger.warn(format, argument1) }
+    fun warnFormatArgument1Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.warn(format, argument1)
+            verify { imperativeLogger.warn(format, argument1) }
+        }
     }
 
     @Test
-    fun warnFormatArgument2Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.warn(format, argument1, argument2)
-        verify { imperativeLogger.warn(format, argument1, argument2) }
+    fun warnFormatArgument2Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.warn(format, argument1, argument2)
+            verify { imperativeLogger.warn(format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun warnFormatArgumentArray() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.warn(format, argument1, argument2, argument3)
-        verify { imperativeLogger.warn(format, argument1, argument2, argument3) }
+    fun warnFormatArgumentArray() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.warn(format, argument1, argument2, argument3)
+            verify { imperativeLogger.warn(format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun warnMessageThrowable() = runTest {
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val exceptionCaptor = slot<SimulatedException>()
-        val stringCaptor = slot<String>()
-        every { imperativeLogger.warn(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.warn(message, exception)
-        assertEquals(exceptionCaptor.captured.message, exception.message)
-        assertEquals(stringCaptor.captured, message)
+    fun warnMessageThrowable() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val exceptionCaptor = slot<SimulatedException>()
+            val stringCaptor = slot<String>()
+            every { imperativeLogger.warn(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.warn(message, exception)
+            assertEquals(exceptionCaptor.captured.message, exception.message)
+            assertEquals(stringCaptor.captured, message)
+        }
     }
 
     @Test
-    fun warnMessageMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        logger.warn(marker, message)
-        verify { imperativeLogger.warn(marker, message) }
+    fun warnMessageMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            logger.warn(marker, message)
+            verify { imperativeLogger.warn(marker, message) }
+        }
     }
 
     @Test
-    fun warnFormatArgument1ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.warn(marker, format, argument1)
-        verify { imperativeLogger.warn(marker, format, argument1) }
+    fun warnFormatArgument1ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.warn(marker, format, argument1)
+            verify { imperativeLogger.warn(marker, format, argument1) }
+        }
     }
 
     @Test
-    fun warnFormatArgument2ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.warn(marker, format, argument1, argument2)
-        verify { imperativeLogger.warn(marker, format, argument1, argument2) }
+    fun warnFormatArgument2ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.warn(marker, format, argument1, argument2)
+            verify { imperativeLogger.warn(marker, format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun warnFormatArgumentArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.warn(marker, format, argument1, argument2, argument3)
-        verify { imperativeLogger.warn(marker, format, argument1, argument2, argument3) }
+    fun warnFormatArgumentArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.warn(marker, format, argument1, argument2, argument3)
+            verify { imperativeLogger.warn(marker, format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun warnMessageThrowableMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val markerCaptor = slot<Marker>()
-        val messageCaptor = slot<String>()
-        val exceptionCaptor = slot<SimulatedException>()
-        every { imperativeLogger.warn(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.warn(marker, message, exception)
-        assertEquals(markerCaptor.captured, marker)
-        assertEquals(messageCaptor.captured, message)
-        assertEquals(exceptionCaptor.captured, exception)
+    fun warnMessageThrowableMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val markerCaptor = slot<Marker>()
+            val messageCaptor = slot<String>()
+            val exceptionCaptor = slot<SimulatedException>()
+            every { imperativeLogger.warn(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.warn(marker, message, exception)
+            assertEquals(markerCaptor.captured, marker)
+            assertEquals(messageCaptor.captured, message)
+            assertEquals(exceptionCaptor.captured, exception)
+        }
     }
     //endregion
 
     //region Error
     @Test
-    fun errorMessage() = runTest {
-        val message: String = randomText()
-        logger.error(message)
-        verify { imperativeLogger.error(message) }
+    fun errorMessage() {
+        runTest {
+            val message: String = randomText()
+            logger.error(message)
+            verify { imperativeLogger.error(message) }
+        }
     }
 
     @Test
-    fun errorFormatArgument1Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.error(format, argument1)
-        verify { imperativeLogger.error(format, argument1) }
+    fun errorFormatArgument1Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.error(format, argument1)
+            verify { imperativeLogger.error(format, argument1) }
+        }
     }
 
     @Test
-    fun errorFormatArgument2Array() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.error(format, argument1, argument2)
-        verify { imperativeLogger.error(format, argument1, argument2) }
+    fun errorFormatArgument2Array() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.error(format, argument1, argument2)
+            verify { imperativeLogger.error(format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun errorFormatArgumentArray() = runTest {
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.error(format, argument1, argument2, argument3)
-        verify { imperativeLogger.error(format, argument1, argument2, argument3) }
+    fun errorFormatArgumentArray() {
+        runTest {
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.error(format, argument1, argument2, argument3)
+            verify { imperativeLogger.error(format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun errorMessageThrowable() = runTest {
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val exceptionCaptor = slot<SimulatedException>()
-        val stringCaptor = slot<String>()
-        every { imperativeLogger.error(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.error(message, exception)
-        assertEquals(exceptionCaptor.captured.message, exception.message)
-        assertEquals(stringCaptor.captured, message)
+    fun errorMessageThrowable() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val exceptionCaptor = slot<SimulatedException>()
+            val stringCaptor = slot<String>()
+            every { imperativeLogger.error(capture(stringCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.error(message, exception)
+            assertEquals(exceptionCaptor.captured.message, exception.message)
+            assertEquals(stringCaptor.captured, message)
+        }
     }
 
     @Test
-    fun errorMessageMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        logger.error(marker, message)
-        verify { imperativeLogger.error(marker, message) }
+    fun errorMessageMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            logger.error(marker, message)
+            verify { imperativeLogger.error(marker, message) }
+        }
     }
 
     @Test
-    fun errorFormatArgument1ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        logger.error(marker, format, argument1)
-        verify { imperativeLogger.error(marker, format, argument1) }
+    fun errorFormatArgument1ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            logger.error(marker, format, argument1)
+            verify { imperativeLogger.error(marker, format, argument1) }
+        }
     }
 
     @Test
-    fun errorFormatArgument2ArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        logger.error(marker, format, argument1, argument2)
-        verify { imperativeLogger.error(marker, format, argument1, argument2) }
+    fun errorFormatArgument2ArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            logger.error(marker, format, argument1, argument2)
+            verify { imperativeLogger.error(marker, format, argument1, argument2) }
+        }
     }
 
     @Test
-    fun errorFormatArgumentArrayMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val format: String = randomText()
-        val argument1: String = randomText()
-        val argument2: String = randomText()
-        val argument3: String = randomText()
-        logger.error(marker, format, argument1, argument2, argument3)
-        verify { imperativeLogger.error(marker, format, argument1, argument2, argument3) }
+    fun errorFormatArgumentArrayMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val format: String = randomText()
+            val argument1: String = randomText()
+            val argument2: String = randomText()
+            val argument3: String = randomText()
+            logger.error(marker, format, argument1, argument2, argument3)
+            verify { imperativeLogger.error(marker, format, argument1, argument2, argument3) }
+        }
     }
 
     @Test
-    fun errorMessageThrowableMarker() = runTest {
-        val marker = MarkerFactory.getMarker(randomText())
-        val message: String = randomText()
-        val exception = SimulatedException(randomText())
-        val markerCaptor = slot<Marker>()
-        val messageCaptor = slot<String>()
-        val exceptionCaptor = slot<SimulatedException>()
-        every { imperativeLogger.error(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
-        logger.error(marker, message, exception)
-        assertEquals(markerCaptor.captured, marker)
-        assertEquals(messageCaptor.captured, message)
-        assertEquals(exceptionCaptor.captured, exception)
+    fun errorMessageThrowableMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val markerCaptor = slot<Marker>()
+            val messageCaptor = slot<String>()
+            val exceptionCaptor = slot<SimulatedException>()
+            every { imperativeLogger.error(capture(markerCaptor), capture(messageCaptor), capture(exceptionCaptor)) } returns Unit
+            logger.error(marker, message, exception)
+            assertEquals(markerCaptor.captured, marker)
+            assertEquals(messageCaptor.captured, message)
+            assertEquals(exceptionCaptor.captured, exception)
+        }
     }
     //endregion
 
     @Test
-    fun checkEnableErrorFlagDifferent() = runTest {
-        assertThrows<ContextNotExistException> {
-            loggerWithError.info(randomText())
+    fun checkEnableErrorFlagDifferent() {
+        runTest {
+            assertThrows<ContextNotExistException> {
+                loggerWithError.info(randomText())
+            }
         }
     }
 

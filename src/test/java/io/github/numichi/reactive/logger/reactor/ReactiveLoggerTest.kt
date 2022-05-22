@@ -12,7 +12,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -30,6 +29,7 @@ import reactor.core.scheduler.Schedulers
 import reactor.test.StepVerifier
 import reactor.util.annotation.NonNull
 import reactor.util.context.Context
+import reactor.util.context.ContextView
 import java.util.*
 
 @ExperimentalCoroutinesApi
@@ -54,7 +54,7 @@ internal class ReactiveLoggerTest {
             return expected
         }
 
-        fun step(logger: () -> Mono<Context>) {
+        fun step(logger: () -> Mono<ContextView>) {
             StepVerifier.create(logger()).expectNextCount(1).verifyComplete()
         }
     }
@@ -236,14 +236,14 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceMessage() = runTest {
+    fun traceMessage() {
         val message: String = randomText()
         step { logger.trace(message) }
         verify { imperativeLogger.trace(message) }
     }
 
     @Test
-    fun traceFormatArgument1Array() = runTest {
+    fun traceFormatArgument1Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         step { logger.trace(format, argument1) }
@@ -251,7 +251,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceFormatArgument2Array() = runTest {
+    fun traceFormatArgument2Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -260,7 +260,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceFormatArgumentArray() = runTest {
+    fun traceFormatArgumentArray() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -270,7 +270,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceMessageThrowable() = runTest {
+    fun traceMessageThrowable() {
         val message: String = randomText()
         val exception = SimulatedException(randomText())
         val exceptionCaptor = slot<SimulatedException>()
@@ -282,7 +282,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceMessageMarker() = runTest {
+    fun traceMessageMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         step { logger.trace(marker, message) }
@@ -290,7 +290,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceFormatArgument1ArrayMarker() = runTest {
+    fun traceFormatArgument1ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -299,7 +299,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceFormatArgument2ArrayMarker() = runTest {
+    fun traceFormatArgument2ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -309,7 +309,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceFormatArgumentArrayMarker() = runTest {
+    fun traceFormatArgumentArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -320,7 +320,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun traceMessageThrowableMarker() = runTest {
+    fun traceMessageThrowableMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         val exception = SimulatedException(randomText())
@@ -337,14 +337,14 @@ internal class ReactiveLoggerTest {
 
     //region Debug
     @Test
-    fun debugMessage() = runTest {
+    fun debugMessage() {
         val message: String = randomText()
         step { logger.debug(message) }
         verify { imperativeLogger.debug(message) }
     }
 
     @Test
-    fun debugFormatArgument1Array() = runTest {
+    fun debugFormatArgument1Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         step { logger.debug(format, argument1) }
@@ -352,7 +352,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugFormatArgument2Array() = runTest {
+    fun debugFormatArgument2Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -361,7 +361,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugFormatArgumentArray() = runTest {
+    fun debugFormatArgumentArray() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -371,7 +371,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugMessageThrowable() = runTest {
+    fun debugMessageThrowable() {
         val message: String = randomText()
         val exception = SimulatedException(randomText())
         val exceptionCaptor = slot<SimulatedException>()
@@ -383,7 +383,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugMessageMarker() = runTest {
+    fun debugMessageMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         step { logger.debug(marker, message) }
@@ -391,7 +391,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugFormatArgument1ArrayMarker() = runTest {
+    fun debugFormatArgument1ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -400,7 +400,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugFormatArgument2ArrayMarker() = runTest {
+    fun debugFormatArgument2ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -410,7 +410,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugFormatArgumentArrayMarker() = runTest {
+    fun debugFormatArgumentArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -421,7 +421,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun debugMessageThrowableMarker() = runTest {
+    fun debugMessageThrowableMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         val exception = SimulatedException(randomText())
@@ -438,14 +438,14 @@ internal class ReactiveLoggerTest {
 
     //region Info
     @Test
-    fun infoMessage() = runTest {
+    fun infoMessage() {
         val message: String = randomText()
         step { logger.info(message) }
         verify { imperativeLogger.info(message) }
     }
 
     @Test
-    fun infoFormatArgument1Array() = runTest {
+    fun infoFormatArgument1Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         step { logger.info(format, argument1) }
@@ -453,7 +453,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoFormatArgument2Array() = runTest {
+    fun infoFormatArgument2Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -462,7 +462,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoFormatArgumentArray() = runTest {
+    fun infoFormatArgumentArray() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -472,7 +472,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoMessageThrowable() = runTest {
+    fun infoMessageThrowable() {
         val message: String = randomText()
         val exception = SimulatedException(randomText())
         val exceptionCaptor = slot<SimulatedException>()
@@ -484,7 +484,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoMessageMarker() = runTest {
+    fun infoMessageMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         step { logger.info(marker, message) }
@@ -492,7 +492,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoFormatArgument1ArrayMarker() = runTest {
+    fun infoFormatArgument1ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -502,7 +502,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoFormatArgument2ArrayMarker() = runTest {
+    fun infoFormatArgument2ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -511,7 +511,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoFormatArgumentArrayMarker() = runTest {
+    fun infoFormatArgumentArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -522,7 +522,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun infoMessageThrowableMarker() = runTest {
+    fun infoMessageThrowableMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         val exception = SimulatedException(randomText())
@@ -539,14 +539,14 @@ internal class ReactiveLoggerTest {
 
     //region Warn
     @Test
-    fun warnMessage() = runTest {
+    fun warnMessage() {
         val message: String = randomText()
         StepVerifier.create(logger.warn(message)).expectNextCount(1).verifyComplete()
         verify { imperativeLogger.warn(message) }
     }
 
     @Test
-    fun warnFormatArgument1Array() = runTest {
+    fun warnFormatArgument1Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         step { logger.warn(format, argument1) }
@@ -554,7 +554,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnFormatArgument2Array() = runTest {
+    fun warnFormatArgument2Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -563,7 +563,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnFormatArgumentArray() = runTest {
+    fun warnFormatArgumentArray() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -573,7 +573,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnMessageThrowable() = runTest {
+    fun warnMessageThrowable() {
         val message: String = randomText()
         val exception = SimulatedException(randomText())
         val exceptionCaptor = slot<SimulatedException>()
@@ -585,7 +585,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnMessageMarker() = runTest {
+    fun warnMessageMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         step { logger.warn(marker, message) }
@@ -593,7 +593,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnFormatArgument1ArrayMarker() = runTest {
+    fun warnFormatArgument1ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -602,7 +602,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnFormatArgument2ArrayMarker() = runTest {
+    fun warnFormatArgument2ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -612,7 +612,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnFormatArgumentArrayMarker() = runTest {
+    fun warnFormatArgumentArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -623,7 +623,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun warnMessageThrowableMarker() = runTest {
+    fun warnMessageThrowableMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         val exception = SimulatedException(randomText())
@@ -640,14 +640,14 @@ internal class ReactiveLoggerTest {
 
     //region Error
     @Test
-    fun errorMessage() = runTest {
+    fun errorMessage() {
         val message: String = randomText()
         step { logger.error(message) }
         verify { imperativeLogger.error(message) }
     }
 
     @Test
-    fun errorFormatArgument1Array() = runTest {
+    fun errorFormatArgument1Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         step { logger.error(format, argument1) }
@@ -655,7 +655,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorFormatArgument2Array() = runTest {
+    fun errorFormatArgument2Array() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -664,7 +664,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorFormatArgumentArray() = runTest {
+    fun errorFormatArgumentArray() {
         val format: String = randomText()
         val argument1: String = randomText()
         val argument2: String = randomText()
@@ -674,7 +674,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorMessageThrowable() = runTest {
+    fun errorMessageThrowable() {
         val message: String = randomText()
         val exception = SimulatedException(randomText())
         val exceptionCaptor = slot<SimulatedException>()
@@ -686,7 +686,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorMessageMarker() = runTest {
+    fun errorMessageMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         step { logger.error(marker, message) }
@@ -694,7 +694,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorFormatArgument1ArrayMarker() = runTest {
+    fun errorFormatArgument1ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -703,7 +703,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorFormatArgument2ArrayMarker() = runTest {
+    fun errorFormatArgument2ArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -713,7 +713,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorFormatArgumentArrayMarker() = runTest {
+    fun errorFormatArgumentArrayMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val format: String = randomText()
         val argument1: String = randomText()
@@ -724,7 +724,7 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun errorMessageThrowableMarker() = runTest {
+    fun errorMessageThrowableMarker() {
         val marker = MarkerFactory.getMarker(randomText())
         val message: String = randomText()
         val exception = SimulatedException(randomText())

@@ -9,7 +9,7 @@ plugins {
 }
 
 group = project.property("group") as String
-version = project.property("version") as String as String
+version = project.property("version") as String
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -20,20 +20,20 @@ java {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.projectreactor:reactor-core:3.4.14")
+    implementation("io.projectreactor:reactor-core:3.4.18")
     implementation("org.slf4j:slf4j-api:1.7.36")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.5")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.0")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.1")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.20")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("io.projectreactor:reactor-test:3.4.14")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.1")
-    testImplementation("org.mockito:mockito-core:4.2.0")
+    testImplementation("io.projectreactor:reactor-test:3.4.18")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+    testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
-    testImplementation("io.mockk:mockk:1.12.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1")
+    testImplementation("io.mockk:mockk:1.12.4")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
