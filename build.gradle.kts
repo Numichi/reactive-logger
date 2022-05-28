@@ -2,7 +2,7 @@ plugins {
     java
     jacoco
     id("com.adarshr.test-logger") version "3.1.0"
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.6.21"
     id("java-library")
     id("maven-publish")
     id("signing")
@@ -25,7 +25,7 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.6")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.1")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation("io.projectreactor:reactor-test:3.4.18")
