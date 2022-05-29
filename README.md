@@ -10,11 +10,11 @@
 
 _After releases, SonaType or mvnrepostiroy may not appear. Regardless, the package is available._
 
-## Important
+# Important
 
 This is just a hobby project driven by self motivation. There is no external sponsor behind the project.
 
-## What is the source of motivation?
+# What is the source of motivation?
 
 I think this description approaches
 the [What Is a Good Pattern for Contextual Logging? (MDC)](https://projectreactor.io/docs/core/release/reference/#faq.mdc) well.
@@ -42,7 +42,7 @@ the following: MDC context data slipping to another request. I think it is unhea
 So, I have been working to create an API for Reactor and Coroutine what solve the above problems. It provides the same interfaces to both
 environments and follows Reactor MDC documentation.
 
-## Overview
+# Overview
 
 _Part of the documentation and description comes from: [README.md](https://github.com/johncfranco/reactive-logger/blob/develop/README.md)_
 
@@ -58,31 +58,57 @@ The library has many goals:
 * Obey the rule restricting blocking I/O to bounded elastic schedulers without requiring a specific logging configuration to do so.
 * Provide the appropriate language approach for Java Reactor or Kotlin Coroutine code.
 
-## Documentation
-
-- [Wiki](https://github.com/Numichi/reactive-logger/wiki/Documentation)
-- [Kotlin example](https://github.com/Numichi/reactive-logger-kotlin-example/tree/main/src/main/kotlin/io/github/numichi/reactive/logger/kotlin/example)
-
-## Dependency
+# Dependency
 
 ### Maven
 
 ```xml
+
 <dependency>
   <groupId>io.github.numichi</groupId>
   <artifactId>reactive-logger</artifactId>
-  <version>VERSION</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
 ### Gradle Groovy DSL
 
-```gradle
-implementation 'io.github.numichi:reactive-logger:VERSION'
+```groovy
+implementation 'io.github.numichi:reactive-logger:2.0.0'
 ```
 
 ### Gradle Kotlin DSL
 
-```gradle
-implementation("io.github.numichi:reactive-logger:VERSION")
+```kotlin
+implementation("io.github.numichi:reactive-logger:2.0.0")
 ```
+
+# Usage
+
+## Logger library
+
+Because it is a layer on slf4j so you can use specific logger libraries like Backlog, Log4j2 and so on. By default, Spring uses the Backlog log library. So, if you don't would like to apply anything
+else, you don't need additional dependencies.
+
+### Log4j2
+
+When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency. Configure log4j2.xml as required. But it is already
+a [configuration](https://logging.apache.org/log4j/2.x/manual/configuration.html) of the logger library.
+
+Many documentation can be found on the internet ([here](https://www.callicoder.com/spring-boot-log4j-2-example/) and [here](https://www.baeldung.com/spring-boot-logging)) on how can you change from
+Logback to Log4j2. The articles mainly use XML configuration, so I presented an example with Gradle Kotlin DSL configuration.
+
+```kotlin
+configurations {
+    all {
+        exclude("org.springframework.boot", "spring-boot-starter-logging")
+    }
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+}
+```
+
+# How use `reactive-logger`
+_In writing_

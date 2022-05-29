@@ -3,7 +3,7 @@ package io.github.numichi.reactive.logger
 import io.github.numichi.reactive.logger.DefaultValues.Companion.getInstance
 import java.util.concurrent.ConcurrentHashMap
 
-class MDC(contextKey: String?, mdcMap: Map<String, String>) : ConcurrentHashMap<String, String>() {
+open class MDC(contextKey: String?, mdcMap: Map<String, String>) : ConcurrentHashMap<String, String>() {
     val contextKey: String
 
     constructor() : this(null, mapOf())
