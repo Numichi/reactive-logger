@@ -24,6 +24,26 @@ object MDCContext {
     }
 
     @JvmStatic
+    fun getMDCOrNull(context: ContextView): MDC? {
+        return getMDCOrNull(context, DefaultValues.getInstance().defaultReactorContextMdcKey)
+    }
+
+    @JvmStatic
+    fun getMDCOrNull(context: ContextView, mdcContextKey: Any): MDC? {
+        return runCatching { context.get<MDC>(mdcContextKey) }.getOrNull()
+    }
+
+    @JvmStatic
+    fun getMDCOrDefault(context: ContextView, mdcContextKey: Any): MDC {
+        return getMDCOrNull(context, mdcContextKey) ?: MDC(mdcContextKey.toString())
+    }
+
+    @JvmStatic
+    fun getMDCOrDefault(context: ContextView): MDC {
+        return getMDCOrNull(context) ?: MDC()
+    }
+
+    @JvmStatic
     fun read(): Mono<MDC> {
         return read(DefaultValues.getInstance().defaultReactorContextMdcKey)
     }
