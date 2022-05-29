@@ -30,7 +30,6 @@ internal class CoroutineOtherTest {
                 .withContextKey(ReactorContext)
                 .withContextExtractive { coroutineContext[it]?.context }
                 .withScheduler(Schedulers.boundedElastic())
-                .withEnableError(false)
                 .withMDCContextKey("other-key")
                 .withLogger(mockKLogger)
                 .build()
@@ -45,7 +44,6 @@ internal class CoroutineOtherTest {
                 .withContextKey(ReactorContext)
                 .withContextExtractive { coroutineContext[it]?.context }
                 .withScheduler(Schedulers.boundedElastic())
-                .withEnableError(false)
                 .withMDCContextKey("other-key")
                 .withLogger(mockLogger)
                 .build()
@@ -181,7 +179,7 @@ internal class CoroutineOtherTest {
     @Test
     fun `should throw exception from snapshot`() {
         val logger = CoroutineLogger.reactorBuilder()
-            .withEnableError(true)
+            .withError(true)
             .withLogger(mockk(relaxed = true))
             .build()
 

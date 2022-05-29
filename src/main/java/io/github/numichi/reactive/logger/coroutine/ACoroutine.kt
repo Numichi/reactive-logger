@@ -40,8 +40,18 @@ abstract class ACoroutine<T : IReactorLogger>(
             return this
         }
 
-        fun withEnableError(enableError: Boolean): Builder<E, L, R> {
-            this.enableError = enableError
+        @Deprecated(
+            message = "It can be misleading due to enabling word in method name and boolean parameter. Use: withError(boolean); False by default",
+            replaceWith = ReplaceWith("withError(enable)"),
+            level = DeprecationLevel.WARNING
+        )
+        fun withEnableError(enable: Boolean): Builder<E, L, R> {
+            this.enableError = enable
+            return this
+        }
+
+        fun withError(enable: Boolean = true): Builder<E, L, R> {
+            this.enableError = enable
             return this
         }
 

@@ -28,9 +28,19 @@ abstract class AReactive(
             return this;
         }
 
-        fun withEnableError(enableError: Boolean): Builder<L, R> {
-            this.enableError = enableError
-            return this;
+        @Deprecated(
+            message = "It can be misleading due to enabling word in method name and boolean parameter. Use: withError(boolean); False by default",
+            replaceWith = ReplaceWith("withError(enableError)"),
+            level = DeprecationLevel.WARNING
+        )
+        fun withEnableError(enable: Boolean): Builder<L, R> {
+            this.enableError = enable
+            return this
+        }
+
+        fun withError(enable: Boolean = true): Builder<L, R> {
+            this.enableError = enable
+            return this
         }
 
         fun withLogger(logger: L): Builder<L, R> {

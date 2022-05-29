@@ -36,7 +36,7 @@ import java.util.*
 internal class ReactiveLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
     private val logger = builder().withLogger(imperativeLogger).build()
-    private val loggerWithError = builder().withLogger(imperativeLogger).withEnableError(true).build()
+    private val loggerWithError = builder().withLogger(imperativeLogger).withError().build()
 
     companion object {
         fun randomText(): String {

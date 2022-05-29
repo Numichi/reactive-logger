@@ -32,7 +32,7 @@ internal class CoroutineLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
     private val logger = CoroutineLogger.reactorBuilder().withLogger(imperativeLogger).build()
     private val loggerScheduled = CoroutineLogger.reactorBuilder().withLogger(imperativeLogger).withScheduler(Schedulers.parallel()).build()
-    private val loggerWithError = CoroutineLogger.reactorBuilder().withLogger(imperativeLogger).withEnableError(true).build()
+    private val loggerWithError = CoroutineLogger.reactorBuilder().withLogger(imperativeLogger).withError(true).build()
 
     companion object {
         @JvmStatic
