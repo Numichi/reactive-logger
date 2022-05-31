@@ -159,7 +159,7 @@ class Example {
 ```kotlin
 class Example {
     // or CoroutineKLogger
-    private val customLog = CoroutineLogger.build(CustomContext) { coroutineContext[it]?.customAttrWhatTypeIsContextView } 
+    private val customLog = CoroutineLogger.builder(CustomContext) { coroutineContext[it]?.customAttrWhatTypeIsContextView } 
       // same as below
   
     private val log = CoroutineLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
