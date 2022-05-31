@@ -31,7 +31,7 @@ interface ICoroutineCore<T : IReactorLogger> : ICore {
         val context = contextExtractive(contextKey) ?: Context.empty()
 
         function(reactorLogger)
-            .contextWrite { it.putAll(context.readOnly()) }
+            .contextWrite { it.putAll(context) }
             .awaitSingle()
     }
 

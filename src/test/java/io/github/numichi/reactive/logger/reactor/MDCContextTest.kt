@@ -130,6 +130,28 @@ internal class MDCContextTest {
         StepVerifier.create(data4)
             .expectNext("example")
             .verifyComplete()
+
+        val data5 = MDCContext.read()
+            .mapNotNull { it["key"] }
+            .contextWrite {
+                MDCContext.modifyContext(it) {mdc ->
+                    mdc["key"] = "example"
+                }
+            }
+        StepVerifier.create(data5)
+            .expectNext("example")
+            .verifyComplete()
+
+        val data6 = MDCContext.read("another")
+            .mapNotNull { it["key"] }
+            .contextWrite {
+                MDCContext.modifyContext(it, "another") { mdc ->
+                    mdc["key"] = "example"
+                }
+            }
+        StepVerifier.create(data6)
+            .expectNext("example")
+            .verifyComplete()
     }
 
     @Test

@@ -17,11 +17,21 @@ abstract class AReactive(
         var enableError: Boolean
     ) {
 
+        /**
+         * Which scheduler does use for logging?
+         *
+         * @param scheduler Default: Schedulers.boundedElastic()
+         */
         fun withScheduler(scheduler: Scheduler): Builder<L, R> {
             this.scheduler = scheduler
             return this;
         }
 
+        /**
+         * Which under reactor context key is the MDC stored?
+         *
+         * @param mdcContextKey Default: "DEFAULT_REACTOR_CONTEXT_MDC_KEY"
+         */
         fun withMDCContextKey(mdcContextKey: String): Builder<L, R> {
             check(mdcContextKey.trim().isNotEmpty()) { "mdcContextKey must not be blank or empty" }
             this.mdcContextKey = mdcContextKey

@@ -62,7 +62,7 @@ class CoroutineKLogger private constructor(
         val context = contextExtractive(contextKey) ?: Context.empty()
 
         return function(reactorLogger)
-            .contextWrite { it.putAll(context.readOnly()) }
+            .contextWrite { it.putAll(context) }
             .awaitSingle()
     }
 }

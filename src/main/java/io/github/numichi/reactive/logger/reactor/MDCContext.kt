@@ -44,6 +44,20 @@ object MDCContext {
     }
 
     @JvmStatic
+    fun modifyContext(context: Context, mdcContextKey: Any, func: (MDC) -> Unit): Context {
+        val mdc = getMDCOrNull(context, mdcContextKey) ?: MDC(mdcContextKey.toString())
+        func(mdc)
+        return put(context, mdc)
+    }
+
+    @JvmStatic
+    fun modifyContext(context: Context, func: (MDC) -> Unit): Context {
+        val mdc = getMDCOrNull(context) ?: MDC()
+        func(mdc)
+        return put(context, mdc)
+    }
+
+    @JvmStatic
     fun read(): Mono<MDC> {
         return read(DefaultValues.getInstance().defaultReactorContextMdcKey)
     }

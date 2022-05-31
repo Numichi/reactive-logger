@@ -20,11 +20,21 @@ abstract class ACoroutine<T : IReactorLogger>(
         var mdcContextKey: String,
         var enableError: Boolean,
     ) {
+        /**
+         * Which scheduler does use for logging?
+         *
+         * @param scheduler Default: Schedulers.boundedElastic()
+         */
         fun withScheduler(scheduler: Scheduler): Builder<E, L, R> {
             this.scheduler = scheduler
             return this
         }
 
+        /**
+         * Which under reactor context key is the MDC stored?
+         *
+         * @param mdcContextKey Default: "DEFAULT_REACTOR_CONTEXT_MDC_KEY"
+         */
         fun withMDCContextKey(mdcContextKey: String): Builder<E, L, R> {
             this.mdcContextKey = mdcContextKey
             return this
