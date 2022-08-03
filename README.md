@@ -27,7 +27,7 @@ for Kotlin Coroutine.
 
 **My first problem with the lifting solution.**
 It runs a hook for each reactor API. It generates a lot of unnecessary events and class creation. I
-have [tested](https://github.com/Numichi/reactive-java-mdc-investigation) it with a minimal controller with Spring Boot (see: GET /counter).
+have [tested](https://github.com/Numichi/reactive-logger-my-problem/blob/main/src/main/kotlin/com/example/demo/controller/MdcController.kt) it with a minimal controller with Spring Boot.
 MDC map copy had run about 129 times for only one request. Then let's count how many times will run on one of the more complex applications?
 
 **My second problem on Kotlin Coroutine with lifting.**
