@@ -29,7 +29,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testImplementation("io.projectreactor:reactor-test:3.4.21")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.18.0")
     testImplementation("org.mockito:mockito-core:4.6.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")

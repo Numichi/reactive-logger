@@ -147,7 +147,7 @@ internal class ReactiveKLoggerTest {
     @Test
     fun scheduler() {
         val customScheduler = Schedulers.newBoundedElastic(10, 10, randomText())
-        val loggerWithCustomScheduler = builder().withScheduler(customScheduler).build()
+        val loggerWithCustomScheduler = builder().setScheduler(customScheduler).build()
         assertSame(loggerWithCustomScheduler.scheduler, customScheduler)
     }
 

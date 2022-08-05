@@ -27,11 +27,11 @@ internal class CoroutineOtherTest {
         runTest {
             val mockKLogger: KLogger = mockk(relaxed = true)
             val loggerK = CoroutineKLogger.reactorBuilder()
-                .withContextKey(ReactorContext)
-                .withContextExtractive { coroutineContext[it]?.context }
-                .withScheduler(Schedulers.boundedElastic())
-                .withMDCContextKey("other-key")
-                .withLogger(mockKLogger)
+                .setContextKey(ReactorContext)
+                .setContextExtractive { coroutineContext[it]?.context }
+                .setScheduler(Schedulers.boundedElastic())
+                .setMDCContextKey("other-key")
+                .setLogger(mockKLogger)
                 .build()
 
             assertEquals("other-key", loggerK.mdcContextKey)
@@ -41,11 +41,11 @@ internal class CoroutineOtherTest {
 
             val mockLogger: Logger = mockk(relaxed = true)
             val loggerL = CoroutineLogger.reactorBuilder()
-                .withContextKey(ReactorContext)
-                .withContextExtractive { coroutineContext[it]?.context }
-                .withScheduler(Schedulers.boundedElastic())
-                .withMDCContextKey("other-key")
-                .withLogger(mockLogger)
+                .setContextKey(ReactorContext)
+                .setContextExtractive { coroutineContext[it]?.context }
+                .setScheduler(Schedulers.boundedElastic())
+                .setMDCContextKey("other-key")
+                .setLogger(mockLogger)
                 .build()
 
             assertEquals("other-key", loggerL.mdcContextKey)
@@ -105,7 +105,7 @@ internal class CoroutineOtherTest {
     @Test
     fun `should get MDC data from snapshot (KLogger)`() {
         val logger = CoroutineKLogger.reactorBuilder()
-            .withLogger(mockk(relaxed = true))
+            .setLogger(mockk(relaxed = true))
             .build()
 
         val x = mono { logger.snapshot()?.get("foo") }
@@ -124,7 +124,7 @@ internal class CoroutineOtherTest {
     @Test
     fun `should get MDC data from snapshot (Logger)`() {
         val logger = CoroutineLogger.reactorBuilder()
-            .withLogger(mockk(relaxed = true))
+            .setLogger(mockk(relaxed = true))
             .build()
 
         val x = mono { logger.snapshot()?.get("foo") }
@@ -143,7 +143,7 @@ internal class CoroutineOtherTest {
     @Test
     fun `snapshot and direct export matching`() {
         val logger = CoroutineLogger.reactorBuilder()
-            .withLogger(mockk(relaxed = true))
+            .setLogger(mockk(relaxed = true))
             .build()
 
         val mdcContextKey = logger.mdcContextKey
@@ -179,8 +179,8 @@ internal class CoroutineOtherTest {
     @Test
     fun `should throw exception from snapshot`() {
         val logger = CoroutineLogger.reactorBuilder()
-            .withError(true)
-            .withLogger(mockk(relaxed = true))
+            .setError(true)
+            .setLogger(mockk(relaxed = true))
             .build()
 
         val contextNotExistException = mono { logger.snapshot() }

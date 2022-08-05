@@ -35,8 +35,8 @@ import java.util.*
 @ExperimentalCoroutinesApi
 internal class ReactiveLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
-    private val logger = builder().withLogger(imperativeLogger).build()
-    private val loggerWithError = builder().withLogger(imperativeLogger).withError().build()
+    private val logger = builder().setLogger(imperativeLogger).build()
+    private val loggerWithError = builder().setLogger(imperativeLogger).setError(true).build()
 
     companion object {
         fun randomText(): String {
@@ -131,22 +131,22 @@ internal class ReactiveLoggerTest {
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = builder().withMDCContextKey(contextKey).build()
+        val loggerWithCustomScheduler = builder().setMDCContextKey(contextKey).build()
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
 
         assertThrows<IllegalStateException> {
-            builder().withMDCContextKey("").build()
+            builder().setMDCContextKey("").build()
         }
 
         assertThrows<IllegalStateException> {
-            builder().withMDCContextKey(" ").build()
+            builder().setMDCContextKey(" ").build()
         }
     }
 
     @Test
     fun scheduler() {
         val customScheduler = Schedulers.newBoundedElastic(10, 10, randomText())
-        val loggerWithCustomScheduler = builder().withScheduler(customScheduler).build()
+        val loggerWithCustomScheduler = builder().setScheduler(customScheduler).build()
         assertSame(loggerWithCustomScheduler.scheduler, customScheduler)
     }
 

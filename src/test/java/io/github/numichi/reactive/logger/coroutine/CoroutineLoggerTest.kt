@@ -4,6 +4,7 @@ import io.github.numichi.reactive.logger.DefaultValues
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest.Companion.ANOTHER_CONTEXT_KEY
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
+import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -30,9 +31,9 @@ import java.util.*
 @ExperimentalCoroutinesApi
 internal class CoroutineLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
-    private val logger = CoroutineLogger.reactorBuilder().withLogger(imperativeLogger).build()
-    private val loggerScheduled = CoroutineLogger.reactorBuilder().withLogger(imperativeLogger).withScheduler(Schedulers.parallel()).build()
-    private val loggerWithError = CoroutineLogger.reactorBuilder().withLogger(imperativeLogger).withError(true).build()
+    private val logger = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).build()
+    private val loggerScheduled = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).setScheduler(Schedulers.parallel()).build()
+    private val loggerWithError = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).setError(true).build()
 
     companion object {
         @JvmStatic
@@ -101,13 +102,13 @@ internal class CoroutineLoggerTest {
     fun `should configure empty context if not exist context or null`() {
         runTest {
             val instance1 =
-                CoroutineLogger.builder(ReactorContext) { coroutineContext[it]?.context }.withLogger(imperativeLogger).build()
+                CoroutineLogger.builder(ReactorContext) { coroutineContext[it]?.context }.setLogger(imperativeLogger).build()
 
             val instance2 =
-                CoroutineLogger.builder(ReactorContext) { null }.withLogger(imperativeLogger).build()
+                CoroutineLogger.builder(ReactorContext) { null }.setLogger(imperativeLogger).build()
 
             val instance3 =
-                CoroutineLogger.builder(ReactorContext) { Context.empty() }.withLogger(imperativeLogger).build()
+                CoroutineLogger.builder(ReactorContext) { Context.empty() }.setLogger(imperativeLogger).build()
 
             instance1.info("")
             instance2.info("")
@@ -154,8 +155,16 @@ internal class CoroutineLoggerTest {
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = CoroutineLogger.reactorBuilder().withMDCContextKey(contextKey).build()
+        val loggerWithCustomScheduler = CoroutineLogger.reactorBuilder().setMDCContextKey(contextKey).build()
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
+
+        assertThrows<IllegalStateException> {
+            CoroutineLogger.reactorBuilder().setMDCContextKey("").build()
+        }
+
+        assertThrows<IllegalStateException> {
+            CoroutineLogger.reactorBuilder().setMDCContextKey(" ").build()
+        }
     }
 
     @Test
@@ -167,12 +176,14 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    suspend fun traceEnabledMarker() {
-        val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isTraceEnabled(marker) } returnsMany listOf(true, false, true)
-        assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
-        assertFalse(logger.isTraceEnabled(marker), "trace enabled when it should not be")
-        assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
+    fun traceEnabledMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            every { imperativeLogger.isTraceEnabled(marker) } returnsMany listOf(true, false, true)
+            assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
+            assertFalse(logger.isTraceEnabled(marker), "trace enabled when it should not be")
+            assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
+        }
     }
 
     @Test
@@ -184,12 +195,14 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    suspend fun debugEnabledMarker() {
-        val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
-        assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
-        assertFalse(logger.isDebugEnabled(marker), "debug enabled when it should not be")
-        assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
+    fun debugEnabledMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
+            assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
+            assertFalse(logger.isDebugEnabled(marker), "debug enabled when it should not be")
+            assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
+        }
     }
 
     @Test
@@ -201,12 +214,14 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    suspend fun infoEnabledMarker() {
-        val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
-        assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
-        assertFalse(logger.isInfoEnabled(marker), "info enabled when it should not be")
-        assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
+    fun infoEnabledMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
+            assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
+            assertFalse(logger.isInfoEnabled(marker), "info enabled when it should not be")
+            assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
+        }
     }
 
     @Test
@@ -218,12 +233,14 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    suspend fun warnEnabledMarker() {
-        val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
-        assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
-        assertFalse(logger.isWarnEnabled(marker), "warn enabled when it should not be")
-        assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
+    fun warnEnabledMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
+            assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
+            assertFalse(logger.isWarnEnabled(marker), "warn enabled when it should not be")
+            assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
+        }
     }
 
     @Test
@@ -235,12 +252,14 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    suspend fun errorEnabledMarker() {
-        val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
-        assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
-        assertFalse(logger.isErrorEnabled(marker), "error enabled when it should not be")
-        assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
+    fun errorEnabledMarker() {
+        runTest {
+            val marker = MarkerFactory.getMarker(randomText())
+            every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
+            assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
+            assertFalse(logger.isErrorEnabled(marker), "error enabled when it should not be")
+            assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
+        }
     }
 
     //region Trace
