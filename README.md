@@ -68,20 +68,20 @@ The library has many goals:
 <dependency>
   <groupId>io.github.numichi</groupId>
   <artifactId>reactive-logger</artifactId>
-  <version>2.1.1</version>
+  <version>VERSION</version>
 </dependency>
 ```
 
 ### Gradle Groovy DSL
 
 ```groovy
-implementation 'io.github.numichi:reactive-logger:2.1.1'
+implementation 'io.github.numichi:reactive-logger:VERSION'
 ```
 
 ### Gradle Kotlin DSL
 
 ```kotlin
-implementation("io.github.numichi:reactive-logger:2.1.1")
+implementation("io.github.numichi:reactive-logger:VERSION")
 ```
 
 # Usage
