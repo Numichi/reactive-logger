@@ -133,10 +133,10 @@ fun main() {
 ```kotlin
 class Example {
     private val log = ReactiveLogger.builder()
-      .withLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
-      .withError(false) // Optional parameter [boolean] hide or throw exception under logging
-      .withMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
-      .withScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
+      .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
+      .setError(false) // Optional parameter [boolean] hide or throw exception under logging
+      .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
+      .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
       .build()
   
     fun foo(msg: String): Mono<Void> {
@@ -163,14 +163,14 @@ class Example {
       // same as below
   
     private val log = CoroutineLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
-      .withLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
+      .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
       // same as below
   
     private val logK = CoroutineKLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
-      .withLogger(io.github.numichi.reactive.logger.LoggerFactory.getKLogger(this::class.java)) // Optional parameter [mu.Logger]
-      .withError(false) // Optional parameter [boolean] hide or throw exception under logging
-      .withMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
-      .withScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
+      .setLogger(io.github.numichi.reactive.logger.LoggerFactory.getKLogger(this::class.java)) // Optional parameter [mu.Logger]
+      .setError(false) // Optional parameter [boolean] hide or throw exception under logging
+      .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
+      .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
       .build()
   
     suspend fun foo(msg: String) {
