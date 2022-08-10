@@ -1,6 +1,6 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.models.MDC
 import kotlinx.coroutines.CoroutineScope
 
 import reactor.util.context.Context

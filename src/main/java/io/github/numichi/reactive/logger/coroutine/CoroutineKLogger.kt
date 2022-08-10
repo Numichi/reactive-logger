@@ -20,7 +20,6 @@ class CoroutineKLogger private constructor(
     override val contextKey: CCKey<out CCElement>,
     override val contextExtractive: CCResolveFn<CCElement>,
 ) : ICoroutineKLogger, ACoroutine<IReactorKLogger>(
-    reactorLogger.isEnableError,
     reactorLogger.mdcContextKey,
     reactorLogger.scheduler
 ) {
@@ -40,7 +39,6 @@ class CoroutineKLogger private constructor(
         contextExtractive: CCResolveFn<E>,
         scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler,
         mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey,
-        enableError: Boolean = false,
         logger: KLogger = KotlinLogging.logger(LoggerFactory.getLogger(ReactiveLogger::class.java))
     ) : ACoroutine.Builder<E, KLogger, CoroutineKLogger>(
         logger,
@@ -48,11 +46,10 @@ class CoroutineKLogger private constructor(
         contextExtractive,
         scheduler,
         mdcContextKey,
-        enableError
     ) {
         @Suppress("UNCHECKED_CAST")
         override fun build() = CoroutineKLogger(
-            ReactiveKLogger(logger, enableError, mdcContextKey, scheduler),
+            ReactiveKLogger(logger, mdcContextKey, scheduler),
             contextKey,
             contextExtractive as CCResolveFn<CCElement>
         )

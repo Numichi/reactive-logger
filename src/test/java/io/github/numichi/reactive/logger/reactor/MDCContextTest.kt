@@ -1,13 +1,22 @@
 package io.github.numichi.reactive.logger.reactor
 
+import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.models.MDC
 import io.github.numichi.reactive.logger.exception.InvalidContextDataException
+import io.github.numichi.reactive.logger.models.MDCHook
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
 internal class MDCContextTest {
+
+    @BeforeEach
+    fun setUp() {
+        DefaultValues.getInstance().reset()
+    }
+
     @Test
     fun `should give the MDC you are looking for`() {
         val mdc1 = MDC()
@@ -134,7 +143,7 @@ internal class MDCContextTest {
         val data5 = MDCContext.read()
             .mapNotNull { it["key"] }
             .contextWrite {
-                MDCContext.modifyContext(it) {mdc ->
+                MDCContext.modifyContext(it) { mdc ->
                     mdc["key"] = "example"
                 }
             }
@@ -184,27 +193,14 @@ internal class MDCContextTest {
         val result1: Mono<MDC> = Mono.defer { MDCContext.read() }
             .contextWrite { MDCContext.put(it, mdc) }
         StepVerifier.create(result1)
-            .expectError(InvalidContextDataException::class.java)
-            .verify()
-
+            .expectNext(MDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
+            .verifyComplete()
 
         val result2: Mono<MDC> = Mono.defer { MDCContext.read("not-exist-context-id") }
             .contextWrite { MDCContext.put(it!!, mdc) }
         StepVerifier.create(result2)
-            .expectError(InvalidContextDataException::class.java)
-            .verify()
-
-        val result3: Mono<MDC> = Mono.defer { MDCContext.read() }
-            .contextWrite { it.put(DefaultValues.getInstance().defaultReactorContextMdcKey, "") }
-        StepVerifier.create(result3)
-            .expectError(InvalidContextDataException::class.java)
-            .verify()
-
-        val result4: Mono<MDC> = Mono.defer { MDCContext.read() }
-            .contextWrite { it.put(DefaultValues.getInstance().defaultReactorContextMdcKey, 100) }
-        StepVerifier.create(result4)
-            .expectError(InvalidContextDataException::class.java)
-            .verify()
+            .expectNext(MDC("not-exist-context-id"))
+            .verifyComplete()
     }
 
     companion object {

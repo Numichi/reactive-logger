@@ -1,8 +1,9 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.models.MDC
 import io.github.numichi.reactive.logger.exception.InvalidContextDataException
+import io.github.numichi.reactive.logger.mdcReferenceContentLoad
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
 import reactor.util.context.ContextView
@@ -79,8 +80,7 @@ object MDCContext {
         val mdc = MDC(mdcContextKey)
 
         try {
-            val map = contextView.get<Map<String, String>>(mdcContextKey)
-            mdc.putAll(map)
+            mdcReferenceContentLoad(contextView, mdcContextKey, mdc)
         } catch (exception: Exception) {
             return Mono.error(InvalidContextDataException(exception))
         }

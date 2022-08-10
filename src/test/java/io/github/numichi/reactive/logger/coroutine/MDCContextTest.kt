@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.models.MDC
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import io.github.numichi.reactive.logger.exception.InvalidContextDataException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -130,12 +130,8 @@ internal class MDCContextTest {
             withMDCContext(MDC(mdcMap)) {
                 val result1 = readMdc(coroutineContext[ReactorContext]?.context)
                 val result2 = readMdc()
-                val result3 = readMdcOrNull(coroutineContext[ReactorContext]?.context)
-                val result4 = readMdcOrNull()
                 assertEquals(mdcMap, result1)
                 assertEquals(mdcMap, result2)
-                assertEquals(mdcMap, result3)
-                assertEquals(mdcMap, result4)
             }
 
             withMDCContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
@@ -153,52 +149,12 @@ internal class MDCContextTest {
 
             withMDCContext(MDC(mdcMap)) {
                 val result1 = readMdc(coroutineContext[ReactorContext]?.context)
-                val result2 = readMdcOrNull(coroutineContext[ReactorContext]?.context)
                 assertEquals(mdcMap, result1)
-                assertEquals(mdcMap, result2)
             }
 
             withMDCContext(MDC(ANOTHER_CONTEXT_KEY, mdcMap)) {
                 val result1 = readMdc(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY)
-                val result2 = readMdcOrNull(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY)
                 assertEquals(mdcMap, result1)
-                assertEquals(mdcMap, result2)
-            }
-        }
-    }
-
-    @Test
-    fun `should get null if context data is invalid`() {
-        runTest {
-            withContext(Context.empty().asCoroutineContext()) {
-                assertNull(readMdcOrNull())
-            }
-
-            assertNull(readMdcOrNull(null))
-            assertNull(readMdcOrNull(null, ""))
-        }
-    }
-
-    @Test
-    fun `should throw ContextNotExistException if context data is invalid`() {
-        runTest {
-            withContext(Context.empty().asCoroutineContext()) {
-                assertThrows<ContextNotExistException> { readMdc() }
-            }
-        }
-    }
-
-    @Test
-    fun `should throw InvalidContextDataException if context data is invalid`() {
-        runTest {
-            withContext(Context.of(mapOf(DefaultValues.getInstance().defaultReactorContextMdcKey to 10)).asCoroutineContext()) {
-                assertThrows<InvalidContextDataException> { readMdc() }
-                assertNull(readMdcOrNull())
-            }
-
-            withContext(Context.of(mapOf(DefaultValues.getInstance().defaultReactorContextMdcKey to "any")).asCoroutineContext()) {
-                assertThrows<InvalidContextDataException> { readMdc() }
-                assertNull(readMdcOrNull())
             }
         }
     }

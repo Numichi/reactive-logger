@@ -1,4 +1,4 @@
-package io.github.numichi.reactive.logger
+package io.github.numichi.reactive.logger.models
 
 import io.github.numichi.reactive.logger.DefaultValues.Companion.getInstance
 import java.util.concurrent.ConcurrentHashMap

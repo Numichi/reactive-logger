@@ -1,8 +1,9 @@
 package io.github.numichi.reactive.logger.reactor
 
 import org.slf4j.MDC as Slf4jMDC
+import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.models.MDC
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger.Companion.builder
@@ -36,8 +37,8 @@ import java.util.*
 @ExperimentalCoroutinesApi
 internal class ReactiveKLoggerTest {
     private val imperativeLogger: KLogger = mockk(relaxed = true)
-    private val logger = builder().withLogger(imperativeLogger).build()
-    private val loggerWithError = builder().withLogger(imperativeLogger).withError().build()
+    private val logger = builder().setLogger(imperativeLogger).build()
+    private val loggerWithError = builder().setLogger(imperativeLogger).build()
 
     companion object {
         fun randomText(): String {
@@ -67,7 +68,7 @@ internal class ReactiveKLoggerTest {
 
     @Test
     fun builderWithClassLogger() {
-        assertNotNull(builder().withLogger(LoggerFactory.getLogger(this.javaClass).toKLogger()).build())
+        assertNotNull(builder().setLogger(LoggerFactory.getLogger(this.javaClass).toKLogger()).build())
     }
 
     @Test
@@ -83,8 +84,7 @@ internal class ReactiveKLoggerTest {
         val mdc = randomMap(1)
         val context = Context.of(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
 
-        assertEquals(Optional.of(mdc), logger.readMDC(context))
-        assertEquals(Optional.of(mdc).get(), logger.readMDC(context).get())
+        assertEquals(mdc, logger.readMDC(context))
     }
 
     @Test
@@ -125,22 +125,22 @@ internal class ReactiveKLoggerTest {
 
         val snapshot3: Mono<MDC> = loggerWithError.snapshot(context2)
         StepVerifier.create(snapshot3)
-            .expectError(ContextNotExistException::class.java)
-            .verify()
+            .expectNext(MDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
+            .verifyComplete()
     }
 
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = builder().withMDCContextKey(contextKey).build()
+        val loggerWithCustomScheduler = builder().setMDCContextKey(contextKey).build()
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
 
         assertThrows<IllegalStateException> {
-            builder().withMDCContextKey("").build()
+            builder().setMDCContextKey("").build()
         }
 
         assertThrows<IllegalStateException> {
-            builder().withMDCContextKey(" ").build()
+            builder().setMDCContextKey(" ").build()
         }
     }
 
@@ -1021,13 +1021,6 @@ internal class ReactiveKLoggerTest {
             .verifyComplete()
     }
     //endregion
-
-    @Test
-    fun checkEnableErrorFlagDifferent() {
-        val message = randomText()
-        val process = Mono.defer { loggerWithError.error(message) }.contextWrite { Context.empty() }
-        StepVerifier.create(process).expectError(ContextNotExistException::class.java).verify()
-    }
 
     class SimulatedException(message: String? = null) : RuntimeException(message)
 }

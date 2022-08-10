@@ -1,6 +1,6 @@
 package io.github.numichi.reactive.logger.reactor
 
-import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.models.MDC
 import io.github.numichi.reactive.logger.ICore
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import org.slf4j.Logger
@@ -15,15 +15,11 @@ interface IReactorCore : ICore {
         get() = logger.name
 
     fun snapshot(context: ContextView): Mono<MDC> {
-        return try {
-            var mdc: MDC
-            takeMDCSnapshot(context).use {
-                mdc = MDC(mdcContextKey, it.copyOfContextMap)
-            }
-            Mono.just(mdc)
-        } catch (exception: Exception) {
-            Mono.error(exception)
+        var mdc: MDC
+        takeMDCSnapshot(context).use {
+            mdc = MDC(mdcContextKey, it.copyOfContextMap)
         }
+        return Mono.just(mdc)
     }
 
     fun wrap(runnable: Runnable): Mono<ContextView> {

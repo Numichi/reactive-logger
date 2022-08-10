@@ -1,10 +1,9 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.models.MDC
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest.Companion.ANOTHER_CONTEXT_KEY
 import io.github.numichi.reactive.logger.exception.ContextNotExistException
-import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -33,7 +32,7 @@ internal class CoroutineLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
     private val logger = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).build()
     private val loggerScheduled = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).setScheduler(Schedulers.parallel()).build()
-    private val loggerWithError = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).setError(true).build()
+    private val loggerWithError = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).build()
 
     companion object {
         @JvmStatic
@@ -55,6 +54,7 @@ internal class CoroutineLoggerTest {
 
     @BeforeEach
     fun beforeEach() {
+        DefaultValues.getInstance().reset()
         clearMocks(imperativeLogger)
     }
 
@@ -136,8 +136,7 @@ internal class CoroutineLoggerTest {
     fun readMDC() {
         val mdc: Map<String, String> = randomMap(1)
         val context = Context.of(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
-        assertEquals(Optional.of(mdc), logger.readMDC(context))
-        assertEquals(Optional.of(mdc).get(), logger.readMDC(context).get())
+        assertEquals(mdc, logger.readMDC(context))
     }
 
     @Test
@@ -875,14 +874,14 @@ internal class CoroutineLoggerTest {
     }
     //endregion
 
-    @Test
-    fun checkEnableErrorFlagDifferent() {
-        runTest {
-            assertThrows<ContextNotExistException> {
-                loggerWithError.info(randomText())
-            }
-        }
-    }
+//    @Test
+//    fun checkEnableErrorFlagDifferent() {
+//        runTest {
+//            assertThrows<ContextNotExistException> {
+//                loggerWithError.info(randomText())
+//            }
+//        }
+//    }
 
     class SimulatedException(message: String?) : RuntimeException(message)
 }

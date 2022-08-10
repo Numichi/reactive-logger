@@ -8,10 +8,9 @@ import reactor.core.scheduler.Scheduler
 
 class ReactiveKLogger(
     override val logger: KLogger,
-    isEnableError: Boolean,
     mdcContextKey: String,
     scheduler: Scheduler,
-) : AReactive(logger, isEnableError, mdcContextKey, scheduler),
+) : AReactive(logger, mdcContextKey, scheduler),
     IReactorKLogger {
 
     companion object {
@@ -22,9 +21,8 @@ class ReactiveKLogger(
     class Builder(
         scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler,
         mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey,
-        enableError: Boolean = false,
         logger: KLogger = KotlinLogging.logger(LoggerFactory.getLogger(ReactiveKLogger::class.java))
-    ) : AReactive.Builder<KLogger, ReactiveKLogger>(logger, scheduler, mdcContextKey, enableError) {
-        override fun build() = ReactiveKLogger(logger, enableError, mdcContextKey, scheduler)
+    ) : AReactive.Builder<KLogger, ReactiveKLogger>(logger, scheduler, mdcContextKey) {
+        override fun build() = ReactiveKLogger(logger, mdcContextKey, scheduler)
     }
 }
