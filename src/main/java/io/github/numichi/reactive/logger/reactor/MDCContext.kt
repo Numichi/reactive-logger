@@ -1,9 +1,9 @@
 package io.github.numichi.reactive.logger.reactor
 
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
+import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.exception.InvalidContextDataException
-import io.github.numichi.reactive.logger.mdcReferenceContentLoad
+import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
 import reactor.util.context.ContextView
@@ -26,7 +26,7 @@ object MDCContext {
 
     @JvmStatic
     fun getMDCOrNull(context: ContextView): MDC? {
-        return getMDCOrNull(context, DefaultValues.getInstance().defaultReactorContextMdcKey)
+        return getMDCOrNull(context, Configuration.defaultReactorContextMdcKey)
     }
 
     @JvmStatic
@@ -60,7 +60,7 @@ object MDCContext {
 
     @JvmStatic
     fun read(): Mono<MDC> {
-        return read(DefaultValues.getInstance().defaultReactorContextMdcKey)
+        return read(Configuration.defaultReactorContextMdcKey)
     }
 
     @JvmStatic
@@ -72,7 +72,7 @@ object MDCContext {
 
     @JvmStatic
     fun read(context: ContextView): Mono<MDC> {
-        return read(context, DefaultValues.getInstance().defaultReactorContextMdcKey)
+        return read(context, Configuration.defaultReactorContextMdcKey)
     }
 
     @JvmStatic

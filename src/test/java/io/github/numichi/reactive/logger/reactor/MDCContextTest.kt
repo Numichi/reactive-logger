@@ -1,10 +1,8 @@
 package io.github.numichi.reactive.logger.reactor
 
+import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
-import io.github.numichi.reactive.logger.exception.InvalidContextDataException
-import io.github.numichi.reactive.logger.models.MDCHook
+import io.github.numichi.reactive.logger.MDC
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
@@ -14,7 +12,7 @@ internal class MDCContextTest {
 
     @BeforeEach
     fun setUp() {
-        DefaultValues.getInstance().reset()
+        Configuration.reset()
     }
 
     @Test

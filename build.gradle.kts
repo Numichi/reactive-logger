@@ -2,7 +2,7 @@ plugins {
     java
     jacoco
     id("com.adarshr.test-logger") version "3.1.0"
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.10"
     id("java-library")
     id("maven-publish")
     id("signing")
@@ -20,7 +20,7 @@ java {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.projectreactor:reactor-core:3.4.21")
+    implementation("io.projectreactor:reactor-core:3.4.22")
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
@@ -28,12 +28,11 @@ dependencies {
     api("io.github.microutils:kotlin-logging-jvm:2.1.23")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testImplementation("io.projectreactor:reactor-test:3.4.21")
+    testImplementation("io.projectreactor:reactor-test:3.4.22")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.18.0")
-    testImplementation("org.mockito:mockito-core:4.6.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation("io.mockk:mockk:1.12.7")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 

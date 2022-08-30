@@ -1,9 +1,8 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
+import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest.Companion.ANOTHER_CONTEXT_KEY
-import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest
 import io.mockk.clearMocks
 import io.mockk.every
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.slf4j.Marker
 import org.slf4j.MarkerFactory
 import reactor.core.scheduler.Schedulers
@@ -55,7 +53,7 @@ internal class CoroutineKLoggerTest {
 
     @BeforeEach
     fun beforeEach() {
-        DefaultValues.getInstance().reset()
+        Configuration.reset()
         clearMocks(imperativeLogger)
     }
 
@@ -65,7 +63,7 @@ internal class CoroutineKLoggerTest {
             val mdc = MDC()
             mdc[randomText()] = randomText()
             var context1 = Context.empty()
-            context1 = context1.put(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+            context1 = context1.put(Configuration.defaultReactorContextMdcKey, mdc)
             var context2 = Context.empty()
             context2 = context2.put(ANOTHER_CONTEXT_KEY, mdc)
 
@@ -117,7 +115,7 @@ internal class CoroutineKLoggerTest {
         runTest {
             val instance1 = CoroutineLogger.reactorBuilder().build()
             assertNotNull(instance1)
-            assertEquals(DefaultValues.getInstance().defaultReactorContextMdcKey, instance1.mdcContextKey)
+            assertEquals(Configuration.defaultReactorContextMdcKey, instance1.mdcContextKey)
         }
     }
 
@@ -131,7 +129,7 @@ internal class CoroutineKLoggerTest {
     @Test
     fun readMDC() {
         val mdc: Map<String, String> = randomMap(1)
-        val context = Context.of(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+        val context = Context.of(Configuration.defaultReactorContextMdcKey, mdc)
         assertEquals(mdc, logger.readMDC(context))
     }
 

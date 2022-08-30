@@ -1,12 +1,11 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.models.MDC
+import io.github.numichi.reactive.logger.MDC
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.asCoroutineContext
 import reactor.util.context.Context
 import kotlin.coroutines.coroutineContext
-
 
 internal suspend fun reactorContextOrEmpty(): Context {
     return rectorContext() ?: Context.empty()

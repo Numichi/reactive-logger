@@ -1,9 +1,7 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
-import io.github.numichi.reactive.logger.exception.ContextNotExistException
-import io.github.numichi.reactive.logger.exception.InvalidContextDataException
+import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.reactor.MDCContext
 import io.github.numichi.reactive.logger.reactor.MDCSnapshot
 import io.mockk.mockk
@@ -26,7 +24,7 @@ internal class CoroutineOtherTest {
 
     @BeforeEach
     fun beforeEach() {
-        DefaultValues.getInstance().reset()
+        Configuration.reset()
     }
 
     @Test

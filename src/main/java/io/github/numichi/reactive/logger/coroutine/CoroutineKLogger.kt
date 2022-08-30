@@ -1,6 +1,6 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.DefaultValues
+import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.reactor.IReactorKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
@@ -37,8 +37,8 @@ class CoroutineKLogger private constructor(
     class Builder<E : CCElement>(
         contextKey: CCKey<E>,
         contextExtractive: CCResolveFn<E>,
-        scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler,
-        mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey,
+        scheduler: Scheduler = Configuration.defaultScheduler,
+        mdcContextKey: String = Configuration.defaultReactorContextMdcKey,
         logger: KLogger = KotlinLogging.logger(LoggerFactory.getLogger(ReactiveLogger::class.java))
     ) : ACoroutine.Builder<E, KLogger, CoroutineKLogger>(
         logger,

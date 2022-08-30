@@ -1,6 +1,6 @@
 package io.github.numichi.reactive.logger.reactor
 
-import io.github.numichi.reactive.logger.DefaultValues
+import io.github.numichi.reactive.logger.Configuration
 import mu.KLogger
 import mu.KotlinLogging
 import org.slf4j.LoggerFactory
@@ -19,8 +19,8 @@ class ReactiveKLogger(
     }
 
     class Builder(
-        scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler,
-        mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey,
+        scheduler: Scheduler = Configuration.defaultScheduler,
+        mdcContextKey: String = Configuration.defaultReactorContextMdcKey,
         logger: KLogger = KotlinLogging.logger(LoggerFactory.getLogger(ReactiveKLogger::class.java))
     ) : AReactive.Builder<KLogger, ReactiveKLogger>(logger, scheduler, mdcContextKey) {
         override fun build() = ReactiveKLogger(logger, mdcContextKey, scheduler)

@@ -112,36 +112,101 @@ dependencies {
 ```
 
 # How use `reactive-logger` with examples
+
+## Backing change on v3.0.0 (incoming)
+
+- DefaultValues rename to Configuration.
+- Removed all `DefaultValues.configuration(...)` methods and `AlreadyConfigurationException`. It can be configured specifically from now. See below.
+- Added Hook mechanism for lift from root custom context value into MDC with any transform. Example, if you use spring sleuth, it will create some items in the rector context, and you would like to
+  use traceId and/or spanId in MDC.
+- Removed all `with...` configuration methods.
+
 ## Common
-### DefaultValues
-There is a common `DefaultValues` class for storing default values. This stores and you can configuration that:
+
+### Configuration
+
+There is a `Configuration` class for storing default values. This stores and you can configuration that:
+
 - What should be the key string for MDC store in reactor context? Default: `DEFAULT_REACTOR_CONTEXT_MDC_KEY`
 - What schedule should it use for logging mode? Default: `Schedulers.boundedElastic()`
 
-**Important:** If you would like to configure, apply the reset first because it throws an AlreadyConfigurationException exception if already configured!
-
 **Example configuration (Kotlin):**
+
 ```kotlin
 fun main() {
-    DefaultValues.reset()
-    DefaultValues.configuration("other-key", Schedulers.parallel())
+    Configuration.reset() // resets parameters to defaults, so optimal here
+    Configuration.defaultScheduler = Schedulers.parallel()
+    Configuration.defaultReactorContextMdcKey = "logFields"
 }
 ```
+
+### Hook
+
+Suppose you have the following context in JSON format when you are logging:
+
+```json
+{
+  "banana": "apple",
+  "DEFAULT_REACTOR_CONTEXT_MDC_KEY": {
+    "foo": "foo",
+    "bar": "bar"
+  }
+}
+```
+
+Banana was added by a library independent of us, which may not exist in context. But, if it exists, we would like to see (for example) the following in the MDC map with `uppercase` transform.
+
+```json
+{
+  "DEFAULT_REACTOR_CONTEXT_MDC_KEY": {
+    "foo": "foo",
+    "bar": "bar",
+    "banana2": "APPLE"
+  }
+}
+```
+
+So we have to configuration it. You have to configure the key-value pair (`Map<String, String>`) you want to store in MDC. Be careful because already existing MDC data can be overwritten. 
+To eliminate the risk of overwriting, you can also use the hook order. 
+If use -1 or lower value, the hook will run before copying the value of the reactor context. If this order value is zero or positive value then after them. `Default: 0`
+
+```kotlin
+import java.lang.IllegalArgumentException
+
+fun main() {
+    Configuration.addHook("banana", -1) { it -> // it here is Any?
+        if (it is String) {
+            return@addHook mapOf("banana2" to it.uppercase())
+        }
+      
+        throw IllegalArgumentException()
+    }
+}
+```
+
+If any exception will be thrown, it is mean that nothing to add to the MDC. Same effect if it will be returned empty map.
+
+There is another hook method what called `addGenericHook` what parameters are the same just it will be specifically nullable class type to easier handling until `addHook` type is nullable `Object`
+or `Any?`.
+
+The function's input value is null only if it did not find an appropriate context for the key you were looking for. Important notice, there may be cases where the requested value does not match the
+expected value.
+It is essential to check the source or type of the value. If you use a `addGenericHook` and a casting error occurs, that hook will be skipped.
 
 ## Reactor
 
 ```kotlin
 class Example {
     private val log = ReactiveLogger.builder()
-      .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
-      .setError(false) // Optional parameter [boolean] hide or throw exception under logging
-      .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
-      .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
-      .build()
-  
+        .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
+        .setError(false) // Optional parameter [boolean] hide or throw exception under logging
+        .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
+        .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
+        .build()
+
     fun foo(msg: String): Mono<Void> {
         return Mono.just(msg)
-            .flatMap { 
+            .flatMap {
                 log.info(it) // result: Mono<ContextView> // MDC: { "key": "example" }
             }
             .contextWrite {
@@ -158,21 +223,20 @@ class Example {
 
 ```kotlin
 class Example {
-    // or CoroutineKLogger
-    private val customLog = CoroutineLogger.builder(CustomContext) { coroutineContext[it]?.customAttrWhatTypeIsContextView } 
-      // same as below
-  
+    private val customLog = CoroutineLogger.builder(CustomContext) { coroutineContext[it]?.customAttrWhatTypeIsContextView }
+        // same as below
+
     private val log = CoroutineLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
-      .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
-      // same as below
-  
+        .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
+        // same as below
+
     private val logK = CoroutineKLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
-      .setLogger(io.github.numichi.reactive.logger.LoggerFactory.getKLogger(this::class.java)) // Optional parameter [mu.Logger]
-      .setError(false) // Optional parameter [boolean] hide or throw exception under logging
-      .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
-      .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
-      .build()
-  
+        .setLogger(io.github.numichi.reactive.logger.LoggerFactory.getKLogger(this::class.java)) // Optional parameter [mu.Logger]
+        .setError(false) // Optional parameter [boolean] hide or throw exception under logging
+        .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
+        .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
+        .build()
+
     suspend fun foo(msg: String) {
         val mdc = readMdc()
         mdc["key"] = "example"

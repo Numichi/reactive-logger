@@ -1,16 +1,14 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
-import io.github.numichi.reactive.logger.exception.ContextNotExistException
-import io.github.numichi.reactive.logger.exception.InvalidContextDataException
+import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.MDC
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.asCoroutineContext
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import reactor.util.context.Context
@@ -20,6 +18,11 @@ internal class MDCContextTest {
 
     companion object {
         const val ANOTHER_CONTEXT_KEY = "another-context-key"
+    }
+
+    @BeforeEach
+    fun setUp() {
+        Configuration.reset()
     }
 
     @Test
@@ -34,11 +37,11 @@ internal class MDCContextTest {
             assertEquals(0, result0.size())
 
             val result1 = putMdc(Context.empty(), mdc1)
-            assertEquals(mdc1, result1.getOrEmpty<Map<*, *>>(DefaultValues.getInstance().defaultReactorContextMdcKey).orElse(null))
+            assertEquals(mdc1, result1.getOrEmpty<Map<*, *>>(Configuration.defaultReactorContextMdcKey).orElse(null))
             assertEquals(1, result1.size())
 
             val result2 = putMdc(Context.empty(), mdc1, mdc2)
-            assertEquals(mdc1, result2.getOrEmpty<Map<*, *>>(DefaultValues.getInstance().defaultReactorContextMdcKey).orElse(null))
+            assertEquals(mdc1, result2.getOrEmpty<Map<*, *>>(Configuration.defaultReactorContextMdcKey).orElse(null))
             assertEquals(mdc2, result2.getOrEmpty<Map<*, *>>(ANOTHER_CONTEXT_KEY).orElse(null))
             assertEquals(2, result2.size())
         }
@@ -75,7 +78,7 @@ internal class MDCContextTest {
             val mdcMap = mutableMapOf<String, String>()
             mdcMap["mdcKey"] = "mdcValue"
 
-            withContext(Context.of(mapOf(DefaultValues.getInstance().defaultReactorContextMdcKey to mdcMap)).asCoroutineContext()) {
+            withContext(Context.of(mapOf(Configuration.defaultReactorContextMdcKey to mdcMap)).asCoroutineContext()) {
                 val result = readMdc(coroutineContext[ReactorContext]?.context)
                 assertEquals(mdcMap, result)
                 assertEquals(mdcMap, result)
@@ -107,8 +110,8 @@ internal class MDCContextTest {
 
             withMDCContext(mdc1, mdc2) {
                 val result1 = readMdc(coroutineContext[ReactorContext]?.context)
-                val result2 = readMdc(coroutineContext[ReactorContext]?.context, DefaultValues.getInstance().defaultReactorContextMdcKey)
-                val result3 = readMdc(DefaultValues.getInstance().defaultReactorContextMdcKey)
+                val result2 = readMdc(coroutineContext[ReactorContext]?.context, Configuration.defaultReactorContextMdcKey)
+                val result3 = readMdc(Configuration.defaultReactorContextMdcKey)
                 val result4 = readMdc(coroutineContext[ReactorContext]?.context, ANOTHER_CONTEXT_KEY)
                 val result5 = readMdc(ANOTHER_CONTEXT_KEY)
 

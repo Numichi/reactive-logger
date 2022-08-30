@@ -1,8 +1,7 @@
 package io.github.numichi.reactive.logger.reactor
 
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
-import io.github.numichi.reactive.logger.models.MDCHook
+import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.MDC
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
@@ -12,17 +11,14 @@ class MDCHookContextTest {
 
     @BeforeEach
     fun setUp() {
-        DefaultValues.getInstance().reset()
+        Configuration.reset()
     }
 
     @Test
     fun `should lift values from context into MDC by hook format`() {
-        val customHook1 = MDCHook<String>(contextKey = "after1", hook = { mapOf("mdcAfter1" to it.uppercase()) }, order = 0)
-        val customHook2 = MDCHook<Int>(contextKey = "after2", hook = { mapOf("mdcAfter2" to "${it * 100}") }, order = 0)
-        val customHook3 = MDCHook<String>(contextKey = "before1", hook = { mapOf("mdcBefore1" to it.uppercase()) }, order = -1)
-        DefaultValues.getInstance().addHook(customHook1)
-        DefaultValues.getInstance().addHook(customHook2)
-        DefaultValues.getInstance().addHook(customHook3)
+        Configuration.addGenericHook<String>(contextKey = "after1", order = 0) { mapOf("mdcAfter1" to it!!.uppercase()) }
+        Configuration.addGenericHook<Int>(contextKey = "after2", order = 0) { mapOf("mdcAfter2" to "${it!! * 100}") }
+        Configuration.addGenericHook<String>(contextKey = "before1", order = -1) { mapOf("mdcBefore1" to it!!.uppercase()) }
 
         val reactiveContextMap = mapOf(
             "after1" to "aaa",
@@ -34,16 +30,19 @@ class MDCHookContextTest {
             .contextWrite { it.putAllMap(reactiveContextMap) }
 
         StepVerifier.create(resultDefault)
-            .expectNextMatches { it.size == 3 && it["mdcAfter1"] == "AAA" && it["mdcAfter2"] == "1100" && it["mdcBefore1"] == "BBB" }
+            .expectNextMatches {
+                it.size == 3
+                && it["mdcAfter1"] == "AAA"
+                && it["mdcAfter2"] == "1100"
+                && it["mdcBefore1"] == "BBB"
+            }
             .verifyComplete()
     }
 
     @Test
     fun `should be overwritten before hook with after hook`() {
-        val customHook1 = MDCHook<Int>(contextKey = "key", hook = { mapOf("hookKey" to "${it * 2}") }, order = 0)
-        val customHook3 = MDCHook<Int>(contextKey = "key", hook = { mapOf("hookKey" to "${it * 3}") }, order = -1)
-        DefaultValues.getInstance().addHook(customHook1)
-        DefaultValues.getInstance().addHook(customHook3)
+        Configuration.addGenericHook<Int>(contextKey = "key", order = 0) { mapOf("hookKey" to "${it!! * 2}") }
+        Configuration.addGenericHook<Int>(contextKey = "key", order = -1) { mapOf("hookKey" to "${it!! * 3}") }
 
         val reactiveContextMap = mapOf("key" to 1)
 

@@ -1,14 +1,12 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
-import io.github.numichi.reactive.logger.exception.ContextNotExistException
-import io.github.numichi.reactive.logger.exception.InvalidContextDataException
-import io.github.numichi.reactive.logger.mdcReferenceContentLoad
+import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
 import reactor.util.context.ContextView
 
 suspend fun readMdc(): MDC {
-    return readMdc(DefaultValues.getInstance().defaultReactorContextMdcKey)
+    return readMdc(Configuration.defaultReactorContextMdcKey)
 }
 
 suspend fun readMdc(mdcContextKey: String): MDC {
@@ -16,7 +14,7 @@ suspend fun readMdc(mdcContextKey: String): MDC {
 }
 
 fun readMdc(contextView: ContextView?): MDC {
-    return readMdc(contextView, DefaultValues.getInstance().defaultReactorContextMdcKey)
+    return readMdc(contextView, Configuration.defaultReactorContextMdcKey)
 }
 
 fun readMdc(contextView: ContextView?, mdcContextKey: String): MDC {

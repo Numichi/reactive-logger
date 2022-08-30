@@ -1,6 +1,6 @@
 package io.github.numichi.reactive.logger.coroutine
 
-import io.github.numichi.reactive.logger.DefaultValues
+import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.reactor.IReactorLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import kotlinx.coroutines.reactor.ReactorContext
@@ -35,8 +35,8 @@ class CoroutineLogger private constructor(
     class Builder<E : CCElement>(
         contextKey: CCKey<E>,
         contextExtractive: CCResolveFn<E>,
-        scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler,
-        mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey,
+        scheduler: Scheduler = Configuration.defaultScheduler,
+        mdcContextKey: String = Configuration.defaultReactorContextMdcKey,
         logger: Logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
     ) : ACoroutine.Builder<E, Logger, CoroutineLogger>(logger, contextKey, contextExtractive, scheduler, mdcContextKey) {
         @Suppress("UNCHECKED_CAST")

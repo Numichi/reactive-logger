@@ -1,6 +1,6 @@
 package io.github.numichi.reactive.logger.reactor
 
-import io.github.numichi.reactive.logger.DefaultValues
+import io.github.numichi.reactive.logger.Configuration
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Scheduler
@@ -18,8 +18,8 @@ class ReactiveLogger(
     }
 
     class Builder(
-        scheduler: Scheduler = DefaultValues.getInstance().defaultScheduler,
-        mdcContextKey: String = DefaultValues.getInstance().defaultReactorContextMdcKey,
+        scheduler: Scheduler = Configuration.defaultScheduler,
+        mdcContextKey: String = Configuration.defaultReactorContextMdcKey,
         logger: Logger = LoggerFactory.getLogger(ReactiveLogger::class.java)
     ) : AReactive.Builder<Logger, ReactiveLogger>(logger, scheduler, mdcContextKey) {
         override fun build(): ReactiveLogger {

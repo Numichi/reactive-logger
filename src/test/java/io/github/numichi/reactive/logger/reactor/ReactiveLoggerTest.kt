@@ -1,11 +1,10 @@
 package io.github.numichi.reactive.logger.reactor
 
 import org.slf4j.MDC as Slf4jMDC
+import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
-import io.github.numichi.reactive.logger.DefaultValues
-import io.github.numichi.reactive.logger.models.MDC
+import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest
-import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger.Companion.builder
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -63,6 +62,7 @@ internal class ReactiveLoggerTest {
     @BeforeEach
     fun afterEach() {
         clearAllMocks()
+        Configuration.reset()
     }
 
     @Test
@@ -81,7 +81,7 @@ internal class ReactiveLoggerTest {
     @Test
     fun readMDC() {
         val mdc = randomMap(1)
-        val context = Context.of(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+        val context = Context.of(Configuration.defaultReactorContextMdcKey, mdc)
 
         assertEquals(mdc, logger.readMDC(context))
     }
@@ -89,7 +89,7 @@ internal class ReactiveLoggerTest {
     @Test
     fun takeMDCSnapshot() {
         val mdc = randomMap(1)
-        val context = Context.of(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+        val context = Context.of(Configuration.defaultReactorContextMdcKey, mdc)
 
         logger.takeMDCSnapshot(context).use {
             assertEquals(Slf4jMDC.getCopyOfContextMap(), mdc)
@@ -108,7 +108,7 @@ internal class ReactiveLoggerTest {
         mdc[randomText()] = randomText()
 
         var context1 = Context.empty()
-        context1 = context1.put(DefaultValues.getInstance().defaultReactorContextMdcKey, mdc)
+        context1 = context1.put(Configuration.defaultReactorContextMdcKey, mdc)
         val snapshot1: Mono<MDC> = logger.snapshot(context1)
         StepVerifier.create(snapshot1)
             .expectNextMatches { mdc1 -> mdc1 == mdc }

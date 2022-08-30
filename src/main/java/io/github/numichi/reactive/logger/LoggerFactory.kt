@@ -4,8 +4,8 @@ import mu.KotlinLogging
 import org.slf4j.Logger
 
 object LoggerFactory {
-    fun getLogger(string: String) = org.slf4j.LoggerFactory.getLogger(string)
-    fun getLogger(clazz: Class<*>) = org.slf4j.LoggerFactory.getLogger(clazz)
+    fun getLogger(string: String): Logger = org.slf4j.LoggerFactory.getLogger(string)
+    fun getLogger(clazz: Class<*>): Logger = org.slf4j.LoggerFactory.getLogger(clazz)
 
     fun getKLogger(string: String) = KotlinLogging.logger(string)
     fun getKLogger(logger: Logger) = KotlinLogging.logger(logger)

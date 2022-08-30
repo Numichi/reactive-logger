@@ -1,6 +1,5 @@
 package io.github.numichi.reactive.logger
 
-import io.github.numichi.reactive.logger.models.MDC
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotEquals

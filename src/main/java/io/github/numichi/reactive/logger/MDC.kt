@@ -1,6 +1,5 @@
-package io.github.numichi.reactive.logger.models
+package io.github.numichi.reactive.logger
 
-import io.github.numichi.reactive.logger.DefaultValues.Companion.getInstance
 import java.util.concurrent.ConcurrentHashMap
 
 open class MDC(contextKey: String?, mdcMap: Map<String, String>) : ConcurrentHashMap<String, String>() {
@@ -12,7 +11,7 @@ open class MDC(contextKey: String?, mdcMap: Map<String, String>) : ConcurrentHas
 
     init {
         this.putAll(mdcMap)
-        this.contextKey = contextKey ?: getInstance().defaultReactorContextMdcKey
+        this.contextKey = contextKey ?: Configuration.defaultReactorContextMdcKey
     }
 
     override fun equals(other: Any?): Boolean {
