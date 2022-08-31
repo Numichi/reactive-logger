@@ -31,7 +31,6 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test:3.4.22")
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.18.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testImplementation("org.mockito:mockito-core:4.7.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("io.mockk:mockk:1.12.7")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
