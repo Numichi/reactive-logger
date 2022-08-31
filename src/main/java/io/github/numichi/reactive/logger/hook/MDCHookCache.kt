@@ -1,6 +1,5 @@
 package io.github.numichi.reactive.logger.hook
 
-import io.github.numichi.reactive.logger.MDCHook
 import kotlin.properties.Delegates
 
 internal object MDCHookCache {

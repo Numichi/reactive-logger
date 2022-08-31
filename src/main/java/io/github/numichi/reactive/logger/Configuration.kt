@@ -1,5 +1,6 @@
 package io.github.numichi.reactive.logger
 
+import io.github.numichi.reactive.logger.hook.MDCHook
 import io.github.numichi.reactive.logger.hook.MDCHookCache
 import reactor.core.scheduler.Scheduler
 import reactor.core.scheduler.Schedulers

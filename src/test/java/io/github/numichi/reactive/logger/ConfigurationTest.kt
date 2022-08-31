@@ -1,6 +1,7 @@
 package io.github.numichi.reactive.logger
 
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY as DEFAULT_REACTOR_CONTEXT_MDC_KEY_FROM_COMMON
+import io.github.numichi.reactive.logger.hook.MDCHook
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach

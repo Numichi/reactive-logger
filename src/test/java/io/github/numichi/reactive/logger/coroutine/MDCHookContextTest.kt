@@ -27,7 +27,7 @@ class MDCHookContextTest {
             Configuration.addGenericHook<String>(contextKey = "before1", order = -1) { mapOf("mdcBefore1" to it!!.uppercase()) }
 
             val reactiveContextMap = mapOf(
-                "after1" to MDC(),
+                "after1" to "aaa",
                 "after2" to 11,
                 "before1" to "bbb"
             )
@@ -61,7 +61,7 @@ class MDCHookContextTest {
             Configuration.addHook(contextKey = "after2", order = 0) {
                 val value = it?.let {
                     if (it is Number) {
-                        return@addHook mapOf("" to (it.toLong() * 100).toString())
+                        (it.toInt() * 100).toString()
                     } else {
                         null
                     }

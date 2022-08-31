@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.hook
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.MDC
-import io.github.numichi.reactive.logger.MDCHook
 import reactor.util.context.ContextView
 
 internal fun mdcReferenceContentLoad(contextView: ContextView, mdcContextKey: String, mdc: MDC) {
