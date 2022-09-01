@@ -12,7 +12,6 @@ open class MDC(contextKey: String?, mdcMap: Map<String, String>) : ConcurrentHas
 
     init {
         this.putAll(mdcMap)
-        setOf(1, 2).toString()
         this.contextKey = contextKey ?: Configuration.defaultReactorContextMdcKey
     }
 
