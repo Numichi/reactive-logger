@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: gradle:7.5-jdk11-alpine
+    - image: circleci/openjdk:11-jdk
   resource_class: medium
   working_directory: ~/repo
   environment:
