@@ -2,7 +2,7 @@ plugins {
     java
     jacoco
     id("com.adarshr.test-logger") version "3.1.0"
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.6.21"
     id("java-library")
     id("maven-publish")
     id("signing")
