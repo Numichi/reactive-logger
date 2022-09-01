@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: openjdk:11-jdk-buster
+    - image: gradle:7.5-jdk11-alpine
   resource_class: medium
   working_directory: ~/repo
   environment:
