@@ -79,6 +79,7 @@ internal class MDCHookProcessTest {
 
             val reactiveContextMap = mapOf(
                 "after1" to "aaa",
+
                 DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("currentMdcKey" to "currentMdcValue")
             )
 
@@ -109,6 +110,29 @@ internal class MDCHookProcessTest {
                     assertEquals(2, mdc.size)
                     assertEquals("currentMdcValue", mdc["currentMdcKey"])
                     assertEquals("null", mdc["hookKey"])
+                }
+            }
+        }
+
+        @Test
+        fun `should handle specific class in hook`() {
+            Configuration.addGenericHook<TestHelperClass>(hookName = "key1", contextKey = TestHelperClass::class.java) { clazz, mdc ->
+                requireNotNull(clazz)
+                mapOf("int" to clazz.getInt().toString())
+            }
+
+            val reactiveContextMap = mapOf(
+                TestHelperClass::class.java to TestHelperClass(),
+                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("currentMdcKey" to "currentMdcValue")
+            )
+
+            runTest {
+                withContext(Context.of(reactiveContextMap).asCoroutineContext()) {
+                    val mdc = readMdc()
+
+                    assertEquals(2, mdc.size)
+                    assertEquals("currentMdcValue", mdc["currentMdcKey"])
+                    assertEquals("222", mdc["int"])
                 }
             }
         }

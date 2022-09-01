@@ -31,7 +31,6 @@ internal class CoroutineLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
     private val logger = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).build()
     private val loggerScheduled = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).setScheduler(Schedulers.parallel()).build()
-    private val loggerWithError = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).build()
 
     companion object {
         @JvmStatic
@@ -73,7 +72,7 @@ internal class CoroutineLoggerTest {
             mdcResult = logger.snapshot(context2)
             assertEquals(mapOf<String, String>(), mdcResult)
 
-            assertEquals(null, loggerWithError.snapshot(null))
+            assertEquals(null, logger.snapshot(null))
 
             withMDCContext(context1) {
                 mdcResult = logger.snapshot(null)
@@ -141,7 +140,6 @@ internal class CoroutineLoggerTest {
     @Test
     fun imperative() {
         assertSame(logger.reactorLogger.logger, imperativeLogger)
-        assertSame(loggerWithError.reactorLogger.logger, imperativeLogger)
     }
 
     @Test

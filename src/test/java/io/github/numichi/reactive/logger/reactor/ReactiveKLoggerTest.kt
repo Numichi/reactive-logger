@@ -37,7 +37,6 @@ import java.util.*
 internal class ReactiveKLoggerTest {
     private val imperativeLogger: KLogger = mockk(relaxed = true)
     private val logger = builder().setLogger(imperativeLogger).build()
-    private val loggerWithError = builder().setLogger(imperativeLogger).build()
 
     companion object {
         fun randomText(): String {
@@ -100,7 +99,6 @@ internal class ReactiveKLoggerTest {
     @Test
     fun imperative() {
         assertSame(logger.logger, imperativeLogger)
-        assertSame(loggerWithError.logger, imperativeLogger)
     }
 
     @Test
@@ -123,7 +121,7 @@ internal class ReactiveKLoggerTest {
             .verifyComplete()
 
 
-        val snapshot3: Mono<MDC> = loggerWithError.snapshot(context2)
+        val snapshot3: Mono<MDC> = logger.snapshot(context2)
         StepVerifier.create(snapshot3)
             .expectNext(MDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
             .verifyComplete()

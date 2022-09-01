@@ -2,6 +2,7 @@ plugins {
     java
     jacoco
     kotlin("jvm") version "1.6.21"
+    id("com.adarshr.test-logger") version "3.2.0"
     id("java-library")
     id("maven-publish")
     id("signing")
