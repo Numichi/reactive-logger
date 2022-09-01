@@ -118,10 +118,7 @@ dependencies {
 - min. JVM 11
 - DefaultValues class rename to Configuration.
 - Removed all `Configuration.configuration(...)` methods and `AlreadyConfigurationException`. It can be configured specifically from now. See below.
-- Added Hook mechanism for lift from root custom context value into MDC with any transform. Example, if you use spring sleuth, it will create some items in the rector context, and you would like to
-  use traceId and/or spanId in MDC. Them hooks are cached, if you would like to reconfiguration hooks use the  `Configuration.hookCacheClear()` before (It will remove all hooks) and you can add new
-  hooks that can be
-  activated.
+- Added Hook mechanism. See below.
 - Removed all `with...` configuration methods.
 
 ## Configuration
