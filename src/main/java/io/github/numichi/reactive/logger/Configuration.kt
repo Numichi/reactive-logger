@@ -15,14 +15,25 @@ enum class SchedulerOptions {
 object Configuration {
     var defaultReactorContextMdcKey: String = DEFAULT_REACTOR_CONTEXT_MDC_KEY
     var defaultScheduler: Scheduler = Schedulers.boundedElastic()
-    var customHook: MutableList<MDCHook<*>> = mutableListOf()
 
-    fun <T> addGenericHook(contextKey: Any, order: Int = 0, hook: (T?) -> Map<String, String>) {
-        customHook.add(MDCHook(contextKey, order, hook))
+    fun <T> addGenericHook(hookName: String, contextKey: Any, order: Int = 0, hook: (T?, MDC) -> Map<String, String>) {
+        MDCHookCache.addHook(hookName, MDCHook(contextKey, order, hook))
     }
 
-    fun addHook(contextKey: Any, order: Int = 0, hook: (Any?) -> Map<String, String>) {
-        customHook.add(MDCHook(contextKey, order, hook))
+    fun addHook(hookName: String, contextKey: Any, order: Int = 0, hook: (Any?, MDC) -> Map<String, String>) {
+        MDCHookCache.addHook(hookName, MDCHook(contextKey, order, hook))
+    }
+
+    fun getHooks(): Map<String, MDCHook<*>> {
+        return MDCHookCache.getHooks()
+    }
+
+    fun existsHook(key: String): Boolean {
+        return MDCHookCache.existsHook(key)
+    }
+
+    fun removeHook(key: String) {
+        MDCHookCache.removeHook(key)
     }
 
     fun setDefaultScheduler(option: SchedulerOptions) {
@@ -34,14 +45,9 @@ object Configuration {
         }
     }
 
-    fun hookCacheClear() {
-        MDCHookCache.initialized = false
-    }
-
     fun reset() {
         defaultReactorContextMdcKey = DEFAULT_REACTOR_CONTEXT_MDC_KEY
         defaultScheduler = Schedulers.boundedElastic()
-        customHook = mutableListOf()
-        hookCacheClear()
+        MDCHookCache.clear()
     }
 }

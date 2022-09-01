@@ -1,6 +1,7 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.MDC
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.reactor.ReactorContext
@@ -168,6 +169,35 @@ internal class MDCContextTest {
             assertThrows<IllegalArgumentException> { withMDCContext(null, MDC()) {} }
             assertThrows<IllegalArgumentException> { readMdc(null) }
             assertThrows<IllegalArgumentException> { readMdc(null, "any-key") }
+        }
+    }
+
+    @Test
+    fun `should run toString method if value not String`() {
+        runTest {
+            val ctx = Context.of(mapOf(
+                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf(
+                    "int" to 111,
+                    "map" to mapOf<Any, Any>()
+                )
+            ))
+
+            withContext(ctx.asCoroutineContext()) {
+                val result2 = readMdc()
+                assertEquals(2, result2.size)
+                assertEquals("111", result2["int"])
+                assertEquals("{}", result2["map"])
+            }
+        }
+    }
+
+    @Test
+    fun `should read empty MDC when not found contextKey`() {
+        runTest {
+            withContext(Context.empty().asCoroutineContext()) {
+                val result2 = readMdc()
+                assertEquals(0, result2.size)
+            }
         }
     }
 }

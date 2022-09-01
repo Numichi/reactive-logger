@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.MDC
-import io.github.numichi.reactive.logger.exception.InvalidContextDataException
 import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
@@ -78,13 +77,7 @@ object MDCContext {
     @JvmStatic
     fun read(contextView: ContextView, mdcContextKey: String): Mono<MDC> {
         val mdc = MDC(mdcContextKey)
-
-        try {
-            mdcReferenceContentLoad(contextView, mdcContextKey, mdc)
-        } catch (exception: Exception) {
-            return Mono.error(InvalidContextDataException(exception))
-        }
-
+        mdcReferenceContentLoad(contextView, mdcContextKey, mdc)
         return Mono.just(mdc)
     }
 }

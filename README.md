@@ -115,17 +115,18 @@ dependencies {
 
 ## Backing change on v3.0.0 (incoming)
 
-- DefaultValues rename to Configuration.
-- Removed all `DefaultValues.configuration(...)` methods and `AlreadyConfigurationException`. It can be configured specifically from now. See below.
+- min. JVM 11
+- DefaultValues class rename to Configuration.
+- Removed all `Configuration.configuration(...)` methods and `AlreadyConfigurationException`. It can be configured specifically from now. See below.
 - Added Hook mechanism for lift from root custom context value into MDC with any transform. Example, if you use spring sleuth, it will create some items in the rector context, and you would like to
-  use traceId and/or spanId in MDC.
+  use traceId and/or spanId in MDC. Them hooks are cached, if you would like to reconfiguration hooks use the  `Configuration.hookCacheClear()` before (It will remove all hooks) and you can add new
+  hooks that can be
+  activated.
 - Removed all `with...` configuration methods.
 
-## Common
+## Configuration
 
-### Configuration
-
-There is a `Configuration` class for storing default values. This stores and you can configuration that:
+### Default values
 
 - What should be the key string for MDC store in reactor context? Default: `DEFAULT_REACTOR_CONTEXT_MDC_KEY`
 - What schedule should it use for logging mode? Default: `Schedulers.boundedElastic()`
@@ -137,10 +138,25 @@ fun main() {
     Configuration.reset() // resets parameters to defaults, so optimal here
     Configuration.defaultScheduler = Schedulers.parallel()
     Configuration.defaultReactorContextMdcKey = "logFields"
+
+    // ... spring boot start example
 }
 ```
 
 ### Hook
+
+The purpose of the hook is to transfer non-manually configured values to the MDC. These value pairs can be inserted into the reactor context by a library independent of us. Of course, we can also fill
+it algorithmically.
+
+So, for every logging or MDC query, the hook checks if the reactor context has the keyword to search. If so, we can tell how we want to save it in the MDC through a specified function or lambda. If
+this function gives to return an empty map or any exception is thrown the hook will do nothing with the data. If the context key does not exist then the first parameter will get null.
+
+Important! Hooks can overwrite any data stored in MDC! So, every gook processing sequence can be configured by an order number, and you will give in the first parameter the value of the context key
+from the reactor context and in the second parameter current MDC content so that we can check in the hook algorithm whether further expansion is necessary. If not need more expansion we can set it to
+return an empty map or exception.
+
+In terms of configuration, you can add and remove dynamically however hooks are cached. You do not need to clear the cache when you modify hooks (add or remove) because every modification will release
+them and they will be re-caching when anything will get MDC collection.
 
 Suppose you have the following context in JSON format when you are logging:
 
@@ -166,32 +182,40 @@ Banana was added by a library independent of us, which may not exist in context.
 }
 ```
 
-So we have to configuration it. You have to configure the key-value pair (`Map<String, String>`) you want to store in MDC. Be careful because already existing MDC data can be overwritten. 
-To eliminate the risk of overwriting, you can also use the hook order. 
 If use -1 or lower value, the hook will run before copying the value of the reactor context. If this order value is zero or positive value then after them. `Default: 0`
+
+The function's input value is null only if it did not find an appropriate context for the key you were looking for. Important notice, there may be cases where the requested value does not match the
+expected value.
+It is essential to check the source or type of the value. If you use a `addGenericHook` and a casting error occurs, that hook will be skipped.
 
 ```kotlin
 import java.lang.IllegalArgumentException
 
 fun main() {
-    Configuration.addHook("banana", -1) { it -> // it here is Any?
+    // ...
+    Configuration.removeHook("hookKey")
+  
+    // value is Any? or Object all time.
+    Configuration.addHook("hookKey", "banana", -1) { value: Any?, mdc: MDC ->
         if (it is String) {
             return@addHook mapOf("banana2" to it.uppercase())
         }
-      
+
         throw IllegalArgumentException()
     }
+
+    // Genetic configuration set to value parameter type. if it can not cast value to genetic type then do nothing.
+    Configuration.addGenericHook<Set<Int>>("hookKey", "banana", 1) { value: Set<Int>?, mdc: MDC ->
+        if (it != null) {
+            return@addHook mapOf("banana3" to it.toString())
+        }
+
+        throw IllegalArgumentException()
+    }
+
+    // ... spring boot start example
 }
 ```
-
-If any exception will be thrown, it is mean that nothing to add to the MDC. Same effect if it will be returned empty map.
-
-There is another hook method what called `addGenericHook` what parameters are the same just it will be specifically nullable class type to easier handling until `addHook` type is nullable `Object`
-or `Any?`.
-
-The function's input value is null only if it did not find an appropriate context for the key you were looking for. Important notice, there may be cases where the requested value does not match the
-expected value.
-It is essential to check the source or type of the value. If you use a `addGenericHook` and a casting error occurs, that hook will be skipped.
 
 ## Reactor
 
@@ -200,8 +224,8 @@ class Example {
     private val log = ReactiveLogger.builder()
         .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
         .setError(false) // Optional parameter [boolean] hide or throw exception under logging
-        .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
-        .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
+        .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from Configuration
+        .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from Configuration
         .build()
 
     fun foo(msg: String): Mono<Void> {
@@ -224,17 +248,17 @@ class Example {
 ```kotlin
 class Example {
     private val customLog = CoroutineLogger.builder(CustomContext) { coroutineContext[it]?.customAttrWhatTypeIsContextView }
-        // same as below
+    // same as below
 
     private val log = CoroutineLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
         .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
-        // same as below
+    // same as below
 
     private val logK = CoroutineKLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
         .setLogger(io.github.numichi.reactive.logger.LoggerFactory.getKLogger(this::class.java)) // Optional parameter [mu.Logger]
         .setError(false) // Optional parameter [boolean] hide or throw exception under logging
-        .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from DefaultValues
-        .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from DefaultValues
+        .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from Configuration
+        .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from Configuration
         .build()
 
     suspend fun foo(msg: String) {

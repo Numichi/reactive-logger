@@ -8,9 +8,11 @@ open class MDC(contextKey: String?, mdcMap: Map<String, String>) : ConcurrentHas
     constructor() : this(null, mapOf())
     constructor(contextKey: String) : this(contextKey, mapOf())
     constructor(mdcMap: Map<String, String>) : this(null, mdcMap)
+    constructor(mdc: MDC) : this(mdc.contextKey, mdc)
 
     init {
         this.putAll(mdcMap)
+        setOf(1, 2).toString()
         this.contextKey = contextKey ?: Configuration.defaultReactorContextMdcKey
     }
 

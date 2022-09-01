@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.ICore
-import io.github.numichi.reactive.logger.exception.ContextNotExistException
 import org.slf4j.Logger
 import reactor.core.publisher.Mono
 import reactor.util.context.ContextView
@@ -23,12 +22,7 @@ interface IReactorCore : ICore {
 
     fun wrap(runnable: Runnable): Mono<ContextView> {
         return Mono.deferContextual { contextView: ContextView ->
-            try {
-                takeMDCSnapshot(contextView).use { runnable.run() }
-            } catch (exception: ContextNotExistException) {
-                return@deferContextual Mono.error(exception)
-            }
-
+            takeMDCSnapshot(contextView).use { runnable.run() }
             Mono.just(contextView)
         }.subscribeOn(scheduler)
     }
