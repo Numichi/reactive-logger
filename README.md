@@ -113,7 +113,7 @@ dependencies {
 
 # How use `reactive-logger` with examples
 
-## Backing change on v3.0.0 (incoming)
+## Breaking change on v3.0.0 (incoming)
 
 - min. JVM 11
 - DefaultValues class rename to Configuration.
