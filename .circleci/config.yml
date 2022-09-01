@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: cimg/openjdk:11-jdk
+    - image: cimg/openjdk:11.0.16
   resource_class: medium
   working_directory: ~/repo
   environment:
