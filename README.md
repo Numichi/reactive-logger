@@ -134,7 +134,7 @@ dependencies {
 fun main() {
     Configuration.reset() // resets parameters to defaults, so optimal here
     Configuration.defaultScheduler = Schedulers.parallel()
-    Configuration.defaultReactorContextMdcKey = "logFields"
+    Configuration.defaultReactorContextMdcKey = "mdcRecords"
 
     // ... spring boot start example
 }
@@ -220,7 +220,6 @@ fun main() {
 class Example {
     private val log = ReactiveLogger.builder()
         .setLogger(org.slf4j.LoggerFactory.getLogger(this::class.java)) // Optional parameter [org.slf4j.Logger]
-        .setError(false) // Optional parameter [boolean] hide or throw exception under logging
         .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from Configuration
         .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from Configuration
         .build()
@@ -253,7 +252,6 @@ class Example {
 
     private val logK = CoroutineKLogger.reactorBuilder() // reactorBuilder() alias builder(ReactorContext) { coroutineContext[it]?.context }
         .setLogger(io.github.numichi.reactive.logger.LoggerFactory.getKLogger(this::class.java)) // Optional parameter [mu.Logger]
-        .setError(false) // Optional parameter [boolean] hide or throw exception under logging
         .setMDCContextKey("DEFAULT_REACTOR_CONTEXT_MDC_KEY") // Optional parameter, default from Configuration
         .setScheduler(Schedulers.boundedElastic()) // Optional parameter, default from Configuration
         .build()
