@@ -13,8 +13,7 @@ import kotlin.coroutines.coroutineContext
 
 interface ICoroutineCore<T : IReactorLogger> : ICore {
     val reactorLogger: T
-    val contextExtractive: CCResolveFn<CCElement>
-    val contextKey: CCKey<out CCElement>
+    val contextExtractive: suspend () -> ContextView?
 
     override val name: String
         get() = reactorLogger.name
@@ -25,7 +24,7 @@ interface ICoroutineCore<T : IReactorLogger> : ICore {
     }
 
     suspend fun wrap(function: (T) -> Mono<*>) {
-        val context = contextExtractive(contextKey) ?: Context.empty()
+        val context = contextExtractive() ?: Context.empty()
 
         function(reactorLogger)
             .contextWrite { it.putAll(context) }

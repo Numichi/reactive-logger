@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 import reactor.util.context.Context
+import reactor.util.context.ContextView
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 class CoroutineKLogger private constructor(
     override val reactorLogger: IReactorKLogger,
-    override val contextKey: CCKey<out CCElement>,
-    override val contextExtractive: CCResolveFn<CCElement>,
+    override val contextExtractive: suspend () -> ContextView?,
 ) : ICoroutineKLogger, ACoroutine<IReactorKLogger>(
     reactorLogger.mdcContextKey,
     reactorLogger.scheduler
@@ -26,57 +26,57 @@ class CoroutineKLogger private constructor(
 
     companion object {
         @JvmStatic
-        fun <E : CoroutineContext.Element> builder(element: CCKey<E>, contextExtractive: CCResolveFn<E>): Builder<E> {
-            return Builder(element, contextExtractive)
+        @Deprecated(
+            "CoroutineContext.Key is not need!",
+            replaceWith = ReplaceWith("builder(contextExtractive)"),
+            level = DeprecationLevel.WARNING
+        )
+        fun <E : CoroutineContext.Element> builder(key: CoroutineContext.Key<E>, contextExtractive: suspend () -> ContextView?): CoroutineLogger.Builder {
+            return CoroutineLogger.Builder(contextExtractive)
         }
 
         @JvmStatic
-        fun reactorBuilder() = builder(ReactorContext) { coroutineContext[it]?.context }
+        fun builder(contextExtractive: suspend () -> ContextView?): Builder {
+            return Builder(contextExtractive)
+        }
 
         @JvmStatic
-        fun <E : CoroutineContext.Element> getLogger(
+        fun reactorBuilder() = builder { coroutineContext[ReactorContext]?.context }
+
+        @JvmStatic
+        fun getLogger(
             logger: KLogger,
             contextKey: String? = null,
             scheduler: Scheduler? = null,
-            coroutineContextKey: CCKey<E>,
-            contextExtractive: CCResolveFn<E>
+            contextExtractive: suspend () -> ContextView? = { coroutineContext[ReactorContext]?.context } 
         ): CoroutineKLogger {
-            return builder(coroutineContextKey, contextExtractive)
+            return builder(contextExtractive)
                 .setLogger(logger)
                 .setMDCContextKey(contextKey ?: Configuration.defaultReactorContextMdcKey)
                 .setScheduler(scheduler ?: Configuration.defaultScheduler)
                 .build()
         }
-
-        @JvmStatic
-        fun getDefaultLogger(logger: KLogger): CoroutineKLogger {
-            return getLogger(logger, null, null, ReactorContext) { coroutineContext[it]?.context }
-        }
     }
 
-    class Builder<E : CCElement>(
-        contextKey: CCKey<E>,
-        contextExtractive: CCResolveFn<E>,
+    class Builder(
+        contextExtractive: suspend () -> ContextView?,
         scheduler: Scheduler = Configuration.defaultScheduler,
         mdcContextKey: String = Configuration.defaultReactorContextMdcKey,
         logger: KLogger = KotlinLogging.logger(LoggerFactory.getLogger(ReactiveLogger::class.java))
-    ) : ACoroutine.Builder<E, KLogger, CoroutineKLogger>(
+    ) : ACoroutine.Builder<KLogger, CoroutineKLogger>(
         logger,
-        contextKey,
         contextExtractive,
         scheduler,
         mdcContextKey,
     ) {
-        @Suppress("UNCHECKED_CAST")
         override fun build() = CoroutineKLogger(
             ReactiveKLogger(logger, mdcContextKey, scheduler),
-            contextKey,
-            contextExtractive as CCResolveFn<CCElement>
+            contextExtractive
         )
     }
 
     override suspend fun <R> wrapResult(function: (IReactorKLogger) -> Mono<R>): R {
-        val context = contextExtractive(contextKey) ?: Context.empty()
+        val context = contextExtractive() ?: Context.empty()
 
         return function(reactorLogger)
             .contextWrite { it.putAll(context) }

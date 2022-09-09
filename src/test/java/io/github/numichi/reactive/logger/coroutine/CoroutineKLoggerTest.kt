@@ -97,22 +97,9 @@ internal class CoroutineKLoggerTest {
     }
 
     @Test
-    fun `should configure empty context if not exist context or null`(){
-        runTest {
-            val instance1 = CoroutineLogger.builder(ReactorContext) { coroutineContext[it]?.context }.setLogger(imperativeLogger).build()
-            val instance2 = CoroutineLogger.builder(ReactorContext) { null }.setLogger(imperativeLogger).build()
-            val instance4 = CoroutineLogger.builder(ReactorContext) { Context.empty() }.setLogger(imperativeLogger).build()
-
-            instance1.info("")
-            instance2.info("")
-            instance4.info("")
-        }
-    }
-
-    @Test
     fun createReactiveLogger() {
         runTest {
-            val instance1 = CoroutineLogger.reactorBuilder().build()
+            val instance1 = CoroutineKLogger.getLogger(imperativeLogger)
             assertNotNull(instance1)
             assertEquals(Configuration.defaultReactorContextMdcKey, instance1.mdcContextKey)
         }

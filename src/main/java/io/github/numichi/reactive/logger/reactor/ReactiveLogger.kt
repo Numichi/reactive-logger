@@ -32,11 +32,6 @@ class ReactiveLogger(
                 .setScheduler(scheduler ?: Configuration.defaultScheduler)
                 .build()
         }
-
-        @JvmStatic
-        fun getDefaultLogger(logger: Logger): ReactiveLogger {
-            return getLogger(logger, null, null)
-        }
     }
 
     class Builder(
