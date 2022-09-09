@@ -32,6 +32,26 @@ class CoroutineKLogger private constructor(
 
         @JvmStatic
         fun reactorBuilder() = builder(ReactorContext) { coroutineContext[it]?.context }
+
+        @JvmStatic
+        fun <E : CoroutineContext.Element> getLogger(
+            logger: KLogger,
+            contextKey: String? = null,
+            scheduler: Scheduler? = null,
+            coroutineContextKey: CCKey<E>,
+            contextExtractive: CCResolveFn<E>
+        ): CoroutineKLogger {
+            return builder(coroutineContextKey, contextExtractive)
+                .setLogger(logger)
+                .setMDCContextKey(contextKey ?: Configuration.defaultReactorContextMdcKey)
+                .setScheduler(scheduler ?: Configuration.defaultScheduler)
+                .build()
+        }
+
+        @JvmStatic
+        fun getDefaultLogger(logger: KLogger): CoroutineKLogger {
+            return getLogger(logger, null, null, ReactorContext) { coroutineContext[it]?.context }
+        }
     }
 
     class Builder<E : CCElement>(

@@ -1,23 +1,19 @@
 package io.github.numichi.reactive.logger.hook
 
 internal object MDCHookCache {
-    var initialized: Boolean = false
-    var listBefore: List<MDCHook<*>> = listOf()
-    var listAfter: List<MDCHook<*>> = listOf()
+    var listBefore: Array<MDCHook<*>> = arrayOf()
+    var listAfter: Array<MDCHook<*>> = arrayOf()
     private val storeHooks: MutableMap<String, MDCHook<*>> = mutableMapOf()
 
     fun initCache() {
-        if (!initialized) {
-            listBefore = storeHooks.values.filter { it.order < 0 }.sortedBy { it.order }
-            listAfter = storeHooks.values.filter { 0 <= it.order }.sortedBy { it.order }
-            initialized = true
-        }
+        listBefore = storeHooks.values.filter { it.order < 0 }.sortedBy { it.order }.toTypedArray()
+        listAfter = storeHooks.values.filter { 0 <= it.order }.sortedBy { it.order }.toTypedArray()
     }
 
     fun clear() {
         storeHooks.clear()
-        listBefore = listOf()
-        listAfter = listOf()
+        listBefore = arrayOf()
+        listAfter = arrayOf()
     }
 
     fun getHooks(): Map<String, MDCHook<*>> {
@@ -30,11 +26,11 @@ internal object MDCHookCache {
 
     fun addHook(key: String, hook: MDCHook<*>) {
         storeHooks[key] = hook
-        initialized = false
+        initCache()
     }
 
     fun removeHook(key: String) {
         storeHooks.remove(key)
-        initialized = false
+        initCache()
     }
 }

@@ -4,6 +4,7 @@ import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.reactor.IReactorLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import kotlinx.coroutines.reactor.ReactorContext
+import mu.KLogger
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Scheduler
@@ -29,6 +30,26 @@ class CoroutineLogger private constructor(
         @JvmStatic
         fun reactorBuilder(): Builder<ReactorContext> {
             return builder(ReactorContext) { coroutineContext[it]?.context }
+        }
+
+        @JvmStatic
+        fun <E : CoroutineContext.Element> getLogger(
+            logger: Logger,
+            contextKey: String? = null,
+            scheduler: Scheduler? = null,
+            coroutineContextKey: CCKey<E>,
+            contextExtractive: CCResolveFn<E>
+        ): CoroutineLogger {
+            return builder(coroutineContextKey, contextExtractive)
+                .setLogger(logger)
+                .setMDCContextKey(contextKey ?: Configuration.defaultReactorContextMdcKey)
+                .setScheduler(scheduler ?: Configuration.defaultScheduler)
+                .build()
+        }
+
+        @JvmStatic
+        fun getDefaultLogger(logger: Logger): CoroutineLogger {
+            return getLogger(logger, null, null, ReactorContext) { coroutineContext[it]?.context }
         }
     }
 

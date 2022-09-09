@@ -1,9 +1,13 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
+import kotlinx.coroutines.reactor.ReactorContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Scheduler
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 class ReactiveLogger(
     override val logger: Logger,
@@ -15,6 +19,24 @@ class ReactiveLogger(
     companion object {
         @JvmStatic
         fun builder() = Builder()
+
+        @JvmStatic
+        fun getLogger(
+            logger: Logger,
+            contextKey: String? = null,
+            scheduler: Scheduler? = null
+        ): ReactiveLogger {
+            return builder()
+                .setLogger(logger)
+                .setMDCContextKey(contextKey ?: Configuration.defaultReactorContextMdcKey)
+                .setScheduler(scheduler ?: Configuration.defaultScheduler)
+                .build()
+        }
+
+        @JvmStatic
+        fun getDefaultLogger(logger: Logger): ReactiveLogger {
+            return getLogger(logger, null, null)
+        }
     }
 
     class Builder(

@@ -4,8 +4,6 @@ import io.github.numichi.reactive.logger.MDC
 import reactor.util.context.ContextView
 
 internal fun mdcReferenceContentLoad(contextView: ContextView, mdcContextKey: String, mdc: MDC) {
-    MDCHookCache.initCache()
-
     MDCHookCache.listBefore.forEach { hookEvent: MDCHook<*> ->
         mdc.putAll(hookEvent.hookEvent(contextView, MDC(mdc)))
     }
