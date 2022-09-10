@@ -23,21 +23,11 @@ class ConfigurationTest {
         Configuration.addGenericHook<String>("key3", "foo3", -1) { it, _ -> mapOf("foo3" to it!!) }
 
         assertEquals(3, Configuration.getHooks().size)
-        assertEquals(0, MDCHookCache.listBefore.size)
-        assertEquals(0, MDCHookCache.listAfter.size)
-
-        MDCHookCache.initCache() // auto triggered
-        assertEquals(3, Configuration.getHooks().size)
         assertEquals(1, MDCHookCache.listBefore.size)
         assertEquals(2, MDCHookCache.listAfter.size)
 
         Configuration.addHook("key4", "foo4", -1) { it, _ -> mapOf("foo4" to "$it") }
 
-        assertEquals(4, Configuration.getHooks().size)
-        assertEquals(1, MDCHookCache.listBefore.size)
-        assertEquals(2, MDCHookCache.listAfter.size)
-
-        MDCHookCache.initCache() // auto triggered
         assertEquals(4, Configuration.getHooks().size)
         assertEquals(2, MDCHookCache.listBefore.size)
         assertEquals(2, MDCHookCache.listAfter.size)
@@ -49,7 +39,6 @@ class ConfigurationTest {
         assertFalse(Configuration.existsHook("key4"))
         assertFalse(Configuration.existsHook("key3"))
 
-        MDCHookCache.initCache() // auto triggered
         assertEquals(2, Configuration.getHooks().size)
         assertEquals(0, MDCHookCache.listBefore.size)
         assertEquals(2, MDCHookCache.listAfter.size)

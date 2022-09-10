@@ -116,7 +116,7 @@ internal class MDCHookProcessTest {
 
         @Test
         fun `should handle specific class in hook`() {
-            Configuration.addGenericHook<TestHelperClass>(hookName = "key1", contextKey = TestHelperClass::class.java) { clazz, mdc ->
+            Configuration.addGenericHook<TestHelperClass>(hookName = "key1", contextKey = TestHelperClass::class.java) { clazz, _ ->
                 requireNotNull(clazz)
                 mapOf("int" to clazz.getInt().toString())
             }

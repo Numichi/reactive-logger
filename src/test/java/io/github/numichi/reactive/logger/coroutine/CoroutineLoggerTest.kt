@@ -29,8 +29,8 @@ import java.util.*
 @ExperimentalCoroutinesApi
 internal class CoroutineLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
-    private val logger = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).build()
-    private val loggerScheduled = CoroutineLogger.reactorBuilder().setLogger(imperativeLogger).setScheduler(Schedulers.parallel()).build()
+    private val logger = CoroutineLogger.getLogger(imperativeLogger)
+    private val loggerScheduled = CoroutineLogger.getLogger(imperativeLogger, scheduler = Schedulers.parallel())
 
     companion object {
         @JvmStatic
@@ -99,14 +99,9 @@ internal class CoroutineLoggerTest {
     @Test
     fun `should configure empty context if not exist context or null`() {
         runTest {
-            val instance1 =
-                CoroutineLogger.builder(ReactorContext) { coroutineContext[it]?.context }.setLogger(imperativeLogger).build()
-
-            val instance2 =
-                CoroutineLogger.builder(ReactorContext) { null }.setLogger(imperativeLogger).build()
-
-            val instance3 =
-                CoroutineLogger.builder(ReactorContext) { Context.empty() }.setLogger(imperativeLogger).build()
+            val instance1 = CoroutineLogger.getLogger(imperativeLogger) { coroutineContext[ReactorContext]?.context }
+            val instance2 = CoroutineLogger.getLogger(imperativeLogger) { null }
+            val instance3 = CoroutineLogger.getLogger(imperativeLogger) { Context.empty() }
 
             instance1.info("")
             instance2.info("")
@@ -117,7 +112,7 @@ internal class CoroutineLoggerTest {
     @Test
     fun createReactiveLogger() {
         runTest {
-            val instance1 = CoroutineLogger.reactorBuilder().build()
+            val instance1 = CoroutineLogger.getLogger(imperativeLogger)
             assertNotNull(instance1)
             assertEquals(Configuration.defaultReactorContextMdcKey, instance1.mdcContextKey)
         }
@@ -151,15 +146,15 @@ internal class CoroutineLoggerTest {
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = CoroutineLogger.reactorBuilder().setMDCContextKey(contextKey).build()
+        val loggerWithCustomScheduler = CoroutineLogger.getLogger(imperativeLogger, mdcContextKey = contextKey)
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
 
         assertThrows<IllegalStateException> {
-            CoroutineLogger.reactorBuilder().setMDCContextKey("").build()
+            CoroutineLogger.getLogger(imperativeLogger, mdcContextKey = "")
         }
 
         assertThrows<IllegalStateException> {
-            CoroutineLogger.reactorBuilder().setMDCContextKey(" ").build()
+            CoroutineLogger.getLogger(imperativeLogger, mdcContextKey = " ")
         }
     }
 
@@ -519,7 +514,7 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun infoFormatArgument1Array(){
+    fun infoFormatArgument1Array() {
         runTest {
             val format: String = randomText()
             val argument1: String = randomText()
@@ -566,7 +561,7 @@ internal class CoroutineLoggerTest {
     }
 
     @Test
-    fun infoMessageMarker(){
+    fun infoMessageMarker() {
         runTest {
             val marker = MarkerFactory.getMarker(randomText())
             val message: String = randomText()

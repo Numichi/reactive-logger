@@ -1,7 +1,7 @@
 plugins {
     java
     jacoco
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.10"
     id("com.adarshr.test-logger") version "3.2.0"
     id("java-library")
     id("maven-publish")
@@ -12,8 +12,8 @@ group = project.property("group") as String
 version = project.property("version") as String
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withSourcesJar()
     withJavadocJar()
 }
@@ -118,7 +118,6 @@ tasks.getByName<Test>("test") {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
-
 }
 
 tasks.jacocoTestReport {

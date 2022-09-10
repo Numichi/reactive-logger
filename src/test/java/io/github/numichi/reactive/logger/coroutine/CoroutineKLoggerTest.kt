@@ -10,7 +10,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.test.runTest
 import mu.KLogger
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -29,8 +28,8 @@ import java.util.*
 @ExperimentalCoroutinesApi
 internal class CoroutineKLoggerTest {
     private val imperativeLogger: KLogger = mockk(relaxed = true)
-    private val logger: ICoroutineKLogger = CoroutineKLogger.reactorBuilder().setLogger(imperativeLogger).build()
-    private val loggerScheduled: ICoroutineKLogger = CoroutineKLogger.reactorBuilder().setLogger(imperativeLogger).setScheduler(Schedulers.parallel()).build()
+    private val logger: ICoroutineKLogger = CoroutineKLogger.getLogger(imperativeLogger)
+    private val loggerScheduled: ICoroutineKLogger = CoroutineKLogger.getLogger(imperativeLogger, scheduler = Schedulers.parallel())
 
     companion object {
         @JvmStatic
@@ -133,7 +132,7 @@ internal class CoroutineKLoggerTest {
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = CoroutineLogger.reactorBuilder().setMDCContextKey(contextKey).build()
+        val loggerWithCustomScheduler = CoroutineKLogger.getLogger(imperativeLogger, mdcContextKey = contextKey)
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
     }
 

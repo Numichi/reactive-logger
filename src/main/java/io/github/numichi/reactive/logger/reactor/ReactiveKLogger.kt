@@ -1,45 +1,32 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
-import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
-import kotlinx.coroutines.reactor.ReactorContext
+import io.github.numichi.reactive.logger.MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE
 import mu.KLogger
-import mu.KotlinLogging
-import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Scheduler
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 class ReactiveKLogger(
     override val logger: KLogger,
-    mdcContextKey: String,
-    scheduler: Scheduler,
-) : AReactive(logger, mdcContextKey, scheduler),
-    IReactorKLogger {
+    override val mdcContextKey: String,
+    override val scheduler: Scheduler,
+) : IReactorKLogger {
 
     companion object {
         @JvmStatic
-        fun builder() = Builder()
-
-        @JvmStatic
         fun getLogger(
             logger: KLogger,
-            contextKey: String? = null,
+            mdcContextKey: String? = null,
             scheduler: Scheduler? = null
         ): ReactiveKLogger {
-            return builder()
-                .setLogger(logger)
-                .setMDCContextKey(contextKey ?: Configuration.defaultReactorContextMdcKey)
-                .setScheduler(scheduler ?: Configuration.defaultScheduler)
-                .build()
-        }
-    }
+            mdcContextKey?.also {
+                check(it.trim().isNotEmpty()) { MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE }
+            }
 
-    class Builder(
-        scheduler: Scheduler = Configuration.defaultScheduler,
-        mdcContextKey: String = Configuration.defaultReactorContextMdcKey,
-        logger: KLogger = KotlinLogging.logger(LoggerFactory.getLogger(ReactiveKLogger::class.java))
-    ) : AReactive.Builder<KLogger, ReactiveKLogger>(logger, scheduler, mdcContextKey) {
-        override fun build() = ReactiveKLogger(logger, mdcContextKey, scheduler)
+            return ReactiveKLogger(
+                logger,
+                mdcContextKey ?: Configuration.defaultReactorContextMdcKey,
+                scheduler ?: Configuration.defaultScheduler
+            )
+        }
     }
 }

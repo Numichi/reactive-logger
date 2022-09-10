@@ -5,7 +5,6 @@ import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest
-import io.github.numichi.reactive.logger.reactor.ReactiveLogger.Companion.builder
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -35,7 +34,7 @@ import java.util.*
 @ExperimentalCoroutinesApi
 internal class ReactiveLoggerTest {
     private val imperativeLogger: Logger = mockk(relaxed = true)
-    private val logger = builder().setLogger(imperativeLogger).build()
+    private val logger = ReactiveLogger.getLogger(imperativeLogger)
 
     companion object {
         fun randomText(): String {
@@ -66,7 +65,7 @@ internal class ReactiveLoggerTest {
 
     @Test
     fun builderWithClassLogger() {
-        assertNotNull(builder().setLogger(LoggerFactory.getLogger(this.javaClass)).build())
+        assertNotNull(ReactiveLogger.getLogger(LoggerFactory.getLogger(this.javaClass)))
     }
 
     @Test
@@ -129,22 +128,22 @@ internal class ReactiveLoggerTest {
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = builder().setMDCContextKey(contextKey).build()
+        val loggerWithCustomScheduler = ReactiveLogger.getLogger(imperativeLogger, mdcContextKey = contextKey)
         assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
 
         assertThrows<IllegalStateException> {
-            builder().setMDCContextKey("").build()
+            ReactiveLogger.getLogger(imperativeLogger, mdcContextKey = "")
         }
 
         assertThrows<IllegalStateException> {
-            builder().setMDCContextKey(" ").build()
+            ReactiveLogger.getLogger(imperativeLogger, mdcContextKey = " ")
         }
     }
 
     @Test
     fun scheduler() {
         val customScheduler = Schedulers.newBoundedElastic(10, 10, randomText())
-        val loggerWithCustomScheduler = builder().setScheduler(customScheduler).build()
+        val loggerWithCustomScheduler = ReactiveLogger.getLogger(imperativeLogger, scheduler = customScheduler)
         assertSame(loggerWithCustomScheduler.scheduler, customScheduler)
     }
 
