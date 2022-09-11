@@ -1,6 +1,7 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE
 import org.slf4j.Logger
 import reactor.core.scheduler.Scheduler
@@ -12,6 +13,24 @@ class ReactiveLogger(
 ) : IReactorLogger {
 
     companion object {
+        @JvmStatic
+        fun getLogger(
+            string: String,
+            mdcContextKey: String? = null,
+            scheduler: Scheduler? = null,
+        ): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(string), mdcContextKey, scheduler)
+        }
+
+        @JvmStatic
+        fun getLogger(
+            clazz: Class<*>,
+            mdcContextKey: String? = null,
+            scheduler: Scheduler? = null,
+        ): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(clazz), mdcContextKey, scheduler)
+        }
+
         @JvmStatic
         fun getLogger(
             logger: Logger,

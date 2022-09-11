@@ -7,6 +7,7 @@ import io.github.numichi.reactive.logger.reactor.MDCSnapshot
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.reactor.mono
+import mu.KLogger
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
@@ -22,7 +23,7 @@ internal class CoroutineOtherTest {
 
     @Test
     fun `should get MDC data from snapshot (KLogger)`() {
-        val logger = CoroutineKLogger.getLogger(mockk(relaxed = true))
+        val logger = CoroutineKLogger.getLogger(mockk<KLogger>(relaxed = true))
 
         val x = mono { logger.snapshot()?.get("foo") }
             .contextWrite {
@@ -38,7 +39,7 @@ internal class CoroutineOtherTest {
 
     @Test
     fun `should get MDC data from snapshot (Logger)`() {
-        val logger = CoroutineLogger.getLogger(mockk(relaxed = true))
+        val logger = CoroutineLogger.getLogger(mockk<KLogger>(relaxed = true))
 
         val x = mono { logger.snapshot()?.get("foo") }
             .contextWrite {
@@ -55,7 +56,7 @@ internal class CoroutineOtherTest {
 
     @Test
     fun `snapshot and direct export matching`() {
-        val logger = CoroutineLogger.getLogger(mockk(relaxed = true))
+        val logger = CoroutineLogger.getLogger(mockk<KLogger>(relaxed = true))
 
         val mdcContextKey = logger.mdcContextKey
 

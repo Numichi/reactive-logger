@@ -12,10 +12,9 @@ import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import mu.KLogger
-import mu.toKLogger
+import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -65,8 +64,31 @@ internal class ReactiveKLoggerTest {
     }
 
     @Test
-    fun builderWithClassLogger() {
-        assertNotNull(ReactiveKLogger.getLogger(LoggerFactory.getLogger(this.javaClass).toKLogger()))
+    fun creationTest() {
+        val logger = LoggerFactory.getLogger(this::class.java)
+        val klogger = KotlinLogging.logger(logger)
+
+        val i1 = ReactiveKLogger.getLogger(logger)
+        val i2 = ReactiveKLogger.getLogger(logger, "foo", Schedulers.single())
+        val i3 = ReactiveKLogger.getLogger(klogger)
+        val i4 = ReactiveKLogger.getLogger(klogger, "foo", Schedulers.single())
+        val i5 = ReactiveKLogger.getLogger({})
+        val i6 = ReactiveKLogger.getLogger({}, "foo", Schedulers.single())
+        val i7 = ReactiveKLogger.getLogger("foobar")
+        val i8 = ReactiveKLogger.getLogger("foobar", "foo", Schedulers.single())
+        val i9 = ReactiveKLogger.getLogger(ReactiveKLoggerTest::class.java)
+        val i10 = ReactiveKLogger.getLogger(ReactiveKLoggerTest::class.java, "foo", Schedulers.single())
+
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i1.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i2.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i3.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i4.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i5.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i6.logger.underlyingLogger.name)
+        assertEquals("foobar", i7.logger.underlyingLogger.name)
+        assertEquals("foobar", i8.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i9.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i10.logger.underlyingLogger.name)
     }
 
     @Test

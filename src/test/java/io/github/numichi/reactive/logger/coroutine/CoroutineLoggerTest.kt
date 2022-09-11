@@ -11,6 +11,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.test.runTest
+import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.slf4j.Marker
 import org.slf4j.MarkerFactory
 import reactor.core.scheduler.Schedulers
@@ -116,6 +118,30 @@ internal class CoroutineLoggerTest {
             assertNotNull(instance1)
             assertEquals(Configuration.defaultReactorContextMdcKey, instance1.mdcContextKey)
         }
+    }
+
+    @Test
+    fun creationTest() {
+        val logger = LoggerFactory.getLogger(this::class.java)
+        val klogger = KotlinLogging.logger(logger)
+
+        val i1 = CoroutineLogger.getLogger(logger)
+        val i2 = CoroutineLogger.getLogger(logger, "foo", Schedulers.single()) { null }
+        val i3 = CoroutineLogger.getLogger(klogger)
+        val i4 = CoroutineLogger.getLogger(klogger, "foo", Schedulers.single()) { null }
+        val i7 = CoroutineLogger.getLogger("foobar")
+        val i8 = CoroutineLogger.getLogger("foobar", "foo", Schedulers.single()) { null }
+        val i9 = CoroutineLogger.getLogger(CoroutineLoggerTest::class.java)
+        val i10 = CoroutineLogger.getLogger(CoroutineLoggerTest::class.java, "foo", Schedulers.single()) { null }
+
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineLoggerTest", i1.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineLoggerTest", i2.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineLoggerTest", i3.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineLoggerTest", i4.logger.name)
+        assertEquals("foobar", i7.logger.name)
+        assertEquals("foobar", i8.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineLoggerTest", i9.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineLoggerTest", i10.logger.name)
     }
 
     @Test

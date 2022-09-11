@@ -12,6 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import mu.KLogger
+import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.slf4j.Marker
 import org.slf4j.MarkerFactory
 import reactor.core.scheduler.Schedulers
@@ -102,6 +104,34 @@ internal class CoroutineKLoggerTest {
             assertNotNull(instance1)
             assertEquals(Configuration.defaultReactorContextMdcKey, instance1.mdcContextKey)
         }
+    }
+
+    @Test
+    fun creationTest() {
+        val logger = LoggerFactory.getLogger(this::class.java)
+        val klogger = KotlinLogging.logger(logger)
+
+        val i1 = CoroutineKLogger.getLogger(logger)
+        val i2 = CoroutineKLogger.getLogger(logger, "foo", Schedulers.single()) { null }
+        val i3 = CoroutineKLogger.getLogger(klogger)
+        val i4 = CoroutineKLogger.getLogger(klogger, "foo", Schedulers.single()) { null }
+        val i5 = CoroutineKLogger.getLogger({})
+        val i6 = CoroutineKLogger.getLogger({}, "foo", Schedulers.single()) { null }
+        val i7 = CoroutineKLogger.getLogger("foobar")
+        val i8 = CoroutineKLogger.getLogger("foobar", "foo", Schedulers.single()) { null }
+        val i9 = CoroutineKLogger.getLogger(CoroutineKLoggerTest::class.java)
+        val i10 = CoroutineKLogger.getLogger(CoroutineKLoggerTest::class.java, "foo", Schedulers.single()) { null }
+
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i1.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i2.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i3.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i4.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i5.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i6.logger.underlyingLogger.name)
+        assertEquals("foobar", i7.logger.underlyingLogger.name)
+        assertEquals("foobar", i8.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i9.logger.underlyingLogger.name)
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i10.logger.underlyingLogger.name)
     }
 
     @Test

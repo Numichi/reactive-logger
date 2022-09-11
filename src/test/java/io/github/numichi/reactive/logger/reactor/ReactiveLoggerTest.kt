@@ -11,9 +11,9 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -64,8 +64,27 @@ internal class ReactiveLoggerTest {
     }
 
     @Test
-    fun builderWithClassLogger() {
-        assertNotNull(ReactiveLogger.getLogger(LoggerFactory.getLogger(this.javaClass)))
+    fun creationTest() {
+        val logger = LoggerFactory.getLogger(this::class.java)
+        val klogger = KotlinLogging.logger(logger)
+
+        val i1 = ReactiveLogger.getLogger(logger)
+        val i2 = ReactiveLogger.getLogger(logger, "foo", Schedulers.single())
+        val i3 = ReactiveLogger.getLogger(klogger)
+        val i4 = ReactiveLogger.getLogger(klogger, "foo", Schedulers.single())
+        val i7 = ReactiveLogger.getLogger("foobar")
+        val i8 = ReactiveLogger.getLogger("foobar", "foo", Schedulers.single())
+        val i9 = ReactiveLogger.getLogger(ReactiveLoggerTest::class.java)
+        val i10 = ReactiveLogger.getLogger(ReactiveLoggerTest::class.java, "foo", Schedulers.single())
+
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", i1.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", i2.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", i3.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", i4.logger.name)
+        assertEquals("foobar", i7.logger.name)
+        assertEquals("foobar", i8.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", i9.logger.name)
+        assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", i10.logger.name)
     }
 
     @Test
