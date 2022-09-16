@@ -177,7 +177,7 @@ Suppose you have the following context in JSON format when you are logging:
 }
 ```
 
-Banana was added by a library independent of us, which may not exist in context. But, if it exists, we would like to see (for example) the following in the MDC map with `uppercase` transform and `banana2` key, like MDC contain:
+Banana was added by a library independent of us, which may not exist in context. But, if it exists, we would like to see (for example) in the MDC map with uppercase transform with banana2 key. Like MDC contain:
 
 ```json
 {
