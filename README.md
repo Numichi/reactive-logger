@@ -8,22 +8,14 @@
 ![Tested on](https://img.shields.io/badge/tested%20on-jvm8-blue)
 [![Reactor Project](https://img.shields.io/badge/supported-Java%20and%20Kotlin%20Coroutine%20with%20Reactor-blue)](https://projectreactor.io/)
 
-_After releases, SonaType or mvnrepostiroy may not appear. Regardless, the package is available._
-
-# Important
-
-- This is just a hobby project driven by self motivation. There is no external sponsor behind the project.
-- I use this library in my projects, so I do it if I find a bug or extension. If you find a bug or you have a new feature idea, please open an issue.
-
 # What is the source of motivation?
 
 I think this description approaches
 the [What Is a Good Pattern for Contextual Logging? (MDC)](https://projectreactor.io/docs/core/release/reference/#faq.mdc) well.
 Furthermore, there is the
 so-called [lifting solution](https://www.novatec-gmbh.de/en/blog/how-can-the-mdc-context-be-used-in-the-reactive-spring-applications/),
-which I think is overkill. In this (lifting) example, he uses Kotlin, but with a Reactor API, not a coroutine. If you stay with Reactor API,
-there is no problem with lifting and it work. I didn't experience any pain, regardless of I used Kotlin or Java. But it is not valid
-for Kotlin Coroutine.
+which I think is overkill. In this (lifting) example, he/she uses Kotlin, but with a Reactor API, not a coroutine. If you stay with Reactor API, there is no problem with lifting and it work. I didn't
+experience any problem, regardless of I used Kotlin or Java. But it is not valid for Kotlin Coroutine.
 
 **My first problem with the lifting solution.**
 It runs a hook for each reactor API. It generates a lot of unnecessary events and class creation. I
@@ -31,9 +23,8 @@ have [tested](https://github.com/Numichi/reactive-logger-my-problem/blob/main/sr
 MDC map copy had run about 129 times for only one request. Then let's count how many times will run on one of the more complex applications?
 
 **My second problem on Kotlin Coroutine with lifting.**
-It does not work. When you call a Reactor API, API will activate hook, and MDC ThreadLocal will be overridden. After it, coroutine gets run
-point back. Hooks are not taken effect in coroutine areas. If you would like to run a logger with slf4j in the coroutine area, according to
-slf4j, the MDC is empty, but CoroutineContext is not.
+It does not work. When you call a Reactor API, API will activate hook, and MDC ThreadLocal will be overridden. After it, coroutine scope gets regain control. Hooks are not taken effect in coroutine
+areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is not.
 
 **Another side effect I have experienced.**
 When I created a parallel request, my first request ended later than my second request. I have used a suspended delay in code, and I noticed
@@ -41,7 +32,7 @@ the following: MDC context data slipping to another request. I think it is unhea
 
 **Goal:**
 So, I have been working to create an API for Reactor and Coroutine what solve the above problems. It provides the same interfaces to both
-environments and follows Reactor MDC documentation.
+environments and follows [Reactor MDC FAQ](https://projectreactor.io/docs/core/release/reference/#faq.mdc).
 
 # Overview
 
@@ -88,18 +79,16 @@ implementation("io.github.numichi:reactive-logger:VERSION")
 
 ## Logger library
 
-Because it is a layer on slf4j so you can use specific logger libraries like Backlog, Log4j2 and so on. By default, Spring uses the Backlog log library. So, if you don't would like to apply anything
-else, you don't need additional dependencies.
+Because it is a layer on slf4j so you can use specific logger libraries like Backlog, Log4j2 and so on. By default, Spring uses the Backlog log library. So, if you don't would like to apply anything else, you don't need additional dependencies.
 
-### Log4j2
+### Log4j2 (optional)
 
-When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency. Configure log4j2.xml as required. But it is already
-a [configuration](https://logging.apache.org/log4j/2.x/manual/configuration.html) of the logger library.
+When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency. Configure log4j2.xml as required. But it is already a [configuration](https://logging.apache.org/log4j/2.x/manual/configuration.html) of the logger library.
 
-Many documentation can be found on the internet ([here](https://www.callicoder.com/spring-boot-log4j-2-example/) and [here](https://www.baeldung.com/spring-boot-logging)) on how can you change from
-Logback to Log4j2. The articles mainly use XML configuration, so I presented an example with Gradle Kotlin DSL configuration.
+Many documentation can be found on the internet ([here](https://www.callicoder.com/spring-boot-log4j-2-example/) and [here](https://www.baeldung.com/spring-boot-logging)) on how can you change from Logback to Log4j2. The articles mainly use XML configuration, so I presented an example with Gradle Kotlin DSL configuration.
 
 ```kotlin
+// Gradle Kotlin DSL
 configurations {
     all {
         exclude("org.springframework.boot", "spring-boot-starter-logging")
@@ -113,47 +102,68 @@ dependencies {
 
 # How use `reactive-logger` with examples
 
-## Breaking change on v3.0.0 (incoming)
+## Breaking change on v3.0.0
 
 - min. JVM 11
 - DefaultValues class rename to Configuration.
-- Removed all `Configuration.configuration(...)` methods and `AlreadyConfigurationException`. It can be configured specifically from now. See below.
+- Removed all `Configuration.configuration(...)` and configuration exception
 - Added Hook mechanism. See below.
-- Removed all `with...` configuration methods.
+- Logger instance builder mechanism has been replaced by a `.getLogger()` method.
 
 ## Configuration
 
 ### Default values
 
-- What should be the key string for MDC store in reactor context? Default: `DEFAULT_REACTOR_CONTEXT_MDC_KEY`
-- What schedule should it use for logging mode? Default: `Schedulers.boundedElastic()`
+The `reactive-logger` uses two default values. These are `defaultReactorContextMdcKey` and `defaultScheduler`.
+
+- `defaultReactorContextMdcKey`: Data intended for MDC can be found under this key in the reactor context.
+  - Default value: `DEFAULT_REACTOR_CONTEXT_MDC_KEY` (String)
+- `defaultScheduler`: Scheduler used for logging.
+  - Default value: `Schedulers.boundedElastic()` (Scheduler)
 
 **Example configuration (Kotlin):**
 
 ```kotlin
 fun main() {
-    Configuration.reset() // resets parameters to defaults, so optimal here
-    Configuration.defaultScheduler = Schedulers.parallel()
-    Configuration.defaultReactorContextMdcKey = "mdcRecords"
+  Configuration.reset() // resets parameters to defaults, so optimal here
+  Configuration.defaultScheduler = Schedulers.parallel()
+  Configuration.defaultReactorContextMdcKey = "mdcRecords"
 
-    // ... spring boot start example
+  // ... spring boot start example
 }
 ```
 
 ### Hook
 
-The purpose of the hook is to transfer non-manually configured values to the MDC. These value pairs can be inserted into the reactor context by a library independent of us. Of course, we can also fill
-it algorithmically.
+> Configuration.addHook(...)
+>
+> Configuration.addGenericHook(...)
 
-So, for every logging or MDC query, the hook checks if the reactor context has the keyword to search. If so, we can tell how we want to save it in the MDC through a specified function or lambda. If
-this function gives to return an empty map or any exception is thrown the hook will do nothing with the data. If the context key does not exist then the first parameter will get null.
+The purpose of the hook is to transfer non-manually configured values to the MDC. These value pairs can be inserted into the reactor context by a library independent of us. Of course, we can also fill it algorithmically.
 
-Important! Hooks can overwrite any data stored in MDC! So, every gook processing sequence can be configured by an order number, and you will give in the first parameter the value of the context key
-from the reactor context and in the second parameter current MDC content so that we can check in the hook algorithm whether further expansion is necessary. If not need more expansion we can set it to
-return an empty map or exception.
+So, for every logging or MDC query, the hook checks if the reactor context has the keyword to search. If so, we can tell how we want to save it in the MDC through a specified function or lambda. If this function gives to return an empty map or any exception is thrown the hook will do nothing with the data. If the context key does not exist then the first parameter will get null.
 
-In terms of configuration, you can add and remove dynamically however hooks are cached. You do not need to clear the cache when you modify hooks (add or remove) because every modification will release
-them and they will be re-caching when anything will get MDC collection.
+Important! Hooks can overwrite any current snapshot data stored in MDC. (It can not overwrite source data.)
+
+**Hook's parameters:**
+
+- `name`: name identifier, if you would to overwrite or delete it later.
+- `contextKey`: One key of the Reactor context that we want to reach. It can be String, number value or any `.class`.
+- `order`: The lowest value will be the first in the row and the last is -1. After -1, but between the value 0, it executes the snapshot from the reactor context, then continues with the value 0. If
+  there is any MDC context key conflict, the new will override the old value.
+- `hook`: This is lambda. What should do in this case? What key-value pairs should the MDC be filled with?
+
+**About hook lambda**
+
+There are 2 methods `addGenericHook` and `addHook`. The only difference is that while the first option can be specified in the type, the latter is `Any?` in any case.
+
+- The first parameter is nullable `Any?` or `T?` depending on the method used. This value is null if configured key is not found in the reactor context or contains a different type than expected (only  in `addGenericHook` case).
+- The second parameter is currently a copy of the MDC snapshot that is being uploaded. Current content can be checked to see if there is a value that we want to overwrite or exists. This can be modified, but it has no effect on the snapshot MDC.
+- The return value is a key-value map that will merge into the currently MDC snapshot. If this map is empty or created to throw any exception then merge will skip.
+
+In terms of configuration, you can add and remove dynamically however hooks are cached. You do not need to clear the cache when you modify hooks (add or remove) because every modification will release them and they will be re-caching.
+
+#### Example
 
 Suppose you have the following context in JSON format when you are logging:
 
@@ -167,52 +177,81 @@ Suppose you have the following context in JSON format when you are logging:
 }
 ```
 
-Banana was added by a library independent of us, which may not exist in context. But, if it exists, we would like to see (for example) the following in the MDC map with `uppercase` transform.
+Banana was added by a library independent of us, which may not exist in context. But, if it exists, we would like to see (for example) the following in the MDC map with `uppercase` transform and `banana2` key, like MDC contain:
 
 ```json
 {
-  "DEFAULT_REACTOR_CONTEXT_MDC_KEY": {
-    "foo": "foo",
-    "bar": "bar",
-    "banana2": "APPLE"
-  }
+  "foo": "foo",
+  "bar": "bar",
+  "banana2": "APPLE"
 }
 ```
 
-If use -1 or lower value, the hook will run before copying the value of the reactor context. If this order value is zero or positive value then after them. `Default: 0`
-
-The function's input value is null only if it did not find an appropriate context for the key you were looking for. Important notice, there may be cases where the requested value does not match the
-expected value.
-It is essential to check the source or type of the value. If you use a `addGenericHook` and a casting error occurs, that hook will be skipped.
+We have to add on application start (or configuration) this next hook:
 
 ```kotlin
-import java.lang.IllegalArgumentException
+// value is Any? or Object all time. So we need check type. If it is not String we can exit with exception.
+Configuration.addHook("hookName", "banana", -1) { value: Any?, _: MDC ->
+  if (it !is String) {
+    throw IllegalArgumentException()
+  }
 
-fun main() {
-    // ...
-    Configuration.removeHook("hookKey")
-  
-    // value is Any? or Object all time.
-    Configuration.addHook("hookKey", "banana", -1) { value: Any?, mdc: MDC ->
-        if (it is String) {
-            return@addHook mapOf("banana2" to it.uppercase())
-        }
-
-        throw IllegalArgumentException()
-    }
-
-    // Genetic configuration set to value parameter type. if it can not cast value to genetic type then do nothing.
-    Configuration.addGenericHook<Set<Int>>("hookKey", "banana", 1) { value: Set<Int>?, mdc: MDC ->
-        if (it != null) {
-            return@addHook mapOf("banana3" to it.toString())
-        }
-
-        throw IllegalArgumentException()
-    }
-
-    // ... spring boot start example
+  mapOf("banana2" to it.uppercase())
 }
 ```
 
 ## Use Logger
-Rework description
+
+The below classes are available. These are similar just different in environment or concept.
+
+- CoroutineKLogger.getLogger(...) - used suspend functions and mu.KLogger concept
+- CoroutineLogger.getLogger(...) - used suspend functions and slf4j Logger concept
+- ReactorKLogger.getLogger(...) - used Mono and mu.KLogger concept
+- ReactorLogger.getLogger(...) - used Mono and slf4j Logger concept
+
+The first parameter is required like slf4j's `getLogger()` and others parameters can individually override default values in this case. So there is an opportunity for more MDC context keys could be
+used and detected in the hook via MDC value (second parameter).
+
+```kotlin
+val logger = CoroutineLogger.getLogger(ExampleClass::class.java)
+logger.info("log message")
+```
+
+## How to modify MDC content in reactor context
+
+### in Reactor
+
+`MDCContext.modifyContext` can support modify MDC content map in Reactor context. If you use multiple MDC content map in reactor context use second parameter to override default key.
+
+```kotlin
+.contextWrite {
+  MDCContext.modifyContext(it) { mdc ->
+    mdc["foo"] = "foo"
+  }
+}
+```
+
+If you define manually one or more content with `io.github.numichi.reactive.logger.MDC` you can use `MDCContext.put(Context, MDC...)`. This class also provides reading opportunities.
+
+### in Coroutine
+
+Similar to Reactor, MDC contents can be read and supplemented. Presented through example:
+
+```kotlin
+import io.github.numichi.reactive.logger.MDC
+
+// ...
+.contextWrite {
+  val map = MDC()
+  map["foo"] = foo
+  putMdc(it, map) // return Context
+}
+```
+
+```kotlin
+val content = readMdc()
+content["bar"] = "bar"
+withMDCContext(content) {
+  readMdc() // contain: {"bar": "bar"}
+}
+```

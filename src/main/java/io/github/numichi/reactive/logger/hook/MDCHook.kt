@@ -17,7 +17,11 @@ class MDCHook<T>(
         }
 
         return try {
-            this.hook(contextValue, mdc)
+            try {
+                this.hook(contextValue, mdc)
+            } catch (e: ClassCastException) {
+                this.hook(null, mdc)
+            }
         } catch (e: Throwable) {
             mapOf()
         }

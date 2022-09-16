@@ -30,9 +30,9 @@ internal class MDCHookProcessTest {
 
         @Test
         fun `should lift values from context into MDC by hook format`() {
-            Configuration.addGenericHook<String>(hookName = "key1", contextKey = "after1") { it, _ -> mapOf("mdcAfter1" to it!!.uppercase()) }
-            Configuration.addGenericHook<Int>(hookName = "key2", contextKey = "after2") { it, _ -> mapOf("mdcAfter2" to "${it!! * 100}") }
-            Configuration.addGenericHook<String>(hookName = "key3", contextKey = "before1") { it, _ -> mapOf("mdcBefore1" to it!!.uppercase()) }
+            Configuration.addGenericHook<String>(name = "key1", contextKey = "after1") { it, _ -> mapOf("mdcAfter1" to it!!.uppercase()) }
+            Configuration.addGenericHook<Int>(name = "key2", contextKey = "after2") { it, _ -> mapOf("mdcAfter2" to "${it!! * 100}") }
+            Configuration.addGenericHook<String>(name = "key3", contextKey = "before1") { it, _ -> mapOf("mdcBefore1" to it!!.uppercase()) }
 
             val reactiveContextMap = mapOf(
                 "after1" to "aaa",
@@ -56,8 +56,8 @@ internal class MDCHookProcessTest {
 
         @Test
         fun `should be overwritten before hook with after hook`() {
-            Configuration.addGenericHook<Int>(hookName = "key1", contextKey = "key", order = 0) { it, _ -> mapOf("hookKey" to "${it!! * 2}") }
-            Configuration.addGenericHook<Int>(hookName = "key2", contextKey = "key", order = -1) { it, _ -> mapOf("hookKey" to "${it!! * 3}") }
+            Configuration.addGenericHook<Int>(name = "key1", contextKey = "key", order = 0) { it, _ -> mapOf("hookKey" to "${it!! * 2}") }
+            Configuration.addGenericHook<Int>(name = "key2", contextKey = "key", order = -1) { it, _ -> mapOf("hookKey" to "${it!! * 3}") }
 
             val reactiveContextMap = mapOf("key" to 1)
 
@@ -73,7 +73,7 @@ internal class MDCHookProcessTest {
 
         @Test
         fun `should not effect when lambda throw any exception`() {
-            Configuration.addHook(hookName = "key1", contextKey = "after1") { _, _ ->
+            Configuration.addHook(name = "key1", contextKey = "after1") { _, _ ->
                 throw Exception()
             }
 
@@ -95,7 +95,7 @@ internal class MDCHookProcessTest {
 
         @Test
         fun `should run hook function with null when access to not exist contextKey`() {
-            Configuration.addHook(hookName = "key1", contextKey = "after1") { it, _ ->
+            Configuration.addHook(name = "key1", contextKey = "after1") { it, _ ->
                 mapOf("hookKey" to "$it")
             }
 
@@ -116,7 +116,7 @@ internal class MDCHookProcessTest {
 
         @Test
         fun `should handle specific class in hook`() {
-            Configuration.addGenericHook<TestHelperClass>(hookName = "key1", contextKey = TestHelperClass::class.java) { clazz, _ ->
+            Configuration.addGenericHook<TestHelperClass>(name = "key1", contextKey = TestHelperClass::class.java) { clazz, _ ->
                 requireNotNull(clazz)
                 mapOf("int" to clazz.getInt().toString())
             }
@@ -136,15 +136,37 @@ internal class MDCHookProcessTest {
                 }
             }
         }
+
+        @Test
+        fun `should handle specific class in hook just throws ClassCastException in background`() {
+            Configuration.addGenericHook<TestHelperClass>(name = "key1", contextKey = TestHelperClass::class.java) { clazz, _ ->
+                mapOf("int" to clazz?.getInt().toString())
+            }
+
+            val reactiveContextMap = mapOf(
+                TestHelperClass::class.java to TestAnotherHelperClass(),
+                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("currentMdcKey" to "currentMdcValue")
+            )
+
+            runTest {
+                withContext(Context.of(reactiveContextMap).asCoroutineContext()) {
+                    val mdc = readMdc()
+
+                    assertEquals(2, mdc.size)
+                    assertEquals("currentMdcValue", mdc["currentMdcKey"])
+                    assertEquals("null", mdc["int"])
+                }
+            }
+        }
     }
 
     @Nested
     inner class Reactor {
         @Test
         fun `should lift values from context into MDC by hook format`() {
-            Configuration.addGenericHook<String>(hookName = "key1", contextKey = "after1") { it, _ -> mapOf("mdcAfter1" to it!!.uppercase()) }
-            Configuration.addGenericHook<Int>(hookName = "key2", contextKey = "after2") { it, _ -> mapOf("mdcAfter2" to "${it!! * 100}") }
-            Configuration.addGenericHook<String>(hookName = "key3", contextKey = "before1") { it, _ -> mapOf("mdcBefore1" to it!!.uppercase()) }
+            Configuration.addGenericHook<String>(name = "key1", contextKey = "after1") { it, _ -> mapOf("mdcAfter1" to it!!.uppercase()) }
+            Configuration.addGenericHook<Int>(name = "key2", contextKey = "after2") { it, _ -> mapOf("mdcAfter2" to "${it!! * 100}") }
+            Configuration.addGenericHook<String>(name = "key3", contextKey = "before1") { it, _ -> mapOf("mdcBefore1" to it!!.uppercase()) }
 
             val reactiveContextMap = mapOf(
                 "after1" to "aaa",
@@ -169,8 +191,8 @@ internal class MDCHookProcessTest {
 
         @Test
         fun `should be overwritten before hook with after hook`() {
-            Configuration.addGenericHook<Int>(hookName = "key1", contextKey = "key", order = 0) { it, _ -> mapOf("hookKey" to "${it!! * 2}") }
-            Configuration.addGenericHook<Int>(hookName = "key2", contextKey = "key", order = -1) { it, _ -> mapOf("hookKey" to "${it!! * 3}") }
+            Configuration.addGenericHook<Int>(name = "key1", contextKey = "key", order = 0) { it, _ -> mapOf("hookKey" to "${it!! * 2}") }
+            Configuration.addGenericHook<Int>(name = "key2", contextKey = "key", order = -1) { it, _ -> mapOf("hookKey" to "${it!! * 3}") }
 
             val reactiveContextMap = mapOf("key" to 1)
 

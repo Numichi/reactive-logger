@@ -16,12 +16,12 @@ object Configuration {
     var defaultReactorContextMdcKey: String = DEFAULT_REACTOR_CONTEXT_MDC_KEY
     var defaultScheduler: Scheduler = Schedulers.boundedElastic()
 
-    fun <T> addGenericHook(hookName: String, contextKey: Any, order: Int = 0, hook: (T?, MDC) -> Map<String, String>) {
-        MDCHookCache.addHook(hookName, MDCHook(contextKey, order, hook))
+    fun <T> addGenericHook(name: String, contextKey: Any, order: Int = 0, hook: (T?, MDC) -> Map<String, String>) {
+        MDCHookCache.addHook(name, MDCHook(contextKey, order, hook))
     }
 
-    fun addHook(hookName: String, contextKey: Any, order: Int = 0, hook: (Any?, MDC) -> Map<String, String>) {
-        MDCHookCache.addHook(hookName, MDCHook(contextKey, order, hook))
+    fun addHook(name: String, contextKey: Any, order: Int = 0, hook: (Any?, MDC) -> Map<String, String>) {
+        MDCHookCache.addHook(name, MDCHook(contextKey, order, hook))
     }
 
     fun getHooks(): Map<String, MDCHook<*>> {
