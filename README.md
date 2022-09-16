@@ -149,7 +149,7 @@ Important! Hooks can overwrite any current snapshot data stored in MDC. (It can 
 
 - `name`: name identifier, if you would to overwrite or delete it later.
 - `contextKey`: One key of the Reactor context that we want to reach. It can be String, number value or any `.class`.
-- `order`: The lowest value will be the first in the row and the last is -1. After -1, but between the value 0, it executes the snapshot from the reactor context, then continues with the value 0. If
+- `order`: The lowest value will be the first in the row and the last is -1. It executes the snapshot from the reactor context between -1 and 0, then continues with the value 0. If
   there is any MDC context key conflict, the new will override the old value.
 - `hook`: This is lambda. What should do in this case? What key-value pairs should the MDC be filled with?
 
