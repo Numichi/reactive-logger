@@ -1,6 +1,7 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.coroutine.MDCContextTest.Companion.ANOTHER_CONTEXT_KEY
 import io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest
@@ -123,15 +124,44 @@ internal class CoroutineKLoggerTest {
         val i10 = CoroutineKLogger.getLogger(CoroutineKLoggerTest::class.java, "foo", Schedulers.single()) { null }
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i1.logger.underlyingLogger.name)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i1.mdcContextKey)
+        assertSame(Schedulers.boundedElastic(), i1.scheduler)
+
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i2.logger.underlyingLogger.name)
+        assertEquals("foo", i2.mdcContextKey)
+        assertSame(Schedulers.single(), i2.scheduler)
+
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i3.logger.underlyingLogger.name)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i3.mdcContextKey)
+        assertSame(Schedulers.boundedElastic(), i3.scheduler)
+
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i4.logger.underlyingLogger.name)
+        assertEquals("foo", i4.mdcContextKey)
+        assertSame(Schedulers.single(), i4.scheduler)
+
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i5.logger.underlyingLogger.name)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i5.mdcContextKey)
+        assertSame(Schedulers.boundedElastic(), i5.scheduler)
+
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i6.logger.underlyingLogger.name)
+        assertEquals("foo", i6.mdcContextKey)
+        assertSame(Schedulers.single(), i6.scheduler)
+
         assertEquals("foobar", i7.logger.underlyingLogger.name)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i7.mdcContextKey)
+        assertSame(Schedulers.boundedElastic(), i7.scheduler)
+
         assertEquals("foobar", i8.logger.underlyingLogger.name)
+        assertEquals("foo", i8.mdcContextKey)
+        assertSame(Schedulers.single(), i8.scheduler)
+
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i9.logger.underlyingLogger.name)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i9.mdcContextKey)
+        assertSame(Schedulers.boundedElastic(), i9.scheduler)
+
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i10.logger.underlyingLogger.name)
+        assertEquals("foo", i10.mdcContextKey)
+        assertSame(Schedulers.single(), i10.scheduler)
     }
 
     @Test

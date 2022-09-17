@@ -6,6 +6,7 @@ import io.github.numichi.reactive.logger.MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE
 import io.github.numichi.reactive.logger.reactor.IReactorLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import kotlinx.coroutines.reactor.ReactorContext
+import mu.KLogger
 import org.slf4j.Logger
 import reactor.core.scheduler.Scheduler
 import reactor.util.context.ContextView
@@ -37,6 +38,16 @@ class CoroutineLogger private constructor(
             contextExtractive: suspend () -> ContextView? = { coroutineContext[ReactorContext]?.context }
         ): CoroutineLogger {
             return getLogger(LoggerFactory.getLogger(clazz), mdcContextKey, scheduler, contextExtractive)
+        }
+
+        @JvmStatic
+        fun getLogger(
+            kLogger: KLogger,
+            mdcContextKey: String? = null,
+            scheduler: Scheduler? = null,
+            contextExtractive: suspend () -> ContextView? = { coroutineContext[ReactorContext]?.context }
+        ): CoroutineLogger {
+            return getLogger(kLogger.underlyingLogger, mdcContextKey, scheduler, contextExtractive)
         }
 
         @JvmStatic

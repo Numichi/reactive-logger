@@ -13,29 +13,50 @@ enum class SchedulerOptions {
 }
 
 object Configuration {
+    @set:JvmStatic
+    @get:JvmStatic
     var defaultReactorContextMdcKey: String = DEFAULT_REACTOR_CONTEXT_MDC_KEY
+
+    @set:JvmStatic
+    @get:JvmStatic
     var defaultScheduler: Scheduler = Schedulers.boundedElastic()
 
-    fun <T> addGenericHook(name: String, contextKey: Any, order: Int = 0, hook: (T?, MDC) -> Map<String, String>) {
+    @JvmStatic
+    fun <T> addGenericHook(name: String, contextKey: Any, order: Int, hook: (T?, MDC) -> Map<String, String>) {
         MDCHookCache.addHook(name, MDCHook(contextKey, order, hook))
     }
 
-    fun addHook(name: String, contextKey: Any, order: Int = 0, hook: (Any?, MDC) -> Map<String, String>) {
+    @JvmStatic
+    fun <T> addGenericHook(name: String, contextKey: Any, hook: (T?, MDC) -> Map<String, String>) {
+        return addGenericHook(name, contextKey, 0, hook)
+    }
+
+    @JvmStatic
+    fun addHook(name: String, contextKey: Any, order: Int, hook: (Any?, MDC) -> Map<String, String>) {
         MDCHookCache.addHook(name, MDCHook(contextKey, order, hook))
     }
 
+    @JvmStatic
+    fun addHook(name: String, contextKey: Any, hook: (Any?, MDC) -> Map<String, String>) {
+        return addHook(name, contextKey, 0, hook)
+    }
+
+    @JvmStatic
     fun getHooks(): Map<String, MDCHook<*>> {
         return MDCHookCache.getHooks()
     }
 
-    fun existsHook(key: String): Boolean {
-        return MDCHookCache.existsHook(key)
+    @JvmStatic
+    fun existsHook(name: String): Boolean {
+        return MDCHookCache.existsHook(name)
     }
 
+    @JvmStatic
     fun removeHook(key: String) {
         MDCHookCache.removeHook(key)
     }
 
+    @JvmStatic
     fun setDefaultScheduler(option: SchedulerOptions) {
         defaultScheduler = when (option) {
             SchedulerOptions.BOUNDED_ELASTIC -> Schedulers.boundedElastic()
@@ -45,6 +66,7 @@ object Configuration {
         }
     }
 
+    @JvmStatic
     fun reset() {
         defaultReactorContextMdcKey = DEFAULT_REACTOR_CONTEXT_MDC_KEY
         defaultScheduler = Schedulers.boundedElastic()

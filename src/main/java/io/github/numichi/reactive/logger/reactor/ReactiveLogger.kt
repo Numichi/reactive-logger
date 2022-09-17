@@ -14,6 +14,11 @@ class ReactiveLogger(
 
     companion object {
         @JvmStatic
+        fun getLogger(string: String): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(string), null, null)
+        }
+
+        @JvmStatic
         fun getLogger(
             string: String,
             mdcContextKey: String? = null,
@@ -23,12 +28,22 @@ class ReactiveLogger(
         }
 
         @JvmStatic
+        fun getLogger(clazz: Class<*>): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(clazz), null, null)
+        }
+
+        @JvmStatic
         fun getLogger(
             clazz: Class<*>,
             mdcContextKey: String? = null,
             scheduler: Scheduler? = null,
         ): ReactiveLogger {
             return getLogger(LoggerFactory.getLogger(clazz), mdcContextKey, scheduler)
+        }
+
+        @JvmStatic
+        fun getLogger(logger: Logger): ReactiveLogger {
+            return getLogger(logger, null, null)
         }
 
         @JvmStatic

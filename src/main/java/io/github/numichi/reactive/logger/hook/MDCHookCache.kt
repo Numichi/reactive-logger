@@ -5,7 +5,7 @@ internal object MDCHookCache {
     var listAfter: Array<MDCHook<*>> = arrayOf()
     private val storeHooks: MutableMap<String, MDCHook<*>> = mutableMapOf()
 
-    fun initCache() {
+    private fun initCache() {
         listBefore = storeHooks.values.filter { it.order < 0 }.sortedBy { it.order }.toTypedArray()
         listAfter = storeHooks.values.filter { 0 <= it.order }.sortedBy { it.order }.toTypedArray()
     }
