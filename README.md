@@ -19,12 +19,12 @@ experience any problem, regardless of I used Kotlin or Java. But it is not valid
 
 **My first problem with the lifting solution.**
 It runs a hook for each reactor API. It generates a lot of unnecessary events and class creation. I
-have [tested](https://github.com/Numichi/reactive-logger-my-problem/blob/main/src/main/kotlin/com/example/demo/controller/MdcController.kt) it with a minimal controller with Spring Boot.
+have tested it with a minimal controller with Spring Boot.
 MDC map copy had run about 129 times for only one request. Then let's count how many times will run on one of the more complex applications?
 
 **My second problem on Kotlin Coroutine with lifting.**
 It does not work. When you call a Reactor API, API will activate hook, and MDC ThreadLocal will be overridden. After it, coroutine scope gets regain control. Hooks are not taken effect in coroutine
-areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is not.
+areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is not. [[See example](https://github.com/Numichi/reactive-logger-my-problem/blob/main/src/main/kotlin/com/example/demo/controller/MdcController.kt)]
 
 **Another side effect I have experienced.**
 When I created a parallel request, my first request ended later than my second request. I have used a suspended delay in code, and I noticed
