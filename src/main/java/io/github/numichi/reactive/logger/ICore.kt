@@ -35,9 +35,9 @@ interface ICore {
         return MDCSnapshot.of(result)
     }
 
-    fun <T> logConsumer(fn: BiConsumer<Logger, Signal<T>>): Consumer<Signal<T>> {
+    fun <T> logConsumer(consumer: BiConsumer<Logger, Signal<T>>): Consumer<Signal<T>> {
         return Consumer { signal ->
-            takeMDCSnapshot(signal.contextView).use { fn.accept(slf4jLogger, signal) }
+            takeMDCSnapshot(signal.contextView).use { consumer.accept(slf4jLogger, signal) }
         }
     }
 }
