@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import reactor.core.scheduler.Scheduler
 
 class ReactiveLogger(
+    /** NOT USE FOR LOGGING */
     override val logger: Logger,
     override val mdcContextKey: String,
     override val scheduler: Scheduler,
@@ -19,11 +20,7 @@ class ReactiveLogger(
         }
 
         @JvmStatic
-        fun getLogger(
-            string: String,
-            mdcContextKey: String? = null,
-            scheduler: Scheduler? = null,
-        ): ReactiveLogger {
+        fun getLogger(string: String, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
             return getLogger(LoggerFactory.getLogger(string), mdcContextKey, scheduler)
         }
 
@@ -33,11 +30,7 @@ class ReactiveLogger(
         }
 
         @JvmStatic
-        fun getLogger(
-            clazz: Class<*>,
-            mdcContextKey: String? = null,
-            scheduler: Scheduler? = null,
-        ): ReactiveLogger {
+        fun getLogger(clazz: Class<*>, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
             return getLogger(LoggerFactory.getLogger(clazz), mdcContextKey, scheduler)
         }
 
@@ -47,11 +40,7 @@ class ReactiveLogger(
         }
 
         @JvmStatic
-        fun getLogger(
-            logger: Logger,
-            mdcContextKey: String? = null,
-            scheduler: Scheduler? = null
-        ): ReactiveLogger {
+        fun getLogger(logger: Logger, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
             mdcContextKey?.also {
                 check(it.trim().isNotEmpty()) { MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE }
             }

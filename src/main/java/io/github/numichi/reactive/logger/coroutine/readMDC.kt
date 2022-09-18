@@ -10,7 +10,7 @@ suspend fun readMdc(): MDC {
 }
 
 suspend fun readMdc(mdcContextKey: String): MDC {
-    return readMdc(rectorContext(), mdcContextKey)
+    return readMdc(reactorContextOrEmpty(), mdcContextKey)
 }
 
 fun readMdc(contextView: ContextView?): MDC {

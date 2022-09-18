@@ -5,7 +5,8 @@ import org.slf4j.Logger
 import org.slf4j.Marker
 
 interface ICoroutineLogger<T : IReactorLogger> : ICoroutineCore<T> {
-    val logger: Logger
+    /** NOT USE FOR LOGGING */
+    override val logger: Logger
         get() = reactorLogger.logger
 
     val isTraceEnabled: Boolean

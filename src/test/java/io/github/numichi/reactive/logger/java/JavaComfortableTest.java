@@ -28,13 +28,13 @@ class JavaComfortableTest {
         
         var logger1 = ReactiveLogger.getLogger(JavaComfortableTest.class);
         assertEquals("custom1", logger1.getMdcContextKey());
-    
+        
         Configuration.setDefaultReactorContextMdcKey("custom2");
-    
+        
         var logger2 = ReactiveLogger.getLogger(JavaComfortableTest.class);
         assertEquals("custom1", logger1.getMdcContextKey());
         assertEquals("custom2", logger2.getMdcContextKey());
-    
+        
         var logger3 = ReactiveLogger.getLogger(JavaComfortableTest.class, "custom3", null);
         assertEquals("custom1", logger1.getMdcContextKey());
         assertEquals("custom2", logger2.getMdcContextKey());

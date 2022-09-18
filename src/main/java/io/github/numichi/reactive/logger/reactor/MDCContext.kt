@@ -58,6 +58,20 @@ object MDCContext {
     }
 
     @JvmStatic
+    fun modifyContext(context: Context, map: Map<String, String>): Context {
+        val mdc = getMDCOrNull(context) ?: MDC()
+        mdc.putAll(map)
+        return put(context, mdc)
+    }
+
+    @JvmStatic
+    fun modifyContext(context: Context, mdcContextKey: Any, map: Map<String, String>): Context {
+        val mdc = getMDCOrNull(context, mdcContextKey) ?: MDC(mdcContextKey.toString())
+        mdc.putAll(map)
+        return put(context, mdc)
+    }
+
+    @JvmStatic
     fun read(): Mono<MDC> {
         return read(Configuration.defaultReactorContextMdcKey)
     }

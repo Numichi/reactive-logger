@@ -62,5 +62,17 @@ class ConfigurationTest {
 
         Configuration.setDefaultScheduler(SchedulerOptions.BOUNDED_ELASTIC)
         assertSame(Schedulers.boundedElastic(), Configuration.defaultScheduler)
+
+        Configuration.defaultScheduler = Schedulers.single()
+        assertSame(Schedulers.single(), Configuration.defaultScheduler)
+
+        Configuration.defaultScheduler = Schedulers.parallel()
+        assertSame(Schedulers.parallel(), Configuration.defaultScheduler)
+
+        Configuration.defaultScheduler = Schedulers.immediate()
+        assertSame(Schedulers.immediate(), Configuration.defaultScheduler)
+
+        Configuration.defaultScheduler = Schedulers.boundedElastic()
+        assertSame(Schedulers.boundedElastic(), Configuration.defaultScheduler)
     }
 }

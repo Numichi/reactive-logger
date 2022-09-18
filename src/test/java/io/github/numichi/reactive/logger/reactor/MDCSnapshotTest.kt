@@ -1,18 +1,13 @@
 package io.github.numichi.reactive.logger.reactor
 
+import io.github.numichi.reactive.logger.randomText
 import io.github.numichi.reactive.logger.reactor.MDCSnapshot.Companion.empty
 import io.github.numichi.reactive.logger.reactor.MDCSnapshot.Companion.of
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.slf4j.MDC
-import java.util.*
 
 internal class MDCSnapshotTest {
-    companion object {
-        fun randomText(): String {
-            return UUID.randomUUID().toString()
-        }
-    }
 
     @Test
     fun populateAndClear() {

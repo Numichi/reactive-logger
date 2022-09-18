@@ -17,35 +17,43 @@ internal class MDCContextTest {
 
     @Test
     fun `should give the MDC you are looking for`() {
-        val mdc1 = MDC()
-        mdc1["mdcKey"] = "mdcValue"
+        run {
+            val mdc = MDC()
+            mdc["mdcKey"] = "mdcValue"
 
-        val mdc2 = MDC(ANOTHER_CONTEXT_KEY)
-        mdc2["mdcKey"] = "mdcValue"
+            val resultDefaultByContext: Mono<MDC> = Mono.deferContextual { MDCContext.read(it) }
+                .contextWrite { MDCContext.put(it, mdc) }
 
-        val resultDefaultByContext: Mono<MDC> = Mono.deferContextual { MDCContext.read(it) }
-            .contextWrite { MDCContext.put(it, mdc1) }
-        StepVerifier.create(resultDefaultByContext)
-            .expectNext(mdc1)
-            .verifyComplete()
+            StepVerifier.create(resultDefaultByContext)
+                .expectNext(mdc)
+                .verifyComplete()
 
-        val resultDefault: Mono<MDC> = MDCContext.read()
-            .contextWrite { MDCContext.put(it, mdc1) }
-        StepVerifier.create(resultDefault)
-            .expectNext(mdc1)
-            .verifyComplete()
+            val resultDefault: Mono<MDC> = MDCContext.read()
+                .contextWrite { MDCContext.put(it, mdc) }
 
-        val resultAnotherByContext: Mono<MDC> = Mono.deferContextual { MDCContext.read(it, ANOTHER_CONTEXT_KEY) }
-            .contextWrite { MDCContext.put(it, mdc2) }
-        StepVerifier.create(resultAnotherByContext)
-            .expectNext(mdc2)
-            .verifyComplete()
+            StepVerifier.create(resultDefault)
+                .expectNext(mdc)
+                .verifyComplete()
+        }
 
-        val resultAnother: Mono<MDC> = MDCContext.read(ANOTHER_CONTEXT_KEY)
-            .contextWrite { MDCContext.put(it, mdc2) }
-        StepVerifier.create(resultAnother)
-            .expectNext(mdc2)
-            .verifyComplete()
+        run {
+            val mdc = MDC(ANOTHER_CONTEXT_KEY)
+            mdc["mdcKey"] = "mdcValue"
+
+            val resultAnotherByContext: Mono<MDC> = Mono.deferContextual { MDCContext.read(it, ANOTHER_CONTEXT_KEY) }
+                .contextWrite { MDCContext.put(it, mdc) }
+
+            StepVerifier.create(resultAnotherByContext)
+                .expectNext(mdc)
+                .verifyComplete()
+
+            val resultAnother: Mono<MDC> = MDCContext.read(ANOTHER_CONTEXT_KEY)
+                .contextWrite { MDCContext.put(it, mdc) }
+
+            StepVerifier.create(resultAnother)
+                .expectNext(mdc)
+                .verifyComplete()
+        }
     }
 
     @Test
@@ -56,109 +64,159 @@ internal class MDCContextTest {
         val anotherMdc = MDC(ANOTHER_CONTEXT_KEY)
         anotherMdc["mdcKey"] = "mdcValue"
 
-        val contextSize1 = Mono.deferContextual { Mono.just(it.size()) }
-            .contextWrite { MDCContext.put(it, defaultMdc) }
-            .contextWrite { MDCContext.put(it, anotherMdc) }
-        StepVerifier.create(contextSize1)
-            .expectNext(2)
-            .verifyComplete()
+        run {
+            val mono = Mono.deferContextual { Mono.just(it.size()) }
+                .contextWrite { MDCContext.put(it, defaultMdc) }
+                .contextWrite { MDCContext.put(it, anotherMdc) }
 
-        val contextSize2 = Mono.deferContextual { Mono.just(it.size()) }
-            .contextWrite { MDCContext.put(it, defaultMdc, anotherMdc) }
-        StepVerifier.create(contextSize2)
-            .expectNext(2)
-            .verifyComplete()
+            StepVerifier.create(mono)
+                .expectNext(2)
+                .verifyComplete()
+        }
 
-        val contextSize3 = Mono.deferContextual { Mono.just(it.size()) }
-            .contextWrite { MDCContext.put(it, defaultMdc, null) }
-        StepVerifier.create(contextSize3)
-            .expectNext(1)
-            .verifyComplete()
+        run {
+            val mono = Mono.deferContextual { Mono.just(it.size()) }
+                .contextWrite { MDCContext.put(it, defaultMdc, anotherMdc) }
 
-        val contextSize4 = Mono.deferContextual { Mono.just(it.size()) }
-            .contextWrite { MDCContext.put(it, defaultMdc, null) }
-            .contextWrite { it.put("A", "B") }
-        StepVerifier.create(contextSize4)
-            .expectNext(2)
-            .verifyComplete()
+            StepVerifier.create(mono)
+                .expectNext(2)
+                .verifyComplete()
+        }
+
+        run {
+            val mono = Mono.deferContextual { Mono.just(it.size()) }
+                .contextWrite { MDCContext.put(it, defaultMdc, null) }
+
+            StepVerifier.create(mono)
+                .expectNext(1)
+                .verifyComplete()
+        }
+
+        run {
+            val mono = Mono.deferContextual { Mono.just(it.size()) }
+                .contextWrite { MDCContext.put(it, defaultMdc, null) }
+                .contextWrite { it.put("A", "B") }
+
+            StepVerifier.create(mono)
+                .expectNext(2)
+                .verifyComplete()
+        }
     }
 
     @Test
     fun `should write within writeContext`() {
-        val data1 = MDCContext.read()
-            .mapNotNull { it["key"] }
-            .contextWrite {
-                val mdc = MDCContext.getMDCOrDefault(it)
-                mdc["key"] = "example"
-                MDCContext.put(it, mdc)
-            }
-        StepVerifier.create(data1)
-            .expectNext("example")
-            .verifyComplete()
-
-        val data2 = MDCContext.read("another")
-            .mapNotNull { it["key"] }
-            .contextWrite {
-                val mdc = MDCContext.getMDCOrDefault(it, "another")
-                mdc["key"] = "example"
-                MDCContext.put(it, mdc)
-            }
-        StepVerifier.create(data2)
-            .expectNext("example")
-            .verifyComplete()
-
-        val data3 = MDCContext.read()
-            .mapNotNull { it["key"] }
-            .contextWrite {
-                var mdc = MDCContext.getMDCOrNull(it)
-                if (mdc == null) {
-                    mdc = MDC()
-                }
-
-                mdc["key"] = "example"
-                MDCContext.put(it, mdc)
-            }
-        StepVerifier.create(data3)
-            .expectNext("example")
-            .verifyComplete()
-
-        val data4 = MDCContext.read("another")
-            .mapNotNull { it["key"] }
-            .contextWrite {
-                var mdc = MDCContext.getMDCOrNull(it, "another")
-
-                if (mdc == null) {
-                    mdc = MDC("another")
-                    mdc!!["key"] = "example"
-                }
-
-                MDCContext.put(it, mdc)
-            }
-        StepVerifier.create(data4)
-            .expectNext("example")
-            .verifyComplete()
-
-        val data5 = MDCContext.read()
-            .mapNotNull { it["key"] }
-            .contextWrite {
-                MDCContext.modifyContext(it) { mdc ->
+        run {
+            val data = MDCContext.read()
+                .mapNotNull { it["key"] }
+                .contextWrite {
+                    val mdc = MDCContext.getMDCOrDefault(it)
                     mdc["key"] = "example"
+                    MDCContext.put(it, mdc)
                 }
-            }
-        StepVerifier.create(data5)
-            .expectNext("example")
-            .verifyComplete()
 
-        val data6 = MDCContext.read("another")
-            .mapNotNull { it["key"] }
-            .contextWrite {
-                MDCContext.modifyContext(it, "another") { mdc ->
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
+
+        run {
+            val data = MDCContext.read("another")
+                .mapNotNull { it["key"] }
+                .contextWrite {
+                    val mdc = MDCContext.getMDCOrDefault(it, "another")
                     mdc["key"] = "example"
+                    MDCContext.put(it, mdc)
                 }
-            }
-        StepVerifier.create(data6)
-            .expectNext("example")
-            .verifyComplete()
+
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
+
+        run {
+            val data = MDCContext.read()
+                .mapNotNull { it["key"] }
+                .contextWrite {
+                    var mdc = MDCContext.getMDCOrNull(it)
+                    if (mdc == null) {
+                        mdc = MDC()
+                    }
+
+                    mdc["key"] = "example"
+                    MDCContext.put(it, mdc)
+                }
+
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
+
+        run {
+            val data = MDCContext.read("another")
+                .mapNotNull { it["key"] }
+                .contextWrite {
+                    var mdc = MDCContext.getMDCOrNull(it, "another")
+
+                    if (mdc == null) {
+                        mdc = MDC("another")
+                        mdc!!["key"] = "example"
+                    }
+
+                    MDCContext.put(it, mdc)
+                }
+
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
+
+        run {
+            val data = MDCContext.read()
+                .mapNotNull { it["key"] }
+                .contextWrite {
+                    MDCContext.modifyContext(it) { mdc ->
+                        mdc["key"] = "example"
+                    }
+                }
+
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
+
+        run {
+            val data = MDCContext.read("another")
+                .mapNotNull { it["key"] }
+                .contextWrite {
+                    MDCContext.modifyContext(it, "another") { mdc ->
+                        mdc["key"] = "example"
+                    }
+                }
+
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
+
+        run {
+            val data = MDCContext.read()
+                .mapNotNull { it["key"] }
+                .contextWrite { MDCContext.modifyContext(it, mapOf("key" to "example")) }
+
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
+
+        run {
+            val data = MDCContext.read("another")
+                .mapNotNull { it["key"] }
+                .contextWrite { MDCContext.modifyContext(it, "another", mapOf("key" to "example")) }
+
+            StepVerifier.create(data)
+                .expectNext("example")
+                .verifyComplete()
+        }
     }
 
     @Test
@@ -168,19 +226,25 @@ internal class MDCContextTest {
         val anotherMdc = MDC(ANOTHER_CONTEXT_KEY)
         anotherMdc["mdcKey"] = "mdcValue"
 
-        val resultDefault: Mono<MDC> = Mono.defer { MDCContext.read() }
-            .contextWrite { MDCContext.put(it, defaultMdc) }
-            .contextWrite { MDCContext.put(it, anotherMdc) }
-        StepVerifier.create(resultDefault)
-            .expectNext(defaultMdc)
-            .verifyComplete()
+        run {
+            val mono: Mono<MDC> = Mono.defer { MDCContext.read() }
+                .contextWrite { MDCContext.put(it, defaultMdc) }
+                .contextWrite { MDCContext.put(it, anotherMdc) }
 
-        val resultAnother: Mono<MDC> = Mono.defer { MDCContext.read(ANOTHER_CONTEXT_KEY) }
-            .contextWrite { MDCContext.put(it, defaultMdc) }
-            .contextWrite { MDCContext.put(it, anotherMdc) }
-        StepVerifier.create(resultAnother)
-            .expectNext(anotherMdc)
-            .verifyComplete()
+            StepVerifier.create(mono)
+                .expectNext(defaultMdc)
+                .verifyComplete()
+        }
+
+        run {
+            val mono: Mono<MDC> = Mono.defer { MDCContext.read(ANOTHER_CONTEXT_KEY) }
+                .contextWrite { MDCContext.put(it, defaultMdc) }
+                .contextWrite { MDCContext.put(it, anotherMdc) }
+
+            StepVerifier.create(mono)
+                .expectNext(anotherMdc)
+                .verifyComplete()
+        }
     }
 
     @Test
@@ -188,17 +252,23 @@ internal class MDCContextTest {
         val mdc = MDC(ANOTHER_CONTEXT_KEY)
         mdc["mdcKey2"] = "mdcValue2"
 
-        val result1: Mono<MDC> = Mono.defer { MDCContext.read() }
-            .contextWrite { MDCContext.put(it, mdc) }
-        StepVerifier.create(result1)
-            .expectNext(MDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
-            .verifyComplete()
+        run {
+            val mono: Mono<MDC> = Mono.defer { MDCContext.read() }
+                .contextWrite { MDCContext.put(it, mdc) }
 
-        val result2: Mono<MDC> = Mono.defer { MDCContext.read("not-exist-context-id") }
-            .contextWrite { MDCContext.put(it!!, mdc) }
-        StepVerifier.create(result2)
-            .expectNext(MDC("not-exist-context-id"))
-            .verifyComplete()
+            StepVerifier.create(mono)
+                .expectNext(MDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
+                .verifyComplete()
+        }
+
+        run {
+            val mono: Mono<MDC> = Mono.defer { MDCContext.read("not-exist-context-id") }
+                .contextWrite { MDCContext.put(it!!, mdc) }
+
+            StepVerifier.create(mono)
+                .expectNext(MDC("not-exist-context-id"))
+                .verifyComplete()
+        }
     }
 
     companion object {

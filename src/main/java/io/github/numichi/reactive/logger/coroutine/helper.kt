@@ -5,7 +5,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.asCoroutineContext
 import reactor.util.context.Context
+import reactor.util.context.ContextView
 import kotlin.coroutines.coroutineContext
+
+internal typealias ContextResolver = suspend () -> ContextView?
 
 internal suspend fun reactorContextOrEmpty(): Context {
     return rectorContext() ?: Context.empty()

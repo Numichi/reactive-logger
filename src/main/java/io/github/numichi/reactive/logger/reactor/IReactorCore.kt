@@ -2,13 +2,10 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.ICore
-import org.slf4j.Logger
 import reactor.core.publisher.Mono
 import reactor.util.context.ContextView
 
 interface IReactorCore : ICore {
-    val logger: Logger
-
     override val name: String
         get() = logger.name
 
