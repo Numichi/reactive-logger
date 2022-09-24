@@ -79,6 +79,7 @@ class ReactiveKLogger(
 
     override val isTraceEnabled: Boolean
         get() = logger.isTraceEnabled
+
     override fun isTraceEnabled(marker: Marker?): Boolean = logger.isTraceEnabled(marker)
     override fun trace(msg: String?): Mono<ContextView> = wrap { logger.trace(msg) }
     override fun trace(format: String?, arg: Any?): Mono<ContextView> = wrap { logger.trace(format, arg) }
@@ -97,6 +98,7 @@ class ReactiveKLogger(
 
     override val isDebugEnabled: Boolean
         get() = logger.isDebugEnabled
+
     override fun isDebugEnabled(marker: Marker?): Boolean = logger.isDebugEnabled(marker)
     override fun debug(msg: String?): Mono<ContextView> = wrap { logger.debug(msg) }
     override fun debug(format: String?, arg: Any?): Mono<ContextView> = wrap { logger.debug(format, arg) }
@@ -115,6 +117,7 @@ class ReactiveKLogger(
 
     override val isInfoEnabled: Boolean
         get() = logger.isInfoEnabled
+
     override fun isInfoEnabled(marker: Marker?): Boolean = logger.isInfoEnabled(marker)
     override fun info(msg: String?): Mono<ContextView> = wrap { logger.info(msg) }
     override fun info(format: String?, arg: Any?): Mono<ContextView> = wrap { logger.info(format, arg) }
@@ -133,6 +136,7 @@ class ReactiveKLogger(
 
     override val isWarnEnabled: Boolean
         get() = logger.isWarnEnabled
+
     override fun isWarnEnabled(marker: Marker?): Boolean = logger.isWarnEnabled(marker)
     override fun warn(msg: String?): Mono<ContextView> = wrap { logger.warn(msg) }
     override fun warn(format: String?, arg: Any?): Mono<ContextView> = wrap { logger.warn(format, arg) }
@@ -151,6 +155,7 @@ class ReactiveKLogger(
 
     override val isErrorEnabled: Boolean
         get() = logger.isErrorEnabled
+
     override fun isErrorEnabled(marker: Marker?): Boolean = logger.isErrorEnabled(marker)
     override fun error(msg: String?): Mono<ContextView> = wrap { logger.error(msg) }
     override fun error(format: String?, arg: Any?): Mono<ContextView> = wrap { logger.error(format, arg) }

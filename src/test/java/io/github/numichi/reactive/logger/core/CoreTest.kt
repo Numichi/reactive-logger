@@ -10,7 +10,7 @@ import io.mockk.clearAllMocks
 import io.mockk.mockk
 import io.mockk.verify
 import mu.KLogger
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono
 import reactor.core.publisher.SignalType
 import reactor.test.StepVerifier
 import reactor.util.context.Context
-import java.util.UUID
+import java.util.*
 
 internal class CoreTest {
     private val mdcContextKey = UUID.randomUUID().toString()

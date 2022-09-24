@@ -18,7 +18,7 @@ class ConfigurationTest {
 
     @Test
     fun `should store the added hooks and categorized after init`() {
-        Configuration.addHook("key1", "foo1", 0) { it, _ ->  mapOf("foo1" to "$it") }
+        Configuration.addHook("key1", "foo1", 0) { it, _ -> mapOf("foo1" to "$it") }
         Configuration.addHook("key2", "foo2", 0) { it, _ -> mapOf("foo2" to "$it") }
         Configuration.addGenericHook<String>("key3", "foo3", -1) { it, _ -> mapOf("foo3" to it!!) }
 

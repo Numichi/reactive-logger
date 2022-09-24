@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.hook
 
 import io.github.numichi.reactive.logger.MDC
 import reactor.util.context.ContextView
-import java.util.NoSuchElementException
 
 class MDCHook<T>(
     val name: String,

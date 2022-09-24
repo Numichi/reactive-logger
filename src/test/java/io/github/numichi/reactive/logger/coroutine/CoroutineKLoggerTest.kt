@@ -139,7 +139,7 @@ internal class CoroutineKLoggerTest {
                 val log = mockk<Logger>(relaxed = true)
                 val logger = CoroutineKLogger.getLogger(log)
                 logger.wrapResult { it.info("") }
-                verify(exactly = 1)  { log.info("") }
+                verify(exactly = 1) { log.info("") }
             }
         }
     }

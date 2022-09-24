@@ -175,12 +175,14 @@ internal class MDCContextTest {
     @Test
     fun `should run toString method if value not String`() {
         runTest {
-            val ctx = Context.of(mapOf(
-                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf(
-                    "int" to 111,
-                    "map" to mapOf<Any, Any>()
+            val ctx = Context.of(
+                mapOf(
+                    DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf(
+                        "int" to 111,
+                        "map" to mapOf<Any, Any>()
+                    )
                 )
-            ))
+            )
 
             withContext(ctx.asCoroutineContext()) {
                 val result2 = readMdc()

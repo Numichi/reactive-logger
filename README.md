@@ -24,7 +24,8 @@ MDC map copy had run about 129 times for only one request. Then let's count how 
 
 **My second problem on Kotlin Coroutine with lifting.**
 It does not work. When you call a Reactor API, API will activate hook, and MDC ThreadLocal will be overridden. After it, coroutine scope gets regain control. Hooks are not taken effect in coroutine
-areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is not. [[See example](https://github.com/Numichi/reactive-logger-my-problem/blob/main/src/main/kotlin/com/example/demo/controller/MdcController.kt)]
+areas. If you would like to run a logger with slf4j in the coroutine area, according to slf4j, the MDC is empty, but CoroutineContext is
+not. [[See example](https://github.com/Numichi/reactive-logger-my-problem/blob/main/src/main/kotlin/com/example/demo/controller/MdcController.kt)]
 
 **Another side effect I have experienced.**
 When I created a parallel request, my first request ended later than my second request. I have used a suspended delay in code, and I noticed
@@ -79,13 +80,16 @@ implementation("io.github.numichi:reactive-logger:VERSION")
 
 ## Logger library
 
-Because it is a layer on slf4j so you can use specific logger libraries like Backlog, Log4j2 and so on. By default, Spring uses the Backlog log library. So, if you don't would like to apply anything else, you don't need additional dependencies.
+Because it is a layer on slf4j so you can use specific logger libraries like Backlog, Log4j2 and so on. By default, Spring uses the Backlog log library. So, if you don't would like to apply anything
+else, you don't need additional dependencies.
 
 ### Log4j2 (optional)
 
-When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency. Configure log4j2.xml as required. But it is already a [configuration](https://logging.apache.org/log4j/2.x/manual/configuration.html) of the logger library.
+When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency. Configure log4j2.xml as required. But it is already
+a [configuration](https://logging.apache.org/log4j/2.x/manual/configuration.html) of the logger library.
 
-Many documentation can be found on the internet ([here](https://www.callicoder.com/spring-boot-log4j-2-example/) and [here](https://www.baeldung.com/spring-boot-logging)) on how can you change from Logback to Log4j2. The articles mainly use XML configuration, so I presented an example with Gradle Kotlin DSL configuration.
+Many documentation can be found on the internet ([here](https://www.callicoder.com/spring-boot-log4j-2-example/) and [here](https://www.baeldung.com/spring-boot-logging)) on how can you change from
+Logback to Log4j2. The articles mainly use XML configuration, so I presented an example with Gradle Kotlin DSL configuration.
 
 ```kotlin
 // Gradle Kotlin DSL
@@ -117,9 +121,9 @@ dependencies {
 The `reactive-logger` uses two default values. These are `defaultReactorContextMdcKey` and `defaultScheduler`.
 
 - `defaultReactorContextMdcKey`: Data intended for MDC can be found under this key in the reactor context.
-  - Default value: `DEFAULT_REACTOR_CONTEXT_MDC_KEY` (String)
+    - Default value: `DEFAULT_REACTOR_CONTEXT_MDC_KEY` (String)
 - `defaultScheduler`: Scheduler used for logging.
-  - Default value: `Schedulers.boundedElastic()` (Scheduler)
+    - Default value: `Schedulers.boundedElastic()` (Scheduler)
 
 **Example configuration (Kotlin):**
 
@@ -139,9 +143,11 @@ fun main() {
 >
 > Configuration.addGenericHook(...)
 
-The purpose of the hook is to transfer non-manually configured values to the MDC. These value pairs can be inserted into the reactor context by a library independent of us. Of course, we can also fill it algorithmically.
+The purpose of the hook is to transfer non-manually configured values to the MDC. These value pairs can be inserted into the reactor context by a library independent of us. Of course, we can also fill
+it algorithmically.
 
-So, for every logging or MDC query, the hook checks if the reactor context has the keyword to search. If so, we can tell how we want to save it in the MDC through a specified function or lambda. If this function gives to return an empty map or any exception is thrown the hook will do nothing with the data. If the context key does not exist then the first parameter will get null.
+So, for every logging or MDC query, the hook checks if the reactor context has the keyword to search. If so, we can tell how we want to save it in the MDC through a specified function or lambda. If
+this function gives to return an empty map or any exception is thrown the hook will do nothing with the data. If the context key does not exist then the first parameter will get null.
 
 Important! Hooks can overwrite any current snapshot data stored in MDC. (It can not overwrite source data.)
 
@@ -157,11 +163,14 @@ Important! Hooks can overwrite any current snapshot data stored in MDC. (It can 
 
 There are 2 methods `addGenericHook` and `addHook`. The only difference is that while the first option can be specified in the type, the latter is `Any?` in any case.
 
-- The first parameter is nullable `Any?` or `T?` depending on the method used. This value is null if configured key is not found in the reactor context or contains a different type than expected (only  in `addGenericHook` case).
-- The second parameter is currently a copy of the MDC snapshot that is being uploaded. Current content can be checked to see if there is a value that we want to overwrite or exists. This can be modified, but it has no effect on the snapshot MDC.
+- The first parameter is nullable `Any?` or `T?` depending on the method used. This value is null if configured key is not found in the reactor context or contains a different type than expected (only
+  in `addGenericHook` case).
+- The second parameter is currently a copy of the MDC snapshot that is being uploaded. Current content can be checked to see if there is a value that we want to overwrite or exists. This can be
+  modified, but it has no effect on the snapshot MDC.
 - The return value is a key-value map that will merge into the currently MDC snapshot. If this map is empty or created to throw any exception then merge will skip.
 
-In terms of configuration, you can add and remove dynamically however hooks are cached. You do not need to clear the cache when you modify hooks (add or remove) because every modification will release them and they will be re-caching.
+In terms of configuration, you can add and remove dynamically however hooks are cached. You do not need to clear the cache when you modify hooks (add or remove) because every modification will release
+them and they will be re-caching.
 
 #### Example
 
@@ -177,7 +186,8 @@ Suppose you have the following context in JSON format when you are logging:
 }
 ```
 
-Banana was added by a library independent of us, which may not exist in context. But, if it exists, we would like to see (for example) in the MDC map with uppercase transform with banana2 key. Like MDC contain:
+Banana was added by a library independent of us, which may not exist in context. But, if it exists, we would like to see (for example) in the MDC map with uppercase transform with banana2 key. Like
+MDC contain:
 
 ```json
 {

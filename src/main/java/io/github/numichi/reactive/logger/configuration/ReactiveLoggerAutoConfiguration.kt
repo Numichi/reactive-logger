@@ -1,8 +1,8 @@
 package io.github.numichi.reactive.logger.configuration
 
-import org.springframework.context.annotation.Configuration
 import io.github.numichi.reactive.logger.Configuration as RLConfig
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Configuration
 import javax.annotation.PostConstruct
 
 @Configuration
