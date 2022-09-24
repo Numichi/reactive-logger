@@ -6,15 +6,19 @@ import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.coroutine.readMdc
 import io.github.numichi.reactive.logger.coroutine.withMDCContext
+import io.github.numichi.reactive.logger.exceptions.NotEmittedValueException
 import io.github.numichi.reactive.logger.reactor.MDCContext
 import io.mockk.clearMocks
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.reactor.asCoroutineContext
 import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import mu.KLogger
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -70,8 +74,37 @@ class CoroutineCoreTest {
         }
     }
 
+    // TODO: Remove on v3.3.0
     @Test
-    fun snapshotTest() {
+    fun getDeprecatedContextResolver() {
+        val logger: Logger = mockk(relaxed = true)
+        val coroutineLogger = CoroutineLogger.getLogger(logger)
+
+        runTest {
+            assertEquals(null, coroutineLogger.contextResolver())
+        }
+
+        runTest {
+            val context = Context.of("A", "B")
+            withContext(context.asCoroutineContext()) {
+                assertEquals(context, coroutineLogger.contextResolver())
+            }
+        }
+    }
+
+    // TODO: Remove on v3.3.0
+    @Test
+    fun getDeprecatedReactorLogger() {
+        val logger: Logger = mockk(relaxed = true)
+        val coroutineLogger = CoroutineLogger.getLogger(logger)
+        val coroutineKLogger = CoroutineKLogger.getLogger(logger)
+
+        assertEquals(coroutineLogger.reactiveLogger, coroutineLogger.reactorLogger)
+        assertEquals(coroutineKLogger.reactiveLogger, coroutineKLogger.reactorLogger)
+    }
+
+    @Test
+    fun getSnapshotTest() {
         val logger: Logger = mockk(relaxed = true)
         val coroutineLogger1 = CoroutineLogger.getLogger(logger)
         val coroutineLogger2 = CoroutineLogger.getLogger(logger, mdcContextKey = "foo")
@@ -152,6 +185,7 @@ class CoroutineCoreTest {
 
     @Test
     fun wrapTest() {
+        // without MDC
         runTest {
             val log = mockk<Logger>(relaxed = true)
             val logger = CoroutineLogger.getLogger(log)
@@ -159,6 +193,7 @@ class CoroutineCoreTest {
             verify(exactly = 1) { log.info("message") }
         }
 
+        // with MDC
         runTest {
             val mdc = readMdc()
             mdc["Foo"] = "Bar"
@@ -167,6 +202,36 @@ class CoroutineCoreTest {
                 val logger = CoroutineLogger.getLogger(log)
                 logger.wrap { it.info("message") }
                 verify(exactly = 1) { log.info("message") }
+            }
+        }
+
+        // NotEmittedValueException
+        runTest {
+            val mdc = readMdc()
+            mdc["Foo"] = "Bar"
+            withMDCContext(mdc) {
+                val log = mockk<Logger>(relaxed = true)
+                val logger = CoroutineLogger.getLogger(log)
+                val error = assertThrows<NotEmittedValueException> {
+                    logger.wrap<Any> { Mono.empty() }
+                }
+
+                assertEquals("Did not emit any value", error.message)
+                assertSame(NoSuchElementException::class.java, error.cause?.javaClass)
+            }
+        }
+
+        // throw IllegalArgumentException or custom exception
+        runTest {
+            val log = mockk<Logger>(relaxed = true)
+            val logger = CoroutineLogger.getLogger(log)
+
+            assertThrows<IllegalArgumentException> {
+                logger.wrap<Any> { Mono.error(IllegalArgumentException()) }
+            }
+
+            assertThrows<IllegalArgumentException> {
+                logger.wrap<Any> { throw IllegalArgumentException() }
             }
         }
     }

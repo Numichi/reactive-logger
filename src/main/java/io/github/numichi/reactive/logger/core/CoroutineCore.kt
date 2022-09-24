@@ -46,7 +46,7 @@ abstract class CoroutineCore<R : RLogger, L : Logger>(
         try {
             return function(reactiveLogger).contextWrite { it.putAll(context) }.awaitSingle()
         } catch (e: NoSuchElementException) {
-            throw NotEmittedValueException("A null value cannot be entered.", e)
+            throw NotEmittedValueException("Did not emit any value", e)
         }
     }
 
