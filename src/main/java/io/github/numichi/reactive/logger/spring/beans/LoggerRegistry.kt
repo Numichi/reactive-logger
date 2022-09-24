@@ -5,7 +5,6 @@ import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 
-
 interface LoggerRegistry {
     fun makeReactiveLogger(instance: String): ReactiveLogger
     fun makeReactiveKLogger(instance: String): ReactiveKLogger

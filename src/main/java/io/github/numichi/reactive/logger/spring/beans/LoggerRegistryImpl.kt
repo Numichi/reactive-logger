@@ -5,11 +5,19 @@ import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
+import io.github.numichi.reactive.logger.spring.properties.ReactiveLogger as ReactiveLoggerProperties
 import io.github.numichi.reactive.logger.spring.properties.Instances
 import mu.KLogger
 import org.slf4j.Logger
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Configuration
 
-open class LoggerRegistryImpl(private val instances: Map<String, Instances>) : LoggerRegistry {
+@Configuration
+@EnableConfigurationProperties(value = [ReactiveLoggerProperties::class])
+open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) : LoggerRegistry {
+    private val instances: Map<String, Instances>
+        get() = properties.instances
+
     private fun createLogger(logger: String?): Logger? {
         if (logger == null) return null
 

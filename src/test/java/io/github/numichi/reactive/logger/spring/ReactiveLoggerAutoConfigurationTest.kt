@@ -3,6 +3,7 @@ package io.github.numichi.reactive.logger.spring
 import io.github.numichi.reactive.logger.Configuration as RLConfig
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.spring.beans.LoggerRegistry
+import io.github.numichi.reactive.logger.spring.beans.LoggerRegistryImpl
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeAll
@@ -15,7 +16,7 @@ import reactor.core.scheduler.Schedulers
     classes = [
         TestConfiguration::class,
         MDCHookAutoConfiguration::class,
-        ReactiveLoggerAutoConfiguration::class
+        LoggerRegistryImpl::class
     ]
 )
 class ReactiveLoggerAutoConfigurationTest {

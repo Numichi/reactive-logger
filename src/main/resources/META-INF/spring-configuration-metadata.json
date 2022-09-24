@@ -1,10 +1,16 @@
 {
   "properties": [
     {
+      "name": "reactive-logger",
+      "type": "io.github.numichi.reactive.logger.spring.properties.ReactiveLogger",
+      "description": "Reactive logger configuration scope.",
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLogger"
+    },
+    {
       "name": "reactive-logger.instances",
       "type": "java.util.Map<java.lang.String, io.github.numichi.reactive.logger.spring.properties.Instances>",
-      "description": "Default reactor context key for MDC information.",
-      "sourceType": "io.github.numichi.reactive.logger.spring.ReactiveLoggerProperties"
+      "description": "Logger information pre-registering.",
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLogger"
     }
   ]
 }
