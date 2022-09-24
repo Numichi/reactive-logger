@@ -18,30 +18,52 @@ open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) 
     private val instances: Map<String, Instances>
         get() = properties.instances
 
-    private fun createLogger(logger: String?): Logger? {
-        if (logger == null) return null
-
-        return try {
-            LoggerFactory.getLogger(Class.forName(logger))
-        } catch (e: Exception) {
-            LoggerFactory.getLogger(logger)
+    private fun createLogger(logger: Any?, default: Class<*>): Logger {
+        if (logger is Class<*>) {
+            return LoggerFactory.getLogger(logger)
         }
+
+        if (logger is String) {
+            return LoggerFactory.getLogger(logger)
+        }
+
+        return LoggerFactory.getLogger(default)
     }
 
-    private fun createKLogger(logger: String?): KLogger? {
-        if (logger == null) return null
-
-        return try {
-            LoggerFactory.getKLogger(Class.forName(logger))
-        } catch (e: Exception) {
-            LoggerFactory.getKLogger(logger)
+    private fun createKLogger(logger: Any?, default: Class<*>): KLogger {
+        if (logger is Class<*>) {
+            return LoggerFactory.getKLogger(logger)
         }
+
+        if (logger is String) {
+            return LoggerFactory.getKLogger(logger)
+        }
+
+        return LoggerFactory.getKLogger(default)
     }
 
     override fun makeReactiveLogger(instance: String): ReactiveLogger {
-        val logger = createLogger(instances[instance]?.logger)
-            ?: LoggerFactory.getLogger(ReactiveLogger::class.java)
+        return makeReactiveLogger(
+            instance,
+            createLogger(instances[instance]?.logger, ReactiveLogger::class.java)
+        )
+    }
 
+    override fun makeReactiveLogger(instance: String, logger: String): ReactiveLogger {
+        return makeReactiveLogger(
+            instance,
+            createKLogger(logger, ReactiveLogger::class.java)
+        )
+    }
+
+    override fun makeReactiveLogger(instance: String, logger: Class<*>): ReactiveLogger {
+        return makeReactiveLogger(
+            instance,
+            createKLogger(logger, ReactiveLogger::class.java)
+        )
+    }
+
+    override fun makeReactiveLogger(instance: String, logger: Logger): ReactiveLogger {
         return ReactiveLogger.getLogger(
             logger,
             instances[instance]?.contextKey,
@@ -50,9 +72,27 @@ open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) 
     }
 
     override fun makeReactiveKLogger(instance: String): ReactiveKLogger {
-        val logger = createKLogger(instances[instance]?.logger)
-            ?: LoggerFactory.getKLogger(ReactiveKLogger::class.java)
+        return makeReactiveKLogger(
+            instance,
+            createKLogger(instances[instance]?.logger, ReactiveKLogger::class.java)
+        )
+    }
 
+    override fun makeReactiveKLogger(instance: String, logger: String): ReactiveKLogger {
+        return makeReactiveKLogger(
+            instance,
+            createKLogger(logger, ReactiveKLogger::class.java)
+        )
+    }
+
+    override fun makeReactiveKLogger(instance: String, logger: Class<*>): ReactiveKLogger {
+        return makeReactiveKLogger(
+            instance,
+            createKLogger(logger, ReactiveKLogger::class.java)
+        )
+    }
+
+    override fun makeReactiveKLogger(instance: String, logger: KLogger): ReactiveKLogger {
         return ReactiveKLogger.getLogger(
             logger,
             instances[instance]?.contextKey,
@@ -61,9 +101,27 @@ open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) 
     }
 
     override fun makeCoroutineLogger(instance: String): CoroutineLogger {
-        val logger = createLogger(instances[instance]?.logger)
-            ?: LoggerFactory.getLogger(CoroutineLogger::class.java)
+        return makeCoroutineLogger(
+            instance,
+            createLogger(instances[instance]?.logger, CoroutineLogger::class.java)
+        )
+    }
 
+    override fun makeCoroutineLogger(instance: String, logger: String): CoroutineLogger {
+        return makeCoroutineLogger(
+            instance,
+            createLogger(logger, CoroutineLogger::class.java)
+        )
+    }
+
+    override fun makeCoroutineLogger(instance: String, logger: Class<*>): CoroutineLogger {
+        return makeCoroutineLogger(
+            instance,
+            createLogger(logger, CoroutineLogger::class.java)
+        )
+    }
+
+    override fun makeCoroutineLogger(instance: String, logger: Logger): CoroutineLogger {
         return CoroutineLogger.getLogger(
             logger,
             instances[instance]?.contextKey,
@@ -72,9 +130,27 @@ open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) 
     }
 
     override fun makeCoroutineKLogger(instance: String): CoroutineKLogger {
-        val logger = createKLogger(instances[instance]?.logger)
-            ?: LoggerFactory.getKLogger(CoroutineKLogger::class.java)
+        return makeCoroutineKLogger(
+            instance,
+            createKLogger(instances[instance]?.logger, CoroutineKLogger::class.java),
+        )
+    }
 
+    override fun makeCoroutineKLogger(instance: String, logger: String): CoroutineKLogger {
+        return makeCoroutineKLogger(
+            instance,
+            createKLogger(logger, CoroutineKLogger::class.java)
+        )
+    }
+
+    override fun makeCoroutineKLogger(instance: String, logger: Class<*>): CoroutineKLogger {
+        return makeCoroutineKLogger(
+            instance,
+            createKLogger(logger, CoroutineKLogger::class.java)
+        )
+    }
+
+    override fun makeCoroutineKLogger(instance: String, logger: KLogger): CoroutineKLogger {
         return CoroutineKLogger.getLogger(
             logger,
             instances[instance]?.contextKey,

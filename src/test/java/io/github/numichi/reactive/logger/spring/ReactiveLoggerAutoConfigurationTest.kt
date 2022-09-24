@@ -55,6 +55,16 @@ class ReactiveLoggerAutoConfigurationTest {
             assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLogger", l3.logger.name)
             assertEquals(Configuration.defaultReactorContextMdcKey, l3.contextKey)
             assertSame(Configuration.defaultScheduler, l3.scheduler)
+
+            val l4 = loggerRegistry.makeReactiveLogger("example-instance-2", "test")
+            assertEquals("test", l4.logger.name)
+            assertEquals("bar2", l4.contextKey)
+            assertSame(Schedulers.parallel(), l4.scheduler)
+
+            val l5 = loggerRegistry.makeReactiveLogger("example-instance-2", ReactiveLoggerAutoConfigurationTest::class.java)
+            assertEquals("io.github.numichi.reactive.logger.spring.ReactiveLoggerAutoConfigurationTest", l5.logger.name)
+            assertEquals("bar2", l5.contextKey)
+            assertSame(Schedulers.parallel(), l5.scheduler)
         }
 
         run {
@@ -72,6 +82,16 @@ class ReactiveLoggerAutoConfigurationTest {
             assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLogger", l3.logger.name)
             assertEquals(Configuration.defaultReactorContextMdcKey, l3.contextKey)
             assertSame(Configuration.defaultScheduler, l3.scheduler)
+
+            val l4 = loggerRegistry.makeReactiveKLogger("example-instance-2", "test")
+            assertEquals("test", l4.logger.name)
+            assertEquals("bar2", l4.contextKey)
+            assertSame(Schedulers.parallel(), l4.scheduler)
+
+            val l5 = loggerRegistry.makeReactiveKLogger("example-instance-2", ReactiveLoggerAutoConfigurationTest::class.java)
+            assertEquals("io.github.numichi.reactive.logger.spring.ReactiveLoggerAutoConfigurationTest", l5.logger.name)
+            assertEquals("bar2", l5.contextKey)
+            assertSame(Schedulers.parallel(), l5.scheduler)
         }
 
         run {
@@ -89,6 +109,16 @@ class ReactiveLoggerAutoConfigurationTest {
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineLogger", l3.logger.name)
             assertEquals(Configuration.defaultReactorContextMdcKey, l3.contextKey)
             assertSame(Configuration.defaultScheduler, l3.scheduler)
+
+            val l4 = loggerRegistry.makeCoroutineLogger("example-instance-2", "test")
+            assertEquals("test", l4.logger.name)
+            assertEquals("bar2", l4.contextKey)
+            assertSame(Schedulers.parallel(), l4.scheduler)
+
+            val l5 = loggerRegistry.makeCoroutineLogger("example-instance-2", ReactiveLoggerAutoConfigurationTest::class.java)
+            assertEquals("io.github.numichi.reactive.logger.spring.ReactiveLoggerAutoConfigurationTest", l5.logger.name)
+            assertEquals("bar2", l5.contextKey)
+            assertSame(Schedulers.parallel(), l5.scheduler)
         }
 
         run {
@@ -106,6 +136,16 @@ class ReactiveLoggerAutoConfigurationTest {
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLogger", l3.logger.name)
             assertEquals(Configuration.defaultReactorContextMdcKey, l3.contextKey)
             assertSame(Configuration.defaultScheduler, l3.scheduler)
+
+            val l4 = loggerRegistry.makeCoroutineKLogger("example-instance-2", "test")
+            assertEquals("test", l4.logger.name)
+            assertEquals("bar2", l4.contextKey)
+            assertSame(Schedulers.parallel(), l4.scheduler)
+
+            val l5 = loggerRegistry.makeCoroutineKLogger("example-instance-2", ReactiveLoggerAutoConfigurationTest::class.java)
+            assertEquals("io.github.numichi.reactive.logger.spring.ReactiveLoggerAutoConfigurationTest", l5.logger.name)
+            assertEquals("bar2", l5.contextKey)
+            assertSame(Schedulers.parallel(), l5.scheduler)
         }
     }
 }
