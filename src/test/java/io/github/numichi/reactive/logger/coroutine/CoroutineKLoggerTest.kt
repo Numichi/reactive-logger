@@ -37,7 +37,7 @@ internal class CoroutineKLoggerTest {
         runTest {
             val instance1 = CoroutineKLogger.getLogger(imperativeLogger)
             assertNotNull(instance1)
-            assertEquals(Configuration.defaultReactorContextMdcKey, instance1.mdcContextKey)
+            assertEquals(Configuration.defaultReactorContextMdcKey, instance1.contextKey)
         }
     }
 
@@ -59,43 +59,43 @@ internal class CoroutineKLoggerTest {
 
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i1.logger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i1.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i1.contextKey)
         assertSame(Schedulers.boundedElastic(), i1.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i2.logger.underlyingLogger.name)
-        assertEquals("foo", i2.mdcContextKey)
+        assertEquals("foo", i2.contextKey)
         assertSame(Schedulers.single(), i2.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i3.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i3.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i3.contextKey)
         assertSame(Schedulers.boundedElastic(), i3.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i4.logger.underlyingLogger.name)
-        assertEquals("foo", i4.mdcContextKey)
+        assertEquals("foo", i4.contextKey)
         assertSame(Schedulers.single(), i4.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i5.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i5.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i5.contextKey)
         assertSame(Schedulers.boundedElastic(), i5.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i6.logger.underlyingLogger.name)
-        assertEquals("foo", i6.mdcContextKey)
+        assertEquals("foo", i6.contextKey)
         assertSame(Schedulers.single(), i6.scheduler)
 
         assertEquals("foobar", i7.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i7.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i7.contextKey)
         assertSame(Schedulers.boundedElastic(), i7.scheduler)
 
         assertEquals("foobar", i8.logger.underlyingLogger.name)
-        assertEquals("foo", i8.mdcContextKey)
+        assertEquals("foo", i8.contextKey)
         assertSame(Schedulers.single(), i8.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i9.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i9.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i9.contextKey)
         assertSame(Schedulers.boundedElastic(), i9.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i10.logger.underlyingLogger.name)
-        assertEquals("foo", i10.mdcContextKey)
+        assertEquals("foo", i10.contextKey)
         assertSame(Schedulers.single(), i10.scheduler)
     }
 
@@ -121,8 +121,8 @@ internal class CoroutineKLoggerTest {
     @Test
     fun contextKey() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = CoroutineKLogger.getLogger(imperativeLogger, mdcContextKey = contextKey)
-        assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
+        val loggerWithCustomScheduler = CoroutineKLogger.getLogger(imperativeLogger, contextKey = contextKey)
+        assertSame(loggerWithCustomScheduler.contextKey, contextKey)
     }
 
     @Test

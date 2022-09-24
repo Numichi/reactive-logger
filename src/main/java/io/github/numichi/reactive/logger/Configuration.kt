@@ -9,7 +9,16 @@ enum class SchedulerOptions {
     BOUNDED_ELASTIC,
     PARALLEL,
     IMMEDIATE,
-    SINGLE
+    SINGLE;
+
+    fun toScheduler(): Scheduler {
+        return when (this) {
+            BOUNDED_ELASTIC -> Schedulers.boundedElastic()
+            PARALLEL -> Schedulers.parallel()
+            IMMEDIATE -> Schedulers.immediate()
+            SINGLE -> Schedulers.single()
+        }
+    }
 }
 
 object Configuration {
@@ -58,12 +67,7 @@ object Configuration {
 
     @JvmStatic
     fun setDefaultScheduler(option: SchedulerOptions) {
-        defaultScheduler = when (option) {
-            SchedulerOptions.BOUNDED_ELASTIC -> Schedulers.boundedElastic()
-            SchedulerOptions.PARALLEL -> Schedulers.parallel()
-            SchedulerOptions.IMMEDIATE -> Schedulers.immediate()
-            SchedulerOptions.SINGLE -> Schedulers.single()
-        }
+        defaultScheduler = option.toScheduler()
     }
 
     @JvmStatic

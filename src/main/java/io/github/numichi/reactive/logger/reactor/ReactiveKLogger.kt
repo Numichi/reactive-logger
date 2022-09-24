@@ -13,7 +13,7 @@ import reactor.util.context.ContextView
 
 class ReactiveKLogger(
     override val logger: KLogger,
-    override val mdcContextKey: String,
+    override val contextKey: String,
     override val scheduler: Scheduler
 ) : ReactiveCore<KLogger>(), RKLogger {
 
@@ -44,34 +44,34 @@ class ReactiveKLogger(
         }
 
         @JvmStatic
-        fun getLogger(string: String, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(string), mdcContextKey, scheduler)
+        fun getLogger(string: String, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(string), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(clazz), mdcContextKey, scheduler)
+        fun getLogger(clazz: Class<*>, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(clazz), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(logger), mdcContextKey, scheduler)
+        fun getLogger(logger: Logger, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(logger), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(func: () -> Unit, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(func), mdcContextKey, scheduler)
+        fun getLogger(func: () -> Unit, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(func), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(logger: KLogger, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
-            mdcContextKey?.also {
+        fun getLogger(logger: KLogger, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveKLogger {
+            contextKey?.also {
                 check(it.trim().isNotEmpty()) { MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE }
             }
 
             return ReactiveKLogger(
                 logger,
-                mdcContextKey ?: Configuration.defaultReactorContextMdcKey,
+                contextKey ?: Configuration.defaultReactorContextMdcKey,
                 scheduler ?: Configuration.defaultScheduler
             )
         }

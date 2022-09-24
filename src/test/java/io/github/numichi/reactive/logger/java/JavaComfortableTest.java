@@ -27,18 +27,18 @@ class JavaComfortableTest {
         Configuration.setDefaultReactorContextMdcKey("custom1");
         
         var logger = ReactiveLogger.getLogger(JavaComfortableTest.class);
-        assertEquals("custom1", logger.getMdcContextKey());
+        assertEquals("custom1", logger.getContextKey());
         
         Configuration.setDefaultReactorContextMdcKey("custom2");
         
         var logger2 = ReactiveLogger.getLogger(JavaComfortableTest.class);
-        assertEquals("custom1", logger.getMdcContextKey());
-        assertEquals("custom2", logger2.getMdcContextKey());
+        assertEquals("custom1", logger.getContextKey());
+        assertEquals("custom2", logger2.getContextKey());
         
         var logger3 = ReactiveLogger.getLogger(JavaComfortableTest.class, "custom3", null);
-        assertEquals("custom1", logger.getMdcContextKey());
-        assertEquals("custom2", logger2.getMdcContextKey());
-        assertEquals("custom3", logger3.getMdcContextKey());
+        assertEquals("custom1", logger.getContextKey());
+        assertEquals("custom2", logger2.getContextKey());
+        assertEquals("custom3", logger3.getContextKey());
         assertSame(Schedulers.boundedElastic(), logger3.getScheduler());
     }
 }

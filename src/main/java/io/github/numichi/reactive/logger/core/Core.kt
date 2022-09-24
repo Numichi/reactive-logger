@@ -13,11 +13,11 @@ import java.util.function.Consumer
 abstract class Core<L : Logger> {
 
     abstract val logger: L
-    abstract val mdcContextKey: String
+    abstract val contextKey: String
     abstract val scheduler: Scheduler
 
     fun wrapRunner(contextView: ContextView, runnable: Runnable) {
-        MDCSnapshot.of(readMdc(contextView, mdcContextKey)).use { runnable.run() }
+        MDCSnapshot.of(readMdc(contextView, contextKey)).use { runnable.run() }
     }
 
     fun <T> logConsumer(consumer: BiConsumer<Logger, Signal<T>>): Consumer<Signal<T>> {
@@ -41,4 +41,8 @@ abstract class Core<L : Logger> {
     @Deprecated("Already out of use. It will be deleted in v3.3.0.", ReplaceWith("logger.name"))
     val name: String
         get() = logger.name
+
+    @Deprecated("Already out of use. It will be deleted in v3.3.0.", ReplaceWith("logger.name"))
+    val mdcContextKey: String
+        get() = contextKey
 }

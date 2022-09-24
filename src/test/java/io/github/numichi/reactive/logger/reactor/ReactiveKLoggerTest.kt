@@ -45,43 +45,43 @@ internal class ReactiveKLoggerTest {
         val i10 = ReactiveKLogger.getLogger(ReactiveKLoggerTest::class.java, "foo", Schedulers.single())
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i1.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i1.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i1.contextKey)
         assertSame(Schedulers.boundedElastic(), i1.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i2.logger.underlyingLogger.name)
-        assertEquals("foo", i2.mdcContextKey)
+        assertEquals("foo", i2.contextKey)
         assertSame(Schedulers.single(), i2.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i3.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i3.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i3.contextKey)
         assertSame(Schedulers.boundedElastic(), i3.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i4.logger.underlyingLogger.name)
-        assertEquals("foo", i4.mdcContextKey)
+        assertEquals("foo", i4.contextKey)
         assertSame(Schedulers.single(), i4.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i5.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i5.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i5.contextKey)
         assertSame(Schedulers.boundedElastic(), i5.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i6.logger.underlyingLogger.name)
-        assertEquals("foo", i6.mdcContextKey)
+        assertEquals("foo", i6.contextKey)
         assertSame(Schedulers.single(), i6.scheduler)
 
         assertEquals("foobar", i7.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i7.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i7.contextKey)
         assertSame(Schedulers.boundedElastic(), i7.scheduler)
 
         assertEquals("foobar", i8.logger.underlyingLogger.name)
-        assertEquals("foo", i8.mdcContextKey)
+        assertEquals("foo", i8.contextKey)
         assertSame(Schedulers.single(), i8.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i9.logger.underlyingLogger.name)
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i9.mdcContextKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i9.contextKey)
         assertSame(Schedulers.boundedElastic(), i9.scheduler)
 
         assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", i10.logger.underlyingLogger.name)
-        assertEquals("foo", i10.mdcContextKey)
+        assertEquals("foo", i10.contextKey)
         assertSame(Schedulers.single(), i10.scheduler)
     }
 
@@ -101,15 +101,15 @@ internal class ReactiveKLoggerTest {
     @Test
     fun mdcContextKexTest() {
         val contextKey = "another-context-key"
-        val loggerWithCustomScheduler = ReactiveKLogger.getLogger(imperativeLogger, mdcContextKey = contextKey)
-        assertSame(loggerWithCustomScheduler.mdcContextKey, contextKey)
+        val loggerWithCustomScheduler = ReactiveKLogger.getLogger(imperativeLogger, contextKey = contextKey)
+        assertSame(loggerWithCustomScheduler.contextKey, contextKey)
 
         assertThrows<IllegalStateException> {
-            ReactiveKLogger.getLogger(imperativeLogger, mdcContextKey = "")
+            ReactiveKLogger.getLogger(imperativeLogger, contextKey = "")
         }
 
         assertThrows<IllegalStateException> {
-            ReactiveKLogger.getLogger(imperativeLogger, mdcContextKey = " ")
+            ReactiveKLogger.getLogger(imperativeLogger, contextKey = " ")
         }
     }
 

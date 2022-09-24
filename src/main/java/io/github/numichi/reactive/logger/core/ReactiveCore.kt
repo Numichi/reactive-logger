@@ -9,7 +9,7 @@ import reactor.util.context.ContextView
 abstract class ReactiveCore<L : Logger> : Core<L>(), RSnapshot {
 
     override fun snapshot(contextView: ContextView): Mono<MDC> {
-        return Mono.just(readMdc(contextView, mdcContextKey))
+        return Mono.just(readMdc(contextView, contextKey))
     }
 
     override fun snapshot(): Mono<MDC> {

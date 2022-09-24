@@ -10,8 +10,8 @@ suspend fun readMdc(): MDC {
     return readMdc(Configuration.defaultReactorContextMdcKey)
 }
 
-suspend fun readMdc(mdcContextKey: String): MDC {
-    return readMdc(reactorContextOrEmpty(), mdcContextKey)
+suspend fun readMdc(contextKey: String): MDC {
+    return readMdc(reactorContextOrEmpty(), contextKey)
 }
 
 // Not throw any exception
@@ -20,9 +20,9 @@ fun readMdc(contextView: ContextView? = Context.empty()): MDC {
     return readMdc(contextView, Configuration.defaultReactorContextMdcKey)
 }
 
-fun readMdc(contextView: ContextView? = Context.empty(), mdcContextKey: String): MDC {
+fun readMdc(contextView: ContextView? = Context.empty(), contextKey: String): MDC {
     requireNotNull(contextView)
-    val mdc = MDC(mdcContextKey)
-    mdcReferenceContentLoad(contextView, mdcContextKey, mdc)
+    val mdc = MDC(contextKey)
+    mdcReferenceContentLoad(contextView, contextKey, mdc)
     return mdc
 }

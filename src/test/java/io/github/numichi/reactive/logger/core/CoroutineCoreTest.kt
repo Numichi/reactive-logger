@@ -107,9 +107,9 @@ class CoroutineCoreTest {
     fun getSnapshotTest() {
         val logger: Logger = mockk(relaxed = true)
         val coroutineLogger1 = CoroutineLogger.getLogger(logger)
-        val coroutineLogger2 = CoroutineLogger.getLogger(logger, mdcContextKey = "foo")
+        val coroutineLogger2 = CoroutineLogger.getLogger(logger, contextKey = "foo")
         val coroutineKLogger1 = CoroutineKLogger.getLogger(logger)
-        val coroutineKLogger2 = CoroutineKLogger.getLogger(logger, mdcContextKey = "foo")
+        val coroutineKLogger2 = CoroutineKLogger.getLogger(logger, contextKey = "foo")
 
         runTest {
             val mdc = readMdc()

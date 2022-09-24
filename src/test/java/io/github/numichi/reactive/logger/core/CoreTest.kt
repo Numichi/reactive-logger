@@ -22,10 +22,10 @@ import reactor.util.context.Context
 import java.util.*
 
 internal class CoreTest {
-    private val mdcContextKey = UUID.randomUUID().toString()
+    private val contextKey = UUID.randomUUID().toString()
     private val logger: Logger = mockk(relaxed = true)
     private val kLogger: KLogger = LoggerFactory.getKLogger(logger)
-    private val reactiveLogger = ReactiveLogger.getLogger(logger, mdcContextKey, null)
+    private val reactiveLogger = ReactiveLogger.getLogger(logger, contextKey, null)
     private val reactiveKLogger = ReactiveKLogger.getLogger(kLogger)
     private val coroutineLogger = CoroutineLogger.getLogger(logger)
     private val coroutineKLogger = CoroutineKLogger.getLogger(kLogger)
@@ -53,6 +53,15 @@ internal class CoreTest {
         assertEquals(logger, coroutineKLogger.slf4jLogger)
     }
 
+    // TODO: Remove on v3.3.0
+    @Test
+    fun getMdcContextKeyTest() {
+        assertEquals(reactiveLogger.contextKey, reactiveLogger.mdcContextKey)
+        assertEquals(reactiveKLogger.contextKey, reactiveKLogger.mdcContextKey)
+        assertEquals(coroutineLogger.contextKey, coroutineLogger.mdcContextKey)
+        assertEquals(coroutineKLogger.contextKey, coroutineKLogger.mdcContextKey)
+    }
+
     @Test
     fun wrapRunnerTest() {
         val randomKey = UUID.randomUUID().toString()
@@ -60,7 +69,7 @@ internal class CoreTest {
         val mdc = mapOf(randomKey to randomValue)
         val contextContext = mapOf<Any, Any>(
             UUID.randomUUID() to UUID.randomUUID(),
-            mdcContextKey to mdc
+            contextKey to mdc
         )
         val context = Context.of(contextContext)
 

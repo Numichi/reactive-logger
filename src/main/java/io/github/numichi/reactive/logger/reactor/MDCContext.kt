@@ -29,13 +29,13 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun getMDCOrNull(context: ContextView, mdcContextKey: Any): MDC? {
-        return runCatching { context.get<MDC>(mdcContextKey) }.getOrNull()
+    fun getMDCOrNull(context: ContextView, contextKey: Any): MDC? {
+        return runCatching { context.get<MDC>(contextKey) }.getOrNull()
     }
 
     @JvmStatic
-    fun getMDCOrDefault(context: ContextView, mdcContextKey: Any): MDC {
-        return getMDCOrNull(context, mdcContextKey) ?: MDC(mdcContextKey.toString())
+    fun getMDCOrDefault(context: ContextView, contextKey: Any): MDC {
+        return getMDCOrNull(context, contextKey) ?: MDC(contextKey.toString())
     }
 
     @JvmStatic
@@ -44,8 +44,8 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun modifyContext(context: Context, mdcContextKey: Any, func: (MDC) -> Unit): Context {
-        val mdc = getMDCOrNull(context, mdcContextKey) ?: MDC(mdcContextKey.toString())
+    fun modifyContext(context: Context, contextKey: Any, func: (MDC) -> Unit): Context {
+        val mdc = getMDCOrNull(context, contextKey) ?: MDC(contextKey.toString())
         func(mdc)
         return put(context, mdc)
     }
@@ -65,8 +65,8 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun modifyContext(context: Context, mdcContextKey: Any, map: Map<String, String>): Context {
-        val mdc = getMDCOrNull(context, mdcContextKey) ?: MDC(mdcContextKey.toString())
+    fun modifyContext(context: Context, contextKey: Any, map: Map<String, String>): Context {
+        val mdc = getMDCOrNull(context, contextKey) ?: MDC(contextKey.toString())
         mdc.putAll(map)
         return put(context, mdc)
     }
@@ -77,9 +77,9 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun read(mdcContextKey: String): Mono<MDC> {
+    fun read(contextKey: String): Mono<MDC> {
         return Mono.deferContextual { ctx: ContextView ->
-            read(ctx, mdcContextKey)
+            read(ctx, contextKey)
         }
     }
 
@@ -89,9 +89,9 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun read(contextView: ContextView, mdcContextKey: String): Mono<MDC> {
-        val mdc = MDC(mdcContextKey)
-        mdcReferenceContentLoad(contextView, mdcContextKey, mdc)
+    fun read(contextView: ContextView, contextKey: String): Mono<MDC> {
+        val mdc = MDC(contextKey)
+        mdcReferenceContentLoad(contextView, contextKey, mdc)
         return Mono.just(mdc)
     }
 }

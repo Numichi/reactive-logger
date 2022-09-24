@@ -12,7 +12,7 @@ import reactor.util.context.ContextView
 
 open class ReactiveLogger(
     override val logger: Logger,
-    override val mdcContextKey: String,
+    override val contextKey: String,
     override val scheduler: Scheduler
 ) : ReactiveCore<Logger>(), RLogger {
 
@@ -23,8 +23,8 @@ open class ReactiveLogger(
         }
 
         @JvmStatic
-        fun getLogger(string: String, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
-            return getLogger(LoggerFactory.getLogger(string), mdcContextKey, scheduler)
+        fun getLogger(string: String, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(string), contextKey, scheduler)
         }
 
         @JvmStatic
@@ -33,8 +33,8 @@ open class ReactiveLogger(
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
-            return getLogger(LoggerFactory.getLogger(clazz), mdcContextKey, scheduler)
+        fun getLogger(clazz: Class<*>, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(clazz), contextKey, scheduler)
         }
 
         @JvmStatic
@@ -43,13 +43,13 @@ open class ReactiveLogger(
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, mdcContextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
-            mdcContextKey?.also {
+        fun getLogger(logger: Logger, contextKey: String? = null, scheduler: Scheduler? = null): ReactiveLogger {
+            contextKey?.also {
                 check(it.trim().isNotEmpty()) { MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE }
             }
 
             return ReactiveLogger(
-                logger, mdcContextKey ?: Configuration.defaultReactorContextMdcKey, scheduler ?: Configuration.defaultScheduler
+                logger, contextKey ?: Configuration.defaultReactorContextMdcKey, scheduler ?: Configuration.defaultScheduler
             )
         }
     }

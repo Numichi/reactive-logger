@@ -38,7 +38,7 @@ internal class ReactiveCoreTest {
 
         // with custom key and empty context
         run {
-            val logger = ReactiveLogger.getLogger("", mdcContextKey = contextKey)
+            val logger = ReactiveLogger.getLogger("", contextKey = contextKey)
 
             val mono = Mono.deferContextual { logger.snapshot(it) }
 
@@ -51,7 +51,7 @@ internal class ReactiveCoreTest {
         run {
             val content = mapOf("A" to "B")
             val mdc = MDC(contextKey, content)
-            val logger = ReactiveLogger.getLogger("", mdcContextKey = contextKey)
+            val logger = ReactiveLogger.getLogger("", contextKey = contextKey)
 
             val mono = Mono.deferContextual { logger.snapshot(it) }
                 .contextWrite { it.put(contextKey, content) }
@@ -65,7 +65,7 @@ internal class ReactiveCoreTest {
         run {
             val content = mapOf("A" to "B")
             val mdc = MDC(contextKey, content)
-            val logger = ReactiveLogger.getLogger("", mdcContextKey = contextKey)
+            val logger = ReactiveLogger.getLogger("", contextKey = contextKey)
 
             val mono = Mono.defer { logger.snapshot() }
                 .contextWrite { it.put(contextKey, content) }

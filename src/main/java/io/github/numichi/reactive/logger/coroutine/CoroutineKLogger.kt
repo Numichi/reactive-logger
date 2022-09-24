@@ -14,39 +14,39 @@ import reactor.core.scheduler.Scheduler
 
 class CoroutineKLogger(
     override val reactiveLogger: ReactiveKLogger
-) : CoroutineCore<ReactiveKLogger, KLogger>(reactiveLogger.logger, reactiveLogger.mdcContextKey, reactiveLogger.scheduler), CKLogger {
+) : CoroutineCore<ReactiveKLogger, KLogger>(reactiveLogger.logger, reactiveLogger.contextKey, reactiveLogger.scheduler), CKLogger {
 
     companion object {
         @JvmStatic
-        fun getLogger(string: String, mdcContextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
-            return getLogger(LoggerFactory.getKLogger(string), mdcContextKey, scheduler)
+        fun getLogger(string: String, contextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
+            return getLogger(LoggerFactory.getKLogger(string), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, mdcContextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
-            return getLogger(LoggerFactory.getKLogger(clazz), mdcContextKey, scheduler)
+        fun getLogger(clazz: Class<*>, contextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
+            return getLogger(LoggerFactory.getKLogger(clazz), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, mdcContextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
-            return getLogger(LoggerFactory.getKLogger(logger), mdcContextKey, scheduler)
+        fun getLogger(logger: Logger, contextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
+            return getLogger(LoggerFactory.getKLogger(logger), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(func: () -> Unit, mdcContextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
-            return getLogger(LoggerFactory.getKLogger(func), mdcContextKey, scheduler)
+        fun getLogger(func: () -> Unit, contextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
+            return getLogger(LoggerFactory.getKLogger(func), contextKey, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(logger: KLogger, mdcContextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
-            mdcContextKey?.also {
+        fun getLogger(logger: KLogger, contextKey: String? = null, scheduler: Scheduler? = null): CoroutineKLogger {
+            contextKey?.also {
                 check(it.trim().isNotEmpty()) { MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE }
             }
 
             return CoroutineKLogger(
                 ReactiveKLogger(
                     logger,
-                    mdcContextKey ?: Configuration.defaultReactorContextMdcKey,
+                    contextKey ?: Configuration.defaultReactorContextMdcKey,
                     scheduler ?: Configuration.defaultScheduler
                 )
             )

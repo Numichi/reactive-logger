@@ -41,6 +41,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.32") // for Spring Boot Starter vulnerability resolver
     implementation("org.springframework.boot:spring-boot-starter:2.7.4")
     api("io.github.microutils:kotlin-logging-jvm:3.0.0")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.4")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
@@ -133,11 +134,9 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
-//tasks.getting(KotlinCompile::class) {
-//    kotlinOptions {
-//        jvmTarget = "11"
-//    }
-//}
+tasks.compileJava {
+    inputs.files(tasks.named("processResources"))
+}
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)

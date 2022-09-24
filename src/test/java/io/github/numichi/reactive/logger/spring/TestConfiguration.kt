@@ -1,4 +1,4 @@
-package io.github.numichi.reactive.logger.java.spring
+package io.github.numichi.reactive.logger.spring
 
 import io.github.numichi.reactive.logger.hook.MDCHook
 import org.springframework.context.annotation.Bean
