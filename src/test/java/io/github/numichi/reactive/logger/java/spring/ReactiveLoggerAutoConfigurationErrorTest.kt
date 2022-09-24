@@ -1,7 +1,8 @@
-package io.github.numichi.reactive.logger.configuration
+package io.github.numichi.reactive.logger.java.spring
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.exceptions.HookNameAlreadyExistException
+import io.github.numichi.reactive.logger.spring.MDCHookAutoConfiguration
 import io.github.numichi.reactive.logger.hook.MDCHook
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll

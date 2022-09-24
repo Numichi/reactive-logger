@@ -1,8 +1,10 @@
-package io.github.numichi.reactive.logger.configuration
+package io.github.numichi.reactive.logger.java.spring
 
 import io.github.numichi.reactive.logger.Configuration as RLConfig
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+import io.github.numichi.reactive.logger.spring.MDCHookAutoConfiguration
+import io.github.numichi.reactive.logger.spring.ReactiveLoggerAutoConfiguration
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test

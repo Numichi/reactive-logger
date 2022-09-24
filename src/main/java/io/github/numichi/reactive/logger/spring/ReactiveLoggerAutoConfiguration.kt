@@ -1,4 +1,4 @@
-package io.github.numichi.reactive.logger.configuration
+package io.github.numichi.reactive.logger.spring
 
 import io.github.numichi.reactive.logger.Configuration as RLConfig
 import org.springframework.boot.context.properties.EnableConfigurationProperties

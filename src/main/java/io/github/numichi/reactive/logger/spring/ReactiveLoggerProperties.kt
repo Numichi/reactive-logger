@@ -1,6 +1,6 @@
-package io.github.numichi.reactive.logger.configuration
+package io.github.numichi.reactive.logger.spring
 
-import io.github.numichi.reactive.logger.configuration.properties.Default
+import io.github.numichi.reactive.logger.spring.properties.Default
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 

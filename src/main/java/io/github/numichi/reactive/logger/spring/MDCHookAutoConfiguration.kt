@@ -1,4 +1,4 @@
-package io.github.numichi.reactive.logger.configuration
+package io.github.numichi.reactive.logger.spring
 
 import io.github.numichi.reactive.logger.exceptions.HookNameAlreadyExistException
 import io.github.numichi.reactive.logger.hook.MDCHook
