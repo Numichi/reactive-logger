@@ -24,8 +24,7 @@ import reactor.core.scheduler.Schedulers
 @ExperimentalCoroutinesApi
 internal class CoroutineKLoggerTest {
     private val imperativeLogger: KLogger = mockk(relaxed = true)
-    private val logger: ICoroutineKLogger = CoroutineKLogger.getLogger(imperativeLogger)
-    private val loggerScheduled: ICoroutineKLogger = CoroutineKLogger.getLogger(imperativeLogger, scheduler = Schedulers.parallel())
+    private val logger = CoroutineKLogger.getLogger(imperativeLogger)
 
     @BeforeEach
     fun beforeEach() {
@@ -58,7 +57,8 @@ internal class CoroutineKLoggerTest {
         val i9 = CoroutineKLogger.getLogger(CoroutineKLoggerTest::class.java)
         val i10 = CoroutineKLogger.getLogger(CoroutineKLoggerTest::class.java, "foo", Schedulers.single())
 
-        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i1.logger.underlyingLogger.name)
+
+        assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", i1.logger.name)
         assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, i1.mdcContextKey)
         assertSame(Schedulers.boundedElastic(), i1.scheduler)
 
@@ -100,26 +100,22 @@ internal class CoroutineKLoggerTest {
     }
 
     @Test
-    fun getName() {
+    fun getNameTest() {
         val name: String = randomText()
         every { imperativeLogger.name } returns name
-        assertEquals(name, logger.name)
+        assertEquals(name, logger.logger.name)
     }
 
     @Test
-    fun imperative() {
-        assertSame(logger.reactorLogger.logger, imperativeLogger)
+    fun sameLoggerTest() {
+        assertSame(logger.reactiveLogger.logger, imperativeLogger)
+        assertSame(logger.reactiveLogger.logger.underlyingLogger, imperativeLogger.underlyingLogger)
     }
 
+    // TODO: Delete on v3.3.0
     @Test
     fun slf4jLogger() {
         assertSame(logger.reactorLogger.slf4jLogger, imperativeLogger.underlyingLogger)
-    }
-
-    @Test
-    fun scheduled() {
-        assertSame(Schedulers.boundedElastic(), logger.scheduler)
-        assertSame(Schedulers.parallel(), loggerScheduled.scheduler)
     }
 
     @Test

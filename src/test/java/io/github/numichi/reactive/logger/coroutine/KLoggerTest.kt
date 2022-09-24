@@ -19,9 +19,9 @@ import org.slf4j.Marker
 import org.slf4j.MarkerFactory
 
 @ExperimentalCoroutinesApi
-class ICoroutineKLoggerTest {
+class KLoggerTest {
     private val imperativeLogger: KLogger = mockk(relaxed = true)
-    private val logger: ICoroutineKLogger = CoroutineKLogger.getLogger(imperativeLogger)
+    private val logger = CoroutineKLogger.getLogger(imperativeLogger)
 
     @BeforeEach
     fun beforeEach() {

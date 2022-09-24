@@ -37,7 +37,7 @@ internal class ReactiveKLoggerTest {
         val i2 = ReactiveKLogger.getLogger(logger, "foo", Schedulers.single())
         val i3 = ReactiveKLogger.getLogger(klogger)
         val i4 = ReactiveKLogger.getLogger(klogger, "foo", Schedulers.single())
-        val i5 = ReactiveKLogger.getLogger({})
+        val i5 = ReactiveKLogger.getLogger {}
         val i6 = ReactiveKLogger.getLogger({}, "foo", Schedulers.single())
         val i7 = ReactiveKLogger.getLogger("foobar")
         val i8 = ReactiveKLogger.getLogger("foobar", "foo", Schedulers.single())
@@ -89,7 +89,7 @@ internal class ReactiveKLoggerTest {
     fun nameTest() {
         val name = randomText()
         every { imperativeLogger.name } returns name
-        assertEquals(name, logger.name)
+        assertEquals(name, logger.logger.name)
     }
 
     @Test

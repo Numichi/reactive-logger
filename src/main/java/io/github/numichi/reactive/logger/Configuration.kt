@@ -23,7 +23,7 @@ object Configuration {
 
     @JvmStatic
     fun <T> addGenericHook(name: String, contextKey: Any, order: Int, hook: (T?, MDC) -> Map<String, String>) {
-        MDCHookCache.addHook(name, MDCHook(contextKey, order, hook))
+        MDCHookCache.addHook(MDCHook(name, contextKey, order, hook))
     }
 
     @JvmStatic
@@ -33,7 +33,7 @@ object Configuration {
 
     @JvmStatic
     fun addHook(name: String, contextKey: Any, order: Int, hook: (Any?, MDC) -> Map<String, String>) {
-        MDCHookCache.addHook(name, MDCHook(contextKey, order, hook))
+        MDCHookCache.addHook(MDCHook(name, contextKey, order, hook))
     }
 
     @JvmStatic

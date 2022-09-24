@@ -5,10 +5,13 @@ import reactor.util.context.ContextView
 import java.util.NoSuchElementException
 
 class MDCHook<T>(
+    val name: String,
     val contextKey: Any,
-    val order: Int,
+    val order: Int = 0,
     val hook: (T?, MDC) -> Map<String, String>
 ) {
+    constructor(name: String, contextKey: Any, hook: (T?, MDC) -> Map<String, String>) : this(name, contextKey, 0, hook)
+
     internal fun hookEvent(contextView: ContextView, mdc: MDC): Map<String, String> {
         val contextValue = try {
             contextView.get<T>(contextKey)

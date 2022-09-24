@@ -96,12 +96,7 @@ internal class CoroutineLoggerTest {
 
     @Test
     fun imperative() {
-        assertSame(logger.reactorLogger.logger, imperativeLogger)
-    }
-
-    @Test
-    fun slf4jLogger() {
-        assertSame(logger.reactorLogger.slf4jLogger, imperativeLogger)
+        assertSame(logger.logger, imperativeLogger)
     }
 
     @Test

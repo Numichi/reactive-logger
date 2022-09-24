@@ -23,20 +23,20 @@ class JavaComfortableTest {
     void comfortableTest() {
         Configuration.addGenericHook("test", "foo", (String value, MDC mdc) -> Map.of("key", value));
         assertEquals(1, Configuration.getHooks().size());
-        
+
         Configuration.setDefaultReactorContextMdcKey("custom1");
-        
-        var logger1 = ReactiveLogger.getLogger(JavaComfortableTest.class);
-        assertEquals("custom1", logger1.getMdcContextKey());
-        
+
+        var logger = ReactiveLogger.getLogger(JavaComfortableTest.class);
+        assertEquals("custom1", logger.getMdcContextKey());
+
         Configuration.setDefaultReactorContextMdcKey("custom2");
-        
+
         var logger2 = ReactiveLogger.getLogger(JavaComfortableTest.class);
-        assertEquals("custom1", logger1.getMdcContextKey());
+        assertEquals("custom1", logger.getMdcContextKey());
         assertEquals("custom2", logger2.getMdcContextKey());
-        
+
         var logger3 = ReactiveLogger.getLogger(JavaComfortableTest.class, "custom3", null);
-        assertEquals("custom1", logger1.getMdcContextKey());
+        assertEquals("custom1", logger.getMdcContextKey());
         assertEquals("custom2", logger2.getMdcContextKey());
         assertEquals("custom3", logger3.getMdcContextKey());
         assertSame(Schedulers.boundedElastic(), logger3.getScheduler());

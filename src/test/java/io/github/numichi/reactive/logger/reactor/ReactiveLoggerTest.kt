@@ -80,6 +80,7 @@ internal class ReactiveLoggerTest {
         val name = randomText()
         every { imperativeLogger.name } returns name
         assertEquals(name, logger.name)
+        assertEquals(name, logger.logger.name)
     }
 
     @Test

@@ -24,8 +24,8 @@ internal object MDCHookCache {
         return storeHooks.containsKey(key)
     }
 
-    fun addHook(key: String, hook: MDCHook<*>) {
-        storeHooks[key] = hook
+    fun addHook(hook: MDCHook<*>) {
+        storeHooks[hook.name] = hook
         initCache()
     }
 

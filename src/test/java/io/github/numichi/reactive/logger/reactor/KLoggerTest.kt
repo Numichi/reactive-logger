@@ -8,17 +8,17 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import mu.KLogger
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.slf4j.Logger
 import org.slf4j.Marker
 import org.slf4j.MarkerFactory
 import reactor.test.StepVerifier
 
-class IReactorLoggerTest {
-    private val imperativeLogger: Logger = mockk(relaxed = true)
-    private val logger = ReactiveLogger.getLogger(imperativeLogger)
+class KLoggerTest {
+    private val imperativeLogger: KLogger = mockk(relaxed = true)
+    private val logger = ReactiveKLogger.getLogger(imperativeLogger)
 
     @BeforeEach
     fun afterEach() {
@@ -26,6 +26,7 @@ class IReactorLoggerTest {
         Configuration.reset()
     }
 
+    //region Trace
     @Test
     fun traceEnabled() {
         every { imperativeLogger.isTraceEnabled } returnsMany listOf(true, false, true)
@@ -44,71 +45,51 @@ class IReactorLoggerTest {
     }
 
     @Test
-    fun debugEnabled() {
-        every { imperativeLogger.isDebugEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
-        Assertions.assertFalse(logger.isDebugEnabled, "debug enabled when it should not be")
-        Assertions.assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
+    fun traceMessageSupplier() {
+        val message: String = randomText()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.trace(capture(supplierCaptor)) } returns Unit
+        step { logger.trace { message } }
+        Assertions.assertEquals(message, supplierCaptor.captured())
     }
 
     @Test
-    fun debugEnabledMarker() {
+    fun traceMessageThrowableSupplier() {
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val exceptionCaptor = slot<SimulatedException>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.trace(capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.trace(exception) { message } }
+        Assertions.assertEquals(exceptionCaptor.captured.message, exception.message)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun traceMessageMarkerSupplier() {
         val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
-        Assertions.assertFalse(logger.isDebugEnabled(marker), "debug enabled when it should not be")
-        Assertions.assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
+        val message: String = randomText()
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.trace(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.trace(marker) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
     }
 
     @Test
-    fun infoEnabled() {
-        every { imperativeLogger.isInfoEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
-        Assertions.assertFalse(logger.isInfoEnabled, "info enabled when it should not be")
-        Assertions.assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
-    }
-
-    @Test
-    fun infoEnabledMarker() {
+    fun traceMessageThrowableMarkerSupplier() {
         val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
-        Assertions.assertFalse(logger.isInfoEnabled(marker), "info enabled when it should not be")
-        Assertions.assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
-    }
-
-    @Test
-    fun warnEnabled() {
-        every { imperativeLogger.isWarnEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
-        Assertions.assertFalse(logger.isWarnEnabled, "warn enabled when it should not be")
-        Assertions.assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
-    }
-
-    @Test
-    fun warnEnabledMarker() {
-        val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
-        Assertions.assertFalse(logger.isWarnEnabled(marker), "warn enabled when it should not be")
-        Assertions.assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
-    }
-
-    @Test
-    fun errorEnabled() {
-        every { imperativeLogger.isErrorEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
-        Assertions.assertFalse(logger.isErrorEnabled, "error enabled when it should not be")
-        Assertions.assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
-    }
-
-    @Test
-    fun errorEnabledMarker() {
-        val marker = MarkerFactory.getMarker(randomText())
-        every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
-        Assertions.assertFalse(logger.isErrorEnabled(marker), "error enabled when it should not be")
-        Assertions.assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        val exceptionCaptor = slot<SimulatedException>()
+        every { imperativeLogger.trace(capture(markerCaptor), capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.trace(marker, exception) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(exception, exceptionCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
     }
 
     @Test
@@ -213,6 +194,71 @@ class IReactorLoggerTest {
 
     //region Debug
     @Test
+    fun debugEnabled() {
+        every { imperativeLogger.isDebugEnabled } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
+        Assertions.assertFalse(logger.isDebugEnabled, "debug enabled when it should not be")
+        Assertions.assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
+    }
+
+    @Test
+    fun debugEnabledMarker() {
+        val marker = MarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
+        Assertions.assertFalse(logger.isDebugEnabled(marker), "debug enabled when it should not be")
+        Assertions.assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
+    }
+
+    @Test
+    fun debugMessageSupplier() {
+        val message: String = randomText()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.debug(capture(supplierCaptor)) } returns Unit
+        step { logger.debug { message } }
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun debugMessageThrowableSupplier() {
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val exceptionCaptor = slot<SimulatedException>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.debug(capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.debug(exception) { message } }
+        Assertions.assertEquals(exceptionCaptor.captured.message, exception.message)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun debugMessageMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.debug(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.debug(marker) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun debugMessageThrowableMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        val exceptionCaptor = slot<SimulatedException>()
+        every { imperativeLogger.debug(capture(markerCaptor), capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.debug(marker, exception) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(exception, exceptionCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
     fun debugMessage() {
         val message: String = randomText()
         step { logger.debug(message) }
@@ -313,6 +359,71 @@ class IReactorLoggerTest {
     //endregion
 
     //region Info
+    @Test
+    fun infoEnabled() {
+        every { imperativeLogger.isInfoEnabled } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
+        Assertions.assertFalse(logger.isInfoEnabled, "info enabled when it should not be")
+        Assertions.assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
+    }
+
+    @Test
+    fun infoEnabledMarker() {
+        val marker = MarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
+        Assertions.assertFalse(logger.isInfoEnabled(marker), "info enabled when it should not be")
+        Assertions.assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
+    }
+
+    @Test
+    fun infoMessageSupplier() {
+        val message: String = randomText()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.info(capture(supplierCaptor)) } returns Unit
+        step { logger.info { message } }
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun infoMessageThrowableSupplier() {
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val exceptionCaptor = slot<SimulatedException>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.info(capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.info(exception) { message } }
+        Assertions.assertEquals(exceptionCaptor.captured.message, exception.message)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun infoMessageMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.info(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.info(marker) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun infoMessageThrowableMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        val exceptionCaptor = slot<SimulatedException>()
+        every { imperativeLogger.info(capture(markerCaptor), capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.info(marker, exception) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(exception, exceptionCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
     @Test
     fun infoMessage() {
         val message: String = randomText()
@@ -415,6 +526,71 @@ class IReactorLoggerTest {
 
     //region Warn
     @Test
+    fun warnEnabled() {
+        every { imperativeLogger.isWarnEnabled } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
+        Assertions.assertFalse(logger.isWarnEnabled, "warn enabled when it should not be")
+        Assertions.assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
+    }
+
+    @Test
+    fun warnEnabledMarker() {
+        val marker = MarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
+        Assertions.assertFalse(logger.isWarnEnabled(marker), "warn enabled when it should not be")
+        Assertions.assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
+    }
+
+    @Test
+    fun warnMessageSupplier() {
+        val message: String = randomText()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.warn(capture(supplierCaptor)) } returns Unit
+        step { logger.warn { message } }
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun warnMessageThrowableSupplier() {
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val exceptionCaptor = slot<SimulatedException>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.warn(capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.warn(exception) { message } }
+        Assertions.assertEquals(exceptionCaptor.captured.message, exception.message)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun warnMessageMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.warn(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.warn(marker) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun warnMessageThrowableMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        val exceptionCaptor = slot<SimulatedException>()
+        every { imperativeLogger.warn(capture(markerCaptor), capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.warn(marker, exception) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(exception, exceptionCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
     fun warnMessage() {
         val message: String = randomText()
         StepVerifier.create(logger.warn(message)).expectNextCount(1).verifyComplete()
@@ -516,6 +692,71 @@ class IReactorLoggerTest {
 
     //region Error
     @Test
+    fun errorEnabled() {
+        every { imperativeLogger.isErrorEnabled } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
+        Assertions.assertFalse(logger.isErrorEnabled, "error enabled when it should not be")
+        Assertions.assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
+    }
+
+    @Test
+    fun errorEnabledMarker() {
+        val marker = MarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
+        Assertions.assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
+        Assertions.assertFalse(logger.isErrorEnabled(marker), "error enabled when it should not be")
+        Assertions.assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
+    }
+
+    @Test
+    fun errorMessageSupplier() {
+        val message: String = randomText()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.error(capture(supplierCaptor)) } returns Unit
+        step { logger.error { message } }
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun errorMessageThrowableSupplier() {
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val exceptionCaptor = slot<SimulatedException>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.error(capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.error(exception) { message } }
+        Assertions.assertEquals(exceptionCaptor.captured.message, exception.message)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun errorMessageMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        every { imperativeLogger.error(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.error(marker) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
+    fun errorMessageThrowableMarkerSupplier() {
+        val marker = MarkerFactory.getMarker(randomText())
+        val message: String = randomText()
+        val exception = SimulatedException(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<() -> Any?>()
+        val exceptionCaptor = slot<SimulatedException>()
+        every { imperativeLogger.error(capture(markerCaptor), capture(exceptionCaptor), capture(supplierCaptor)) } returns Unit
+        step { logger.error(marker, exception) { message } }
+        Assertions.assertEquals(marker, markerCaptor.captured)
+        Assertions.assertEquals(exception, exceptionCaptor.captured)
+        Assertions.assertEquals(message, supplierCaptor.captured())
+    }
+
+    @Test
     fun errorMessage() {
         val message: String = randomText()
         step { logger.error(message) }
@@ -615,5 +856,46 @@ class IReactorLoggerTest {
     }
     //endregion
 
-    class SimulatedException(message: String?) : RuntimeException(message)
+    //region Other
+    @Test
+    fun entry() {
+        val message1: String = randomText()
+        val message2: String = randomText()
+        step { logger.entry(message1, message2) }
+        verify { imperativeLogger.entry(message1, message2) }
+    }
+
+    @Test
+    fun exit() {
+        step { logger.exit() }
+        verify { imperativeLogger.exit() }
+    }
+
+    @Test
+    fun exitParameterized() {
+        val message: String = randomText()
+        StepVerifier.create(logger.exit(message))
+            .expectNextMatches { it == message }
+            .verifyComplete()
+        verify { imperativeLogger.exit(message) }
+    }
+
+    @Test
+    fun throwing() {
+        val message: String = randomText()
+        StepVerifier.create(logger.throwing(SimulatedException(message)))
+            .expectNextMatches { it.message == message }
+            .verifyComplete()
+    }
+
+    @Test
+    fun catching() {
+        val message: String = randomText()
+        StepVerifier.create(logger.catching(SimulatedException(message)))
+            .expectNextMatches { it.message == message }
+            .verifyComplete()
+    }
+    //endregion
+
+    class SimulatedException(message: String? = null) : RuntimeException(message)
 }

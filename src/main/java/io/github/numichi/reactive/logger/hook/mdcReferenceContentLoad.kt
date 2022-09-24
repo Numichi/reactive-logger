@@ -9,7 +9,7 @@ internal fun mdcReferenceContentLoad(contextView: ContextView, mdcContextKey: St
     }
 
     contextView.getOrDefault<Map<String, String>>(mdcContextKey, null)?.also {
-        val map = it.mapValues { v -> (v.value as Any).toString() }
+        val map = it.mapValues { v -> (v.value as Any?).toString() }
         mdc.putAll(map)
     }
 

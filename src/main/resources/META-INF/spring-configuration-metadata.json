@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "reactive-logger.default.key",
+      "type": "java.lang.String",
+      "description": "Default reactor context key for MDC information.",
+      "defaultValue": "DEFAULT_REACTOR_CONTEXT_MDC_KEY",
+      "sourceType": "io.github.numichi.reactive.logger.configuration.ReactiveLoggerAutoConfiguration"
+    },
+    {
+      "name": "reactive-logger.default.scheduler",
+      "type": "io.github.numichi.reactive.logger.SchedulerOptions",
+      "description": "Description for reactive-logger.default.key.",
+      "defaultValue": "bounded_elastic",
+      "sourceType": "io.github.numichi.reactive.logger.configuration.ReactiveLoggerAutoConfiguration"
+    }
+  ]
+}

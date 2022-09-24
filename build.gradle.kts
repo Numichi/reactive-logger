@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     java
     jacoco
@@ -11,6 +13,8 @@ plugins {
 group = project.property("group") as String
 version = project.property("version") as String
 
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions.jvmTarget = "11"
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
@@ -18,21 +22,34 @@ java {
     withJavadocJar()
 }
 
+// Disable LogBack for test
+configurations {
+    testing {
+        all {
+            exclude("org.springframework.boot", "spring-boot-starter-logging")
+        }
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.projectreactor:reactor-core:3.4.22")
-    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("io.projectreactor:reactor-core:3.4.23")
+    implementation("org.slf4j:slf4j-api:2.0.1")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    api("io.github.microutils:kotlin-logging-jvm:2.1.23")
+    implementation("org.yaml:snakeyaml:1.32") // for Spring Boot Starter vulnerability resolver
+    implementation("org.springframework.boot:spring-boot-starter:2.7.4")
+    api("io.github.microutils:kotlin-logging-jvm:3.0.0")
 
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.4")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testImplementation("io.projectreactor:reactor-test:3.4.22")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.18.0")
+    testImplementation("io.projectreactor:reactor-test:3.4.23")
+    testImplementation("org.apache.logging.log4j:log4j-core:2.19.0")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("io.mockk:mockk:1.12.7")
+    testImplementation("io.mockk:mockk:1.12.8")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
@@ -116,12 +133,14 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
+//tasks.getting(KotlinCompile::class) {
+//    kotlinOptions {
+//        jvmTarget = "11"
+//    }
+//}
+
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
 }
 
 jacoco {
@@ -129,6 +148,7 @@ jacoco {
 }
 
 tasks.jacocoTestReport {
+    dependsOn(tasks.test)
     reports {
         xml.required.set(true)
         csv.required.set(false)

@@ -1,12 +1,19 @@
-package io.github.numichi.reactive.logger.coroutine
+package io.github.numichi.reactive.logger.core
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
+import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
+import io.github.numichi.reactive.logger.coroutine.readMdc
+import io.github.numichi.reactive.logger.coroutine.withMDCContext
+import io.github.numichi.reactive.logger.reactor.MDCContext
 import io.mockk.clearMocks
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
+import mu.KLogger
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,7 +24,7 @@ import reactor.test.StepVerifier
 import reactor.util.context.Context
 
 @ExperimentalCoroutinesApi
-class ICoroutineCoreTest {
+class CoroutineCoreTest {
 
     @BeforeEach
     fun afterEach() {
@@ -84,9 +91,9 @@ class ICoroutineCoreTest {
 
         runTest {
             val snapshot1 = coroutineLogger1.snapshot()
-            val snapshot2 = coroutineKLogger1.snapshot()
+            val snapshot2 = coroutineKLogger1.snapshot() // not null
             assertEquals(snapshot1, snapshot2)
-            assertEquals(null, snapshot2)
+            assertEquals(MDC(), snapshot2)
         }
 
         runTest {
@@ -108,6 +115,39 @@ class ICoroutineCoreTest {
             assertEquals(snapshot1, snapshot2)
             assertEquals(mdc, snapshot2)
         }
+    }
+
+    @Test
+    fun `should get MDC data from snapshot (KLogger)`() {
+        val logger = CoroutineKLogger.getLogger(mockk<KLogger>(relaxed = true))
+
+        val x = mono { logger.snapshot()["foo"] }
+            .contextWrite {
+                val mdc = MDC()
+                mdc["foo"] = "bar"
+                MDCContext.put(it, mdc)
+            }
+
+        StepVerifier.create(x)
+            .expectNext("bar")
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should get MDC data from snapshot (Logger)`() {
+        val logger = CoroutineLogger.getLogger(mockk<KLogger>(relaxed = true))
+
+        val x = mono { logger.snapshot()["foo"] }
+            .contextWrite {
+                val mdc = MDC()
+                mdc["foo"] = "bar"
+                MDCContext.put(it, mdc)
+            }
+
+        StepVerifier.create(x)
+            .expectNext("bar")
+            .verifyComplete()
+
     }
 
     @Test
