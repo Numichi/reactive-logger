@@ -41,7 +41,7 @@ jobs:
             ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.jacoco.json ./reactive-logger/build/reports/jacoco/test/jacocoTestReport.xml
       - save_cache:
           paths:
-            - .gradle
+            - ./reactive-logger/.gradle
           key: v1-dependencies-{{ checksum "reactive-logger/build.gradle.kts" }}
       - persist_to_workspace:
           root: tmp
@@ -61,7 +61,6 @@ jobs:
       - save_cache:
           paths:
             - ./reactive-logger-example-java/.gradle
-            - .gradle
           key: v1-dependencies-{{ checksum "reactive-logger-example-java/build.gradle" }}
   example-kotlin-test:
     <<: *defaults
@@ -77,7 +76,6 @@ jobs:
       - save_cache:
           paths:
             - ./reactive-logger-example-kotlin/.gradle
-            - .gradle
           key: v1-dependencies-{{ checksum "reactive-logger-example-kotlin/build.gradle.kts" }}
   upload-coverage:
     <<: *defaults
