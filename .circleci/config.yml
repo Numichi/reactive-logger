@@ -26,28 +26,59 @@ jobs:
   test:
     <<: *defaults
     environment:
-      JACOCO_SOURCE_PATH: ./src/main/java
+      JACOCO_SOURCE_PATH: ./reactive-logger/src/main/kotlin
     steps:
       - checkout
       - attach_workspace:
           at: ~/repo/tmp
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle.kts" }}
-            - v1-dependencies-
+            - v1-dependencies-{{ checksum "reactive-logger/build.gradle.kts" }}
       - run:
           name: Run test and coverate report format
           command: |
-            gradle :test
-            ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.jacoco.json ./build/reports/jacoco/test/jacocoTestReport.xml
+            gradle :reactive-logger:test
+            ./tmp/cc-test-reporter format-coverage -t jacoco -o ./tmp/codeclimate.jacoco.json ./reactive-logger/build/reports/jacoco/test/jacocoTestReport.xml
       - save_cache:
           paths:
             - .gradle
-          key: java-v1-dependencies-{{ checksum "build.gradle.kts" }}
+          key: v1-dependencies-{{ checksum "reactive-logger/build.gradle.kts" }}
       - persist_to_workspace:
           root: tmp
           paths:
             - codeclimate.jacoco.json
+  example-java-test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "reactive-logger-example-java/build.gradle" }}
+      - run:
+          name: Run test
+          command: |
+            gradle :reactive-logger-example-java:test
+      - save_cache:
+          paths:
+            - ./reactive-logger-example-java/.gradle
+            - .gradle
+          key: v1-dependencies-{{ checksum "reactive-logger-example-java/build.gradle" }}
+  example-kotlin-test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "reactive-logger-example-kotlin/build.gradle.kts" }}
+      - run:
+          name: Run test
+          command: |
+            gradle :reactive-logger-example-kotlin:test
+      - save_cache:
+          paths:
+            - ./reactive-logger-example-kotlin/.gradle
+            - .gradle
+          key: v1-dependencies-{{ checksum "reactive-logger-example-kotlin/build.gradle.kts" }}
   upload-coverage:
     <<: *defaults
     steps:
@@ -63,6 +94,8 @@ workflows:
   commit:
     jobs:
       - build
+      - example-java-test
+      - example-kotlin-test
       - test:
           requires:
             - build

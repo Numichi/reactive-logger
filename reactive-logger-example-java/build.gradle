@@ -1,0 +1,45 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2021.0.4")
+}
+
+configurations {
+   all {
+       exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+   }
+}
+
+dependencies {
+    implementation project(":reactive-logger")
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    implementation 'com.lmax:disruptor:3.4.4'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2:2.7.3'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.19.0' // For Log4j2 @Plugin
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
