@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 /**
- * Similar with [io.github.numichi.reactive.logger.example.controllers.ReactiveLoggerController]
+ * Similar with [io.github.numichi.reactive.logger.example.kotlin.controller.ReactiveKLoggerController]
  */
 @RestController
 @RequestMapping("coroutine")
 class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
+    companion object {
+        const val WILL_NOT_APPEAR = "will-not-appear"
+    }
 
     /**
      * ### Manual like
@@ -28,7 +31,7 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
      *
      * "example-instance" from application.yml
      */
-    val logger1 = loggerRegistry.makeCoroutineLogger("example-instance")
+    private val logger1 = loggerRegistry.makeCoroutineLogger("example-instance")
 
     /**
      * ### Manual like
@@ -38,12 +41,12 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
      *
      * "another-example-instance" from application.yml
      */
-    val logger2 = loggerRegistry.makeCoroutineLogger("another-example-instance", CoroutineLoggerController::class.java)
+    private val logger2 = loggerRegistry.makeCoroutineLogger("another-example-instance", CoroutineLoggerController::class.java)
 
     /**
      * Manual logger creation
      */
-    val logger = CoroutineLogger.getLogger(CoroutineLoggerController::class.java)
+    private val logger = CoroutineLogger.getLogger(CoroutineLoggerController::class.java)
 
     /**
      * See the equivalent of reactive.
@@ -86,7 +89,7 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
     suspend fun doInfo1() {
         // readMdc(logger1.contextKey) will throw Exception because this context key already not initialized here.
         val mdc1 = readOrDefaultMdc(logger1.contextKey) + mapOf("foo" to "bar")
-        val mdc2 = readMdc() + mapOf("will-not-appear" to "will-not-appear")
+        val mdc2 = readMdc() + mapOf(WILL_NOT_APPEAR to WILL_NOT_APPEAR)
 
         withMDCContext(mdc1, mdc2) {
             logger1.info("log1-information")
@@ -96,7 +99,6 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
 
         mono { logger1.info("log1-information") }
             .contextWrite { it.modifyMdc(logger1.contextKey, mapOf("foo" to "bar")) }
-            .contextWrite { it.modifyMdc(mapOf("will-not-appear" to "will-not-appear")) }
             .awaitSingleOrNull()
     }
 
@@ -107,6 +109,6 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
      */
     @GetMapping("log2")
     suspend fun doInfo2() {
-        logger1.info("log2-information")
+        logger2.info("log2-information")
     }
 }

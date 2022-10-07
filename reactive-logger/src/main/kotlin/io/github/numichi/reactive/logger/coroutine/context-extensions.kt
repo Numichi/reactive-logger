@@ -3,27 +3,60 @@ package io.github.numichi.reactive.logger.coroutine
 import io.github.numichi.reactive.logger.MDC
 import reactor.util.context.Context
 import reactor.util.context.ContextView
+import reactor.util.function.Tuple2
 
 //region modify / merge
 fun Context.modifyMdc(modify: (MDC) -> MDC): Context {
-    return this.merge(modify(readOrDefaultMdc(this)))
+    return merge(modify(readOrDefaultMdc(this)))
 }
 
 fun Context.modifyMdc(modify: Map<String, String?>): Context {
-    return this.merge(readOrDefaultMdc(this).plus(modify))
+    return merge(readOrDefaultMdc(this).plus(modify))
+}
+
+fun Context.modifyMdc(modify: Pair<String, String?>): Context {
+    return merge(readOrDefaultMdc(this).plus(modify))
+}
+
+fun Context.modifyMdc(modify: Tuple2<String, String?>): Context {
+    return merge(readOrDefaultMdc(this).plus(modify))
+}
+
+fun Context.modifyMdc(modify: Array<Pair<String, String?>>): Context {
+    return merge(readOrDefaultMdc(this).plus(modify))
+}
+
+fun Context.modifyMdc(modify: Array<Tuple2<String, String?>>): Context {
+    return merge(readOrDefaultMdc(this).plus(modify))
 }
 
 fun Context.modifyMdc(contextKey: Any, modify: (MDC) -> MDC): Context {
-    return this.merge(modify(readOrDefaultMdc(this, contextKey)))
+    return merge(modify(readOrDefaultMdc(this, contextKey)))
 }
 
 fun Context.modifyMdc(contextKey: Any, modify: Map<String, String?>): Context {
-    val mdc = readOrDefaultMdc(this, contextKey).plus(modify)
-    return put(mdc.contextKey, mdc.data)
+    return merge(readOrDefaultMdc(this, contextKey).plus(modify))
+}
+
+fun Context.modifyMdc(contextKey: Any, modify: Pair<String, String?>): Context {
+    return merge(readOrDefaultMdc(this, contextKey).plus(modify))
+}
+
+fun Context.modifyMdc(contextKey: Any, modify: Tuple2<String, String?>): Context {
+    return merge(readOrDefaultMdc(this, contextKey).plus(modify))
+}
+
+fun Context.modifyMdc(contextKey: Any, modify: Array<Pair<String, String?>>): Context {
+    return merge(readOrDefaultMdc(this, contextKey).plus(modify))
+}
+
+fun Context.modifyMdc(contextKey: Any, modify: Array<Tuple2<String, String?>>): Context {
+    return merge(readOrDefaultMdc(this, contextKey).plus(modify))
 }
 
 fun Context.merge(mdc: MDC): Context {
-    return this.modifyMdc(mdc.contextKey, mdc.data)
+    val newMDC = readOrDefaultMdc(this, mdc.contextKey).plus(mdc.data)
+    return put(newMDC.contextKey, newMDC.data)
 }
 //endregion
 

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.assertThrows
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import reactor.util.context.Context
+import reactor.util.function.Tuples
 
 internal class MDCContextTest {
 
@@ -74,7 +75,7 @@ internal class MDCContextTest {
             .expectErrorMatches { it.message == "not-found-key context key is not contain in context" }
             .verify()
         StepVerifier.create(mono5)
-            .expectErrorMatches { it.message == "The content type is not java.util.Map<String, String?>" }
+            .expectErrorMatches { it.message == "The content type is not java.util.Map<Object, Object>" }
             .verify()
     }
 
@@ -150,6 +151,13 @@ internal class MDCContextTest {
                 .expectNext(MDC("baz", mapOf("foo" to "bar")))
                 .verifyComplete()
         }
+
+        run {
+            val mono = MDCContext.readOrDefault("foo")
+                .contextWrite { Context.of("foo", MDC()) }
+
+            StepVerifier.create(mono).verifyError(ReadException::class.java)
+        }
     }
 
     @Test
@@ -187,7 +195,33 @@ internal class MDCContextTest {
             assertEquals(expected, mdcMap2.get<Map<String, String?>>("foo"))
         }
 
-        // merge MDC object into Context
+        // merge Tuple into Context
+        run {
+            val add = Tuples.of("111", "222")
+            val ctx = Context.of("foo", mapOf("foo" to "bar"))
+            val expected1 = mapOf("111" to "222")
+            val expected2 = mapOf("foo" to "bar", "111" to "222")
+
+            val mdcMap1 = MDCContext.merge(ctx, add)
+            val mdcMap2 = MDCContext.merge(ctx, "foo", add)
+            assertEquals(expected1, mdcMap1.get<Map<String, String?>>(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
+            assertEquals(expected2, mdcMap2.get<Map<String, String?>>("foo"))
+        }
+
+        // merge Pair into Context
+        run {
+            val add = "111" to "222"
+            val ctx = Context.of("foo", mapOf("foo" to "bar"))
+            val expected1 = mapOf("111" to "222")
+            val expected2 = mapOf("foo" to "bar", "111" to "222")
+
+            val mdcMap1 = MDCContext.merge(ctx, add)
+            val mdcMap2 = MDCContext.merge(ctx, "foo", add)
+            assertEquals(expected1, mdcMap1.get<Map<String, String?>>(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
+            assertEquals(expected2, mdcMap2.get<Map<String, String?>>("foo"))
+        }
+
+        // merge MDC.of object into Context
         run {
             val add = MDC("foo", "111" to "222")
             val ctx = Context.of("foo", mapOf("foo" to "bar"))

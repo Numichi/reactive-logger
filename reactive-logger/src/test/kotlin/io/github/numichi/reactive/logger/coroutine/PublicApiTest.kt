@@ -34,7 +34,7 @@ class PublicApiTest {
             val context = Context.of("aaa", "bbb")
 
             val exception1 = assertThrows<ReadException> { readMdc(context, "aaa") }
-            assertEquals("The content type is not java.util.Map<String, String?>", exception1.message)
+            assertEquals("The content type is not java.util.Map<Object, Object>", exception1.message)
             Assertions.assertTrue(exception1.cause is ClassCastException)
 
             val exception2 = assertThrows<ReadException> { readMdc(context, "asd") }

@@ -41,7 +41,7 @@ class CoroutineCoreTest {
             val mono = Mono.just("test")
                 .doOnEach { s ->
                     if (s.isOnNext) {
-                        coroutineLogger.logSignal(s) { it.info(s.get()) }
+                        coroutineLogger.logOnSignal(s) { it.info(s.get()) }
                     }
                 }
 
@@ -59,7 +59,7 @@ class CoroutineCoreTest {
             val mono = Mono.error<Exception>(Exception("error"))
                 .doOnEach { s ->
                     if (s.isOnError) {
-                        coroutineLogger.logSignal(s) { it.info(s.throwable?.message) }
+                        coroutineLogger.logOnSignal(s) { it.info(s.throwable?.message) }
                     }
                 }
 

@@ -29,7 +29,7 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
      *
      * "example-instance" from application.yml
      */
-    val logger1 = loggerRegistry.makeReactiveKLogger("example-instance")
+    private val logger1 = loggerRegistry.makeReactiveKLogger("example-instance")
 
     /**
      * ### Manual like
@@ -39,12 +39,12 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
      *
      * "another-example-instance" from application.yml
      */
-    val logger2 = loggerRegistry.makeReactiveKLogger("another-example-instance", ReactiveKLoggerController::class.java)
+    private val logger2 = loggerRegistry.makeReactiveKLogger("another-example-instance", ReactiveKLoggerController::class.java)
 
     /**
      * Manual logger creation
      */
-    val logger = ReactiveKLogger.getLogger(ReactiveKLoggerController::class.java)
+    private val logger = ReactiveKLogger.getLogger(ReactiveKLoggerController::class.java)
 
     /**
      * ### Response example
@@ -141,8 +141,8 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
     @GetMapping("log1")
     fun doInfo1(): Mono<Void> {
         return logger1.info { "log1-information" }
-            .contextWrite { it.modifyMdc(logger1.contextKey, mapOf("foo" to "bar")) }
-            .contextWrite { it.modifyMdc(mapOf("will-not-appear" to "will-not-appear")) }
+            .contextWrite { it.modifyMdc(logger1.contextKey, "foo" to "bar") }
+            .contextWrite { it.modifyMdc("will-not-appear" to "will-not-appear") }
     }
 
     /**

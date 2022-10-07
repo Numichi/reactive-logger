@@ -56,6 +56,7 @@ public class ReactiveLoggerController {
      *   "userId": "c8780d8a-0e59-4b33-b4f3-ff026d102b3c",
      *   "traceId": "d3cc02d38cc222ad",
      *   "spanId": "d3cc02d38cc222ad"
+     *   "parentId": null
      * }
      * }</pre>
      * <p></p>
@@ -100,7 +101,8 @@ public class ReactiveLoggerController {
      *   "message": "log1-information",
      *   "context": {
      *     "spanId": "ad864e3400b43977",
-     *     "traceId": "ad864e3400b43977"
+     *     "traceId": "ad864e3400b43977",
+     *     "parentId": null,
      *     "userId": "4cfd73ad-3f32-47f5-a2f4-4a2b54339d1c"
      *   }
      * }</pre>

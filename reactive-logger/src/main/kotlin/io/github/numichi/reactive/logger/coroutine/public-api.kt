@@ -4,7 +4,7 @@ import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.exceptions.ReadException
 import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
-import io.github.numichi.reactive.logger.toStringStringMap
+import io.github.numichi.reactive.logger.toSafeMdcMap
 import kotlinx.coroutines.CoroutineScope
 import reactor.util.context.Context
 import reactor.util.context.ContextView
@@ -24,7 +24,7 @@ fun readMdc(contextView: ContextView): MDC {
 
 fun readMdc(contextView: ContextView, contextKey: Any): MDC {
     return try {
-        val mdcMap = contextView.get<Map<Any?, Any?>>(contextKey).toStringStringMap()
+        val mdcMap = contextView.get<Map<Any?, Any?>>(contextKey).toSafeMdcMap()
         MDC(contextKey, mdcMap)
     } catch (e: ClassCastException) {
         throw ReadException("The content type is not java.util.Map<Object, Object>", e)

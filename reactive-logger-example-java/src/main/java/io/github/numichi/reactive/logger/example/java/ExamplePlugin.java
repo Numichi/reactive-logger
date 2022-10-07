@@ -28,7 +28,7 @@ public class ExamplePlugin extends AbstractStringLayout {
     public String toSerializable(LogEvent event) {
         var model = new LogModel();
         model.setMessage(event.getMessage().getFormattedMessage());
-        model.setContext(event.getContextData().toMap());
+        model.setContext(event.getContextData().toMap()); // <-- here goes the MDC
         
         try {
             return mapper.writeValueAsString(model) + "\n";

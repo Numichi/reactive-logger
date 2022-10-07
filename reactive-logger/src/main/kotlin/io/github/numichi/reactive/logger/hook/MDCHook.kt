@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger.hook
 
 import io.github.numichi.reactive.logger.MDC
-import io.github.numichi.reactive.logger.toStringStringMap
+import io.github.numichi.reactive.logger.toSafeMdcMap
 import reactor.util.context.ContextView
 
 class MDCHook<T>(
@@ -21,9 +21,9 @@ class MDCHook<T>(
 
         return try {
             try {
-                this.hook(contextValue, mdc).toStringStringMap()
+                this.hook(contextValue, mdc).toSafeMdcMap()
             } catch (e: ClassCastException) {
-                this.hook(null, mdc).toStringStringMap()
+                this.hook(null, mdc).toSafeMdcMap()
             }
         } catch (e: Throwable) {
             mapOf()

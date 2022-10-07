@@ -2,15 +2,15 @@
   "properties": [
     {
       "name": "reactive-logger",
-      "type": "io.github.numichi.reactive.logger.spring.properties.ReactiveLogger",
+      "type": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties",
       "description": "Reactive logger configuration scope.",
-      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLogger"
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties"
     },
     {
       "name": "reactive-logger.instances",
-      "type": "java.util.Map<java.lang.String, io.github.numichi.reactive.logger.spring.properties.Instances>",
+      "type": "java.util.Map<java.lang.String, io.github.numichi.reactive.logger.spring.properties.InstanceProperties>",
       "description": "Logger information pre-registering.",
-      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLogger"
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties"
     }
   ]
 }

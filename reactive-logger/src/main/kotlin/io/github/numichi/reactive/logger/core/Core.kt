@@ -30,4 +30,8 @@ abstract class Core<L : Logger> {
             wrapRunner(signal.contextView) { consumer.accept(logger, signal) }
         }
     }
+
+    fun <V> logOnSignal(signal: Signal<V>, fn: Consumer<L>) {
+        wrapRunner(signal.contextView) { fn.accept(logger) }
+    }
 }

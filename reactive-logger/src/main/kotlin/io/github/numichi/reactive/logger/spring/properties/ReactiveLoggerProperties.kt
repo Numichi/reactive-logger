@@ -5,6 +5,6 @@ import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "reactive-logger")
-data class ReactiveLogger(
-    var instances: Map<String, Instances> = mapOf()
+data class ReactiveLoggerProperties(
+    var instances: Map<String, InstanceProperties> = mapOf()
 )

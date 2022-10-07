@@ -13,7 +13,6 @@ import java.nio.charset.Charset
 @Plugin(name = "ExamplePlugin", category = Node.CATEGORY, elementType = Appender.ELEMENT_TYPE)
 class ExamplePlugin : AbstractStringLayout(Charset.defaultCharset()) {
     companion object {
-
         @JvmStatic
         @PluginFactory
         fun pluginFactory() = ExamplePlugin()

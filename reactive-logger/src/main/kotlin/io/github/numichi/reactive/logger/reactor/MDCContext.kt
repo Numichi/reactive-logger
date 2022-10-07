@@ -6,9 +6,12 @@ import io.github.numichi.reactive.logger.coroutine.readMdc
 import io.github.numichi.reactive.logger.coroutine.readOrDefaultMdc
 import io.github.numichi.reactive.logger.exceptions.ReadException
 import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
+import io.github.numichi.reactive.logger.toSafeMdcMap
+import io.github.numichi.reactive.logger.toSafeMdcPair
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
 import reactor.util.context.ContextView
+import reactor.util.function.Tuple2
 import java.util.function.Function
 
 object MDCContext {
@@ -37,12 +40,32 @@ object MDCContext {
             MDC(contextKey)
         }
 
-        return put(context, mdc.plus(map))
+        return put(context, mdc.plus(map.toSafeMdcMap()))
+    }
+
+    @JvmStatic
+    fun merge(context: Context, contextKey: Any, tuple2: Tuple2<String, String?>): Context {
+        return merge(context, contextKey, tuple2.toSafeMdcMap())
+    }
+
+    @JvmStatic
+    fun merge(context: Context, contextKey: Any, pair: Pair<String, String?>): Context {
+        return merge(context, contextKey, mapOf(pair.toSafeMdcPair()))
     }
 
     @JvmStatic
     fun merge(context: Context, map: Map<String, String?>): Context {
-       return merge(context, Configuration.defaultReactorContextMdcKey, map)
+        return merge(context, Configuration.defaultReactorContextMdcKey, map)
+    }
+
+    @JvmStatic
+    fun merge(context: Context, tuple2: Tuple2<String, String?>): Context {
+        return merge(context, Configuration.defaultReactorContextMdcKey, tuple2)
+    }
+
+    @JvmStatic
+    fun merge(context: Context, pair: Pair<String, String?>): Context {
+        return merge(context, Configuration.defaultReactorContextMdcKey, pair)
     }
 
     @JvmStatic
@@ -119,12 +142,7 @@ object MDCContext {
 
     @JvmStatic
     fun modify(context: Context, func: Function<MDC, MDC>): Context {
-        val mdc = try {
-            read(context)
-        } catch (e: ReadException) {
-            MDC()
-        }
-        return put(context, func.apply(mdc))
+        return modify(context, Configuration.defaultReactorContextMdcKey, func)
     }
     //endregion
 

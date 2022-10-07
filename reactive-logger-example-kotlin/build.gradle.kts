@@ -39,7 +39,9 @@ dependencies {
     annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0") // For Log4j2 @Plugin
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("io.projectreactor:reactor-test")
+    testImplementation("io.mockk:mockk:1.13.2")
 }
 
 dependencyManagement {

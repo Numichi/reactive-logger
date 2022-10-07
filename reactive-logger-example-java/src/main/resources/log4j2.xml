@@ -6,7 +6,7 @@
     </Appenders>
 
     <Loggers>
-        <AsyncRoot level="info">
+        <AsyncRoot level="trace">
             <AppenderRef ref="ExampleLog"/>
         </AsyncRoot>
     </Loggers>

@@ -8,7 +8,6 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
 import reactor.core.publisher.Mono
-import reactor.core.publisher.Signal
 import reactor.core.scheduler.Scheduler
 import reactor.util.context.Context
 import reactor.util.context.ContextView
@@ -29,10 +28,6 @@ abstract class CoroutineCore<R : RLogger, L : Logger>(
     suspend fun snapshot(contextView: ContextView? = null): MDC {
         val ctx = contextView ?: getContextView()
         return reactiveLogger.snapshot(ctx).awaitSingle()
-    }
-
-    inline fun <reified V> logSignal(signal: Signal<V>, crossinline fn: (L) -> Unit) {
-        wrapRunner(signal.contextView) { fn(logger) }
     }
 
     suspend fun wrapUnit(function: (R) -> Mono<*>) {
