@@ -7,6 +7,21 @@
 ![Tested on](https://img.shields.io/badge/tested%20on-jvm11-blue)
 [![Reactor Project](https://img.shields.io/badge/supported-Java%20and%20Kotlin%20Coroutine%20with%20Reactor-blue)](https://projectreactor.io/)
 
+- [Getting Started](#what-is-the-source-of-motivation)
+    - [What is the source of motivation?](#what-is-the-source-of-motivation)
+    - [Overview](#overview)
+- [Quick Start](#getting-started)
+    - [Dependency](#dependency)
+    - [Logger library (optinal)](#logger-library-optinal)
+    - [Minimal usage](#minimal-usage)
+    - [How does it storage MDC information?](#how-does-it-storage-mdc-information)
+    - [How can you modify MDC information in context?](#how-can-you-modify-mdc-information-in-context)
+- [Configuration](#getting-started)
+  - [Default values](#getting-started)
+  - [Hook](#getting-started)
+  - [Spring support](#getting-started)
+
+# Getting Started
 
 ## What is the source of motivation?
 
@@ -51,11 +66,13 @@ The library has many goals:
 * Obey the rule restricting blocking I/O to bounded elastic schedulers without requiring a specific logging configuration to do so.
 * Provide the appropriate language approach for Java Reactor or Kotlin Coroutine code.
 
-## Get Started
+---
 
-### Dependency
+# Quick Start
 
-#### Maven
+## Dependency
+
+### Maven
 
 ```xml
 
@@ -66,25 +83,24 @@ The library has many goals:
 </dependency>
 ```
 
-#### Gradle Groovy DSL
+### Gradle Groovy DSL
 
 ```groovy
 implementation 'io.github.numichi:reactive-logger:VERSION'
 ```
 
-#### Gradle Kotlin DSL
+### Gradle Kotlin DSL
 
 ```kotlin
 implementation("io.github.numichi:reactive-logger:VERSION")
 ```
 
-
-### Logger library (optinal)
+## Logger library (optinal)
 
 Because it is a layer on slf4j so you can use specific logger libraries like Backlog, Log4j2 and so on. By default, Spring uses the Backlog log library. So, if you don't would like to apply anything
 else, you don't need additional dependencies.
 
-#### Log4j2 configuration
+### Log4j2 configuration
 
 When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency. Configure log4j2.xml as required. But it is already
 a [configuration](https://logging.apache.org/log4j/2.x/manual/configuration.html) of the logger library.
@@ -105,5 +121,73 @@ dependencies {
 }
 ```
 
-# How use `reactive-logger`
-Incoming **v4.0.0**. Along with this, the description will also be rewritten. Until then, read the README of the previous commits.
+## Minimal usage
+
+There are two main categories: `Reactive` and `Coroutine`. You can use Reactive in Project Reactor (Java or Kotlin) code-based, Coroutine mainly in Kotlin Coroutine environment. There are also two
+main suffixes: `Logger` and `KLogger`. Where you used Logger that component use `org.slf4j.Logger` interface. Similar way, KLogger means that component use `mu.KLogger`.
+
+> **_NOTE:_** You can not use Coroutine in Java code. Recommend using just ReactorLogger in Java code-based projects.
+
+They are available below. These are not implemented Logger or KLogger but, environment-specifically they contain the same logging methods. In the case of reactive, the logging methods
+return `Mono<Void>`. In the case of coroutine, all methods are `suspend` types.
+
+- ReactiveLogger
+- ReactiveKLogger
+- CoroutineLogger
+- CoroutineKLogger
+
+> **_NOTE:_** Logically, By definition, MDC information should be stored in the Reactive Context and not at the ThreadLocal level. So, reactor context can be reached by subscription (in reactor) or suspend method (in coroutine).
+
+If you want to add some MDC information to the context, check [How can you modify MDC information in context?](#how-can-you-modify-mdc-information-in-context) point.
+
+### Example
+
+```java
+// Java
+class Example {
+    private final ReactiveLogger logger = ReactiveLogger.getLogger(Example.class);
+    
+    public Mono<Void> minimal() {
+        return logger.info("minimal")
+    }
+    
+    public Mono<UUID> getAndLogUUID() {
+        return Mono.just(UUID.randomUUID())
+            .flatMap(uuid -> logger.info(uuid.toString()).thenReturn(uuid));
+    }
+}
+```
+```kotlin
+// Kotlin
+class Example {
+    private val CoroutineLogger logger = CoroutineLogger.getLogger(Example.class);
+    
+    suspend fun minimal() {
+        logger.info("minimal") // suspended
+    }
+
+    suspend fun getAndLogUUID(): UUID {
+        val uuid = UUID.randomUUID()
+        logger.info(uuid.toString()) // suspended
+        return uuid
+    }
+}
+```
+
+## How does it storage MDC information?
+document is being written
+
+## How can you modify MDC information in context? 
+document is being written
+
+---
+# Configuration
+
+## Default values
+document is being written
+
+## Hook
+document is being written
+
+## Spring support
+document is being written
