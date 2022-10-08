@@ -2,7 +2,7 @@ reactive-logger:
   instances:
     example-instance:
       logger: "custom logger name"
-      context-key: "context-key-from-yml"
+      contextKey: "context-key-from-yml"
       scheduler: bounded_elastic
     another-example-instance:
       context-key: "another-context-key-from-yml"

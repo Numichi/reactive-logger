@@ -19,18 +19,19 @@ open class DefaultValuesAutoConfiguration(properties: ReactiveLoggerProperties) 
         fun reset(properties: ReactiveLoggerProperties, force: Boolean) {
             val contextKey = properties.contextKey
             val scheduler = properties.scheduler
+            val alreadyConfigured = ReactiveLoggerConfiguration.defaultReactorContextMdcKey == DEFAULT_REACTOR_CONTEXT_MDC_KEY && ReactiveLoggerConfiguration.defaultScheduler == Schedulers.boundedElastic()
 
-            if ((ReactiveLoggerConfiguration.defaultReactorContextMdcKey == DEFAULT_REACTOR_CONTEXT_MDC_KEY && contextKey != null) || (force && contextKey != null)) {
+            if ((alreadyConfigured && contextKey != null) || (force && contextKey != null)) {
                 ReactiveLoggerConfiguration.defaultReactorContextMdcKey = contextKey
             }
 
-            if ((ReactiveLoggerConfiguration.defaultScheduler == Schedulers.boundedElastic() && scheduler != null) || (force && scheduler != null)) {
+            if ((alreadyConfigured && scheduler != null) || (force && scheduler != null)) {
                 ReactiveLoggerConfiguration.setDefaultScheduler(scheduler)
             }
         }
     }
 
     init {
-        reset(properties, false)
+        reset(properties, properties.forceUse)
     }
 }

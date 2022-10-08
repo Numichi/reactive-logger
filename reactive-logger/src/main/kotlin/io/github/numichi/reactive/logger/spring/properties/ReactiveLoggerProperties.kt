@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConstructorBinding
 @ConfigurationProperties(prefix = "reactive-logger")
 data class ReactiveLoggerProperties(
+    var forceUse: Boolean = false,
     var contextKey: String? = null,
     var scheduler: SchedulerOptions? = null,
     var instances: Map<String, InstanceProperties> = mapOf()

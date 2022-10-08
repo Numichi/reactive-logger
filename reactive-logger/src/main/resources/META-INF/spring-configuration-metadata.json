@@ -21,6 +21,13 @@
       "defaultValue": "bounded_elastic"
     },
     {
+      "name": "reactive-logger.forceUse",
+      "type": "java.lang.Boolean",
+      "description": "Force defaults to be set, even if they have been set by configuration.",
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties",
+      "defaultValue": false
+    },
+    {
       "name": "reactive-logger.instances",
       "type": "java.util.Map<java.lang.String, io.github.numichi.reactive.logger.spring.properties.InstanceProperties>",
       "description": "Logger information pre-registering.",

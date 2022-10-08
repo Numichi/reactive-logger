@@ -17,6 +17,7 @@
     - [How does it storage MDC information?](#how-does-it-storage-mdc-information)
     - [Context modification and reading](#context-modification-and-reading)
     - [MDC](#mdc)
+    - [Extended MDC scope in coroutine (withMDCContext)](#extended-mdc-scope-in-coroutine-withmdccontext)
 - [Configuration](#getting-started)
     - [Default values](#getting-started)
     - [Hook](#getting-started)
@@ -202,8 +203,8 @@ Context.of(
     )
 );
 ```
+Example output MDC information by "foo-example".
 ```json
-// example output MDC information by "foo-example"
 {
   "foo": "bar",
   "bff9c950-59bf-4356-bd2e-a9b2451c4f06": "3792db45-58a8-4959-939a-b42271f15dca"
@@ -284,12 +285,38 @@ override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Vo
 
 suspend fun getCurrentContextKey(): String {
     val mdc readOrDefaultMdc() // suspend
-    return mdc.contextKey as String // throw ClassCastException
+    return mdc.contextKey as String // can throw ClassCastException
 }
 ```
 
 ## MDC
-document is being written
+
+It is a reactor context `Map<String, String>` representation that is not modifiable (like an immutable class). Every modification creates a new instance you can pass for context modification or open new context scope.
+
+If you need new instance is required, you can create a new one by the constructor. Also, valid here is that if you do not configure the context key, the default context key value will be from the default configuration.
+
+Available methods:
+
+| method | can use operator mode in Kotlin             | description                                                                      |
+|--------|---------------------------------------------|----------------------------------------------------------------------------------|
+| get    | yes, example `mdc["foo"]`                   | Result value of map of context.                                                  |
+| plus   | yes, example `mdc1 + map("foo" to "bar")`   | Can add new or can override value into the map.                                  |
+| minus  | yes, example `mdc1 - arrayOf("foo", "bar")` | The new MDC instance will not contain the keys in the map. Like, remove by keys. |
+| keep   | no                                          | Reverse like minus. Only keep their selected keys.                               |
+| clean  | no                                          | Result current MDC instance, just map will be empty.                             |
+
+
+## Extended MDC scope in coroutine (withMDCContext)
+
+It is trivial how you can add new value into the reactor context (`Context.contextWrite()` or see [Context modification and reading](#context-modification-and-reading)), but this is not in the coroutine. You can call `readMdc()` or `coroutineContext[ReactorContext]` and modification `MDC` or `Map`, just how do you pass it to `withContext` conveniently? Library gives a helper method `withMDCContext()` that waits for one or more MDC instance and opens new context scope. 
+
+```kotlin
+suspend fun openNewScope() {
+    withMDCContext(readMdc() + ("foo" to "bar")) {
+        val barValue = readMdc()["foo"]
+    }
+}
+```
 
 ---
 # Configuration
