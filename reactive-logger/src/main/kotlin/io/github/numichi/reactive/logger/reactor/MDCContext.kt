@@ -33,44 +33,44 @@ object MDCContext {
 
     //region merge
     @JvmStatic
-    fun merge(context: Context, contextKey: Any, map: Map<String, String?>): Context {
+    fun modify(context: Context, contextKey: Any, data: Map<String, String?>): Context {
         val mdc = try {
             read(context, contextKey)
         } catch (e: ReadException) {
             MDC(contextKey)
         }
 
-        return put(context, mdc.plus(map.toSafeMdcMap()))
+        return put(context, mdc.plus(data.toSafeMdcMap()))
     }
 
     @JvmStatic
-    fun merge(context: Context, contextKey: Any, tuple2: Tuple2<String, String?>): Context {
-        return merge(context, contextKey, tuple2.toSafeMdcMap())
+    fun modify(context: Context, contextKey: Any, data: Tuple2<String, String?>): Context {
+        return modify(context, contextKey, data.toSafeMdcMap())
     }
 
     @JvmStatic
-    fun merge(context: Context, contextKey: Any, pair: Pair<String, String?>): Context {
-        return merge(context, contextKey, mapOf(pair.toSafeMdcPair()))
+    fun modify(context: Context, contextKey: Any, data: Pair<String, String?>): Context {
+        return modify(context, contextKey, mapOf(data.toSafeMdcPair()))
     }
 
     @JvmStatic
-    fun merge(context: Context, map: Map<String, String?>): Context {
-        return merge(context, Configuration.defaultReactorContextMdcKey, map)
+    fun modify(context: Context, data: Map<String, String?>): Context {
+        return modify(context, Configuration.defaultReactorContextMdcKey, data)
     }
 
     @JvmStatic
-    fun merge(context: Context, tuple2: Tuple2<String, String?>): Context {
-        return merge(context, Configuration.defaultReactorContextMdcKey, tuple2)
+    fun modify(context: Context, data: Tuple2<String, String?>): Context {
+        return modify(context, Configuration.defaultReactorContextMdcKey, data)
     }
 
     @JvmStatic
-    fun merge(context: Context, pair: Pair<String, String?>): Context {
-        return merge(context, Configuration.defaultReactorContextMdcKey, pair)
+    fun modify(context: Context, data: Pair<String, String?>): Context {
+        return modify(context, Configuration.defaultReactorContextMdcKey, data)
     }
 
     @JvmStatic
-    fun merge(context: Context, mdc: MDC): Context {
-        return merge(context, mdc.contextKey, mdc.data)
+    fun modify(context: Context, data: MDC): Context {
+        return modify(context, data.contextKey, data.data)
     }
     //endregion
 
@@ -92,8 +92,8 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun read(context: ContextView): MDC {
-        return read(context, Configuration.defaultReactorContextMdcKey)
+    fun read(contextView: ContextView): MDC {
+        return read(contextView, Configuration.defaultReactorContextMdcKey)
     }
 
     @JvmStatic
@@ -118,8 +118,8 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun readOrDefault(context: ContextView): MDC {
-        return readOrDefault(context, Configuration.defaultReactorContextMdcKey)
+    fun readOrDefault(contextView: ContextView): MDC {
+        return readOrDefault(contextView, Configuration.defaultReactorContextMdcKey)
     }
 
     @JvmStatic
@@ -155,18 +155,18 @@ object MDCContext {
     @JvmStatic
     fun snapshot(contextKey: String): Mono<MDC> {
         return Mono.deferContextual { contextView: ContextView ->
-            snapshot(contextView, contextKey)
+            Mono.just(snapshot(contextView, contextKey))
         }
     }
 
     @JvmStatic
-    fun snapshot(contextView: ContextView): Mono<MDC> {
+    fun snapshot(contextView: ContextView): MDC {
         return snapshot(contextView, Configuration.defaultReactorContextMdcKey)
     }
 
     @JvmStatic
-    fun snapshot(contextView: ContextView, contextKey: String): Mono<MDC> {
-        return Mono.just(mdcReferenceContentLoad(contextView, MDC(contextKey)))
+    fun snapshot(contextView: ContextView, contextKey: String): MDC {
+        return mdcReferenceContentLoad(contextView, MDC(contextKey))
     }
     //endregion
 }

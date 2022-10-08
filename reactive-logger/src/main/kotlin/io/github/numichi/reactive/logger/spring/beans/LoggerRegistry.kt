@@ -8,23 +8,25 @@ import mu.KLogger
 import org.slf4j.Logger
 
 interface LoggerRegistry {
-    fun makeReactiveLogger(instance: String): ReactiveLogger
-    fun makeReactiveLogger(instance: String, logger: String): ReactiveLogger
-    fun makeReactiveLogger(instance: String, logger: Class<*>): ReactiveLogger
-    fun makeReactiveLogger(instance: String, logger: Logger): ReactiveLogger
+    fun reset()
 
-    fun makeReactiveKLogger(instance: String): ReactiveKLogger
-    fun makeReactiveKLogger(instance: String, logger: String): ReactiveKLogger
-    fun makeReactiveKLogger(instance: String, logger: Class<*>): ReactiveKLogger
-    fun makeReactiveKLogger(instance: String, logger: KLogger): ReactiveKLogger
+    fun getReactiveLogger(instance: String): ReactiveLogger
+    fun getReactiveLogger(instance: String, logger: String): ReactiveLogger
+    fun getReactiveLogger(instance: String, logger: Class<*>): ReactiveLogger
+    fun getReactiveLogger(instance: String, logger: Logger): ReactiveLogger
 
-    fun makeCoroutineLogger(instance: String): CoroutineLogger
-    fun makeCoroutineLogger(instance: String, logger: String): CoroutineLogger
-    fun makeCoroutineLogger(instance: String, logger: Class<*>): CoroutineLogger
-    fun makeCoroutineLogger(instance: String, logger: Logger): CoroutineLogger
+    fun getReactiveKLogger(instance: String): ReactiveKLogger
+    fun getReactiveKLogger(instance: String, logger: String): ReactiveKLogger
+    fun getReactiveKLogger(instance: String, logger: Class<*>): ReactiveKLogger
+    fun getReactiveKLogger(instance: String, logger: KLogger): ReactiveKLogger
 
-    fun makeCoroutineKLogger(instance: String): CoroutineKLogger
-    fun makeCoroutineKLogger(instance: String, logger: String): CoroutineKLogger
-    fun makeCoroutineKLogger(instance: String, logger: Class<*>): CoroutineKLogger
-    fun makeCoroutineKLogger(instance: String, logger: KLogger): CoroutineKLogger
+    fun getCoroutineLogger(instance: String): CoroutineLogger
+    fun getCoroutineLogger(instance: String, logger: String): CoroutineLogger
+    fun getCoroutineLogger(instance: String, logger: Class<*>): CoroutineLogger
+    fun getCoroutineLogger(instance: String, logger: Logger): CoroutineLogger
+
+    fun getCoroutineKLogger(instance: String): CoroutineKLogger
+    fun getCoroutineKLogger(instance: String, logger: String): CoroutineKLogger
+    fun getCoroutineKLogger(instance: String, logger: Class<*>): CoroutineKLogger
+    fun getCoroutineKLogger(instance: String, logger: KLogger): CoroutineKLogger
 }

@@ -25,7 +25,7 @@ class ReactiveLoggerAutoConfigurationErrorTest {
             list.add(MDCHook<String>("hook0", "", 1) { _, _ -> mapOf() })
             list.add(MDCHook<String>("hook0", "", 0) { _, _ -> mapOf() })
 
-            MDCHookAutoConfiguration(list).postConstruct()
+            MDCHookAutoConfiguration(list)
         }
 
         assertEquals("The name \"hook0\" already exists. Order=1 ContextKey=", error.message)

@@ -41,8 +41,8 @@ public class ReactiveLoggerController {
     private final ReactiveLogger logger = ReactiveLogger.getLogger(ReactiveLoggerController.class);
     
     public ReactiveLoggerController(LoggerRegistry loggerRegistry) {
-        this.logger1 = loggerRegistry.makeReactiveLogger("example-instance");
-        this.logger2 = loggerRegistry.makeReactiveLogger("another-example-instance", ReactiveLoggerController.class);
+        this.logger1 = loggerRegistry.getReactiveLogger("example-instance");
+        this.logger2 = loggerRegistry.getReactiveLogger("another-example-instance", ReactiveLoggerController.class);
     }
     
     /**
@@ -142,8 +142,8 @@ public class ReactiveLoggerController {
     public Mono<Void> doInfo1() {
         return Mono.just("log1-information")
             .flatMap(logger1::info)
-            .contextWrite(context -> MDCContext.merge(context, logger1.getContextKey(), Map.of("foo", "bar")))
-            .contextWrite(context -> MDCContext.merge(context, Map.of("will-not-appear", "will-not-appear")));
+            .contextWrite(context -> MDCContext.modify(context, logger1.getContextKey(), Map.of("foo", "bar")))
+            .contextWrite(context -> MDCContext.modify(context, Map.of("will-not-appear", "will-not-appear")));
     }
     
     /**

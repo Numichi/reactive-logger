@@ -236,4 +236,34 @@ class ReactiveKLogger(
     override fun <T : Any?> exit(result: T): Mono<T> = wrap { logger.exit(result) }.then(Mono.justOrEmpty(result))
     override fun <T : Throwable> throwing(throwable: T): Mono<T> = wrap { logger.throwing(throwable) }.thenReturn(throwable)
     override fun <T : Throwable> catching(throwable: T): Mono<Void> = wrap { logger.catching(throwable) }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ReactiveKLogger) return false
+        if (logger != other.logger) return false
+        if (contextKey != other.contextKey) return false
+        if (scheduler != other.scheduler) return false
+        if (isTraceEnabled != other.isTraceEnabled) return false
+        if (isDebugEnabled != other.isDebugEnabled) return false
+        if (isInfoEnabled != other.isInfoEnabled) return false
+        if (isWarnEnabled != other.isWarnEnabled) return false
+        if (isErrorEnabled != other.isErrorEnabled) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = logger.hashCode()
+        result = 31 * result + contextKey.hashCode()
+        result = 31 * result + scheduler.hashCode()
+        result = 31 * result + isTraceEnabled.hashCode()
+        result = 31 * result + isDebugEnabled.hashCode()
+        result = 31 * result + isInfoEnabled.hashCode()
+        result = 31 * result + isWarnEnabled.hashCode()
+        result = 31 * result + isErrorEnabled.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "ReactiveKLogger(logger=$logger, contextKey='$contextKey', scheduler=$scheduler, isTraceEnabled=$isTraceEnabled, isDebugEnabled=$isDebugEnabled, isInfoEnabled=$isInfoEnabled, isWarnEnabled=$isWarnEnabled, isErrorEnabled=$isErrorEnabled)"
+    }
 }

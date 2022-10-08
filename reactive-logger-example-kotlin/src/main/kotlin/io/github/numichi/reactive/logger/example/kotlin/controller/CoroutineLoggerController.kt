@@ -31,7 +31,7 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
      *
      * "example-instance" from application.yml
      */
-    private val logger1 = loggerRegistry.makeCoroutineLogger("example-instance")
+    private val logger1 = loggerRegistry.getCoroutineLogger("example-instance")
 
     /**
      * ### Manual like
@@ -41,7 +41,7 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
      *
      * "another-example-instance" from application.yml
      */
-    private val logger2 = loggerRegistry.makeCoroutineLogger("another-example-instance", CoroutineLoggerController::class.java)
+    private val logger2 = loggerRegistry.getCoroutineLogger("another-example-instance", CoroutineLoggerController::class.java)
 
     /**
      * Manual logger creation

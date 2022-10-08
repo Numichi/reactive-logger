@@ -165,4 +165,35 @@ open class ReactiveLogger(
     override fun error(marker: Marker?, format: String?, arg1: Any?, arg2: Any?): Mono<Void> = wrap { logger.error(marker, format, arg1, arg2) }
     override fun error(marker: Marker?, format: String?, vararg argArray: Any?): Mono<Void> = wrap { logger.error(marker, format, *argArray) }
     override fun error(marker: Marker?, msg: String?, t: Throwable?): Mono<Void> = wrap { logger.error(marker, msg, t) }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ReactiveLogger) return false
+        if (logger != other.logger) return false
+        if (contextKey != other.contextKey) return false
+        if (scheduler != other.scheduler) return false
+        if (isTraceEnabled != other.isTraceEnabled) return false
+        if (isDebugEnabled != other.isDebugEnabled) return false
+        if (isInfoEnabled != other.isInfoEnabled) return false
+        if (isWarnEnabled != other.isWarnEnabled) return false
+        if (isErrorEnabled != other.isErrorEnabled) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = logger.hashCode()
+        result = 31 * result + contextKey.hashCode()
+        result = 31 * result + scheduler.hashCode()
+        result = 31 * result + isTraceEnabled.hashCode()
+        result = 31 * result + isDebugEnabled.hashCode()
+        result = 31 * result + isInfoEnabled.hashCode()
+        result = 31 * result + isWarnEnabled.hashCode()
+        result = 31 * result + isErrorEnabled.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "ReactiveLogger(logger=$logger, contextKey='$contextKey', scheduler=$scheduler, isTraceEnabled=$isTraceEnabled, isDebugEnabled=$isDebugEnabled, isInfoEnabled=$isInfoEnabled, isWarnEnabled=$isWarnEnabled, isErrorEnabled=$isErrorEnabled)"
+    }
 }

@@ -231,5 +231,31 @@ class CoroutineKLogger(
     override suspend fun <T> exit(result: T) = wrap { it.exit(result) }
     override suspend fun <T : Throwable> throwing(throwable: T) = wrap { it.throwing(throwable) }
     override suspend fun <T : Throwable> catching(throwable: T) = wrapUnit { it.catching(throwable) }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CoroutineKLogger) return false
+        if (reactiveLogger != other.reactiveLogger) return false
+        if (isTraceEnabled != other.isTraceEnabled) return false
+        if (isDebugEnabled != other.isDebugEnabled) return false
+        if (isInfoEnabled != other.isInfoEnabled) return false
+        if (isWarnEnabled != other.isWarnEnabled) return false
+        if (isErrorEnabled != other.isErrorEnabled) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = reactiveLogger.hashCode()
+        result = 31 * result + isTraceEnabled.hashCode()
+        result = 31 * result + isDebugEnabled.hashCode()
+        result = 31 * result + isInfoEnabled.hashCode()
+        result = 31 * result + isWarnEnabled.hashCode()
+        result = 31 * result + isErrorEnabled.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "CoroutineKLogger(reactiveLogger=$reactiveLogger, isTraceEnabled=$isTraceEnabled, isDebugEnabled=$isDebugEnabled, isInfoEnabled=$isInfoEnabled, isWarnEnabled=$isWarnEnabled, isErrorEnabled=$isErrorEnabled)"
+    }
 }
 

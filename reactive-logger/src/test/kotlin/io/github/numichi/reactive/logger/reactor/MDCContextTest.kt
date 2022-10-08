@@ -168,10 +168,10 @@ internal class MDCContextTest {
             val ctx = Context.empty()
             val expected = mapOf("111" to "222")
 
-            val mdcMap1 = MDCContext.merge(ctx, add)
+            val mdcMap1 = MDCContext.modify(ctx, add)
             assertEquals(expected, mdcMap1.get<Map<String, String?>>(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
 
-            val mdcMap2 = MDCContext.merge(ctx, "foo", add)
+            val mdcMap2 = MDCContext.modify(ctx, "foo", add)
             assertEquals(expected, mdcMap2.get<Map<String, String?>>("foo"))
         }
 
@@ -181,7 +181,7 @@ internal class MDCContextTest {
             val ctx = Context.of(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mapOf("foo" to "bar"))
             val expected = mapOf("foo" to "bar", "111" to "222")
 
-            val mdcMap1 = MDCContext.merge(ctx, add)
+            val mdcMap1 = MDCContext.modify(ctx, add)
             assertEquals(expected, mdcMap1.get<Map<String, String?>>(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
         }
 
@@ -191,7 +191,7 @@ internal class MDCContextTest {
             val ctx = Context.of("foo", mapOf("foo" to "bar"))
             val expected = mapOf("foo" to "bar", "111" to "222")
 
-            val mdcMap2 = MDCContext.merge(ctx, "foo", add)
+            val mdcMap2 = MDCContext.modify(ctx, "foo", add)
             assertEquals(expected, mdcMap2.get<Map<String, String?>>("foo"))
         }
 
@@ -202,8 +202,8 @@ internal class MDCContextTest {
             val expected1 = mapOf("111" to "222")
             val expected2 = mapOf("foo" to "bar", "111" to "222")
 
-            val mdcMap1 = MDCContext.merge(ctx, add)
-            val mdcMap2 = MDCContext.merge(ctx, "foo", add)
+            val mdcMap1 = MDCContext.modify(ctx, add)
+            val mdcMap2 = MDCContext.modify(ctx, "foo", add)
             assertEquals(expected1, mdcMap1.get<Map<String, String?>>(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
             assertEquals(expected2, mdcMap2.get<Map<String, String?>>("foo"))
         }
@@ -215,8 +215,8 @@ internal class MDCContextTest {
             val expected1 = mapOf("111" to "222")
             val expected2 = mapOf("foo" to "bar", "111" to "222")
 
-            val mdcMap1 = MDCContext.merge(ctx, add)
-            val mdcMap2 = MDCContext.merge(ctx, "foo", add)
+            val mdcMap1 = MDCContext.modify(ctx, add)
+            val mdcMap2 = MDCContext.modify(ctx, "foo", add)
             assertEquals(expected1, mdcMap1.get<Map<String, String?>>(DEFAULT_REACTOR_CONTEXT_MDC_KEY))
             assertEquals(expected2, mdcMap2.get<Map<String, String?>>("foo"))
         }
@@ -227,7 +227,7 @@ internal class MDCContextTest {
             val ctx = Context.of("foo", mapOf("foo" to "bar"))
             val expected = mapOf("foo" to "bar", "111" to "222")
 
-            val mdcMap2 = MDCContext.merge(ctx, add)
+            val mdcMap2 = MDCContext.modify(ctx, add)
             assertEquals(expected, mdcMap2.get<Map<String, String?>>("foo"))
         }
     }
@@ -306,13 +306,8 @@ internal class MDCContextTest {
             val snapshot1 = MDCContext.snapshot(context)
             val snapshot2 = MDCContext.snapshot(context, "foo")
 
-            StepVerifier.create(snapshot1)
-                .expectNext(MDC("bar" to "baz"))
-                .verifyComplete()
-
-            StepVerifier.create(snapshot2)
-                .expectNext(MDC("foo", "bar1" to "baz1"))
-                .verifyComplete()
+            assertEquals(MDC("bar" to "baz"), snapshot1)
+            assertEquals(MDC("foo", "bar1" to "baz1"), snapshot2)
         }
     }
 
@@ -334,12 +329,7 @@ internal class MDCContextTest {
         val snapshot1 = MDCContext.snapshot(context)
         val snapshot2 = MDCContext.snapshot(context, "foo")
 
-        StepVerifier.create(snapshot1)
-            .expectNext(MDC("bar" to "baz"))
-            .verifyComplete()
-
-        StepVerifier.create(snapshot2)
-            .expectNext(MDC("foo", mapOf("bar1" to "baz1", "bbb" to "BBB")))
-            .verifyComplete()
+        assertEquals(MDC("bar" to "baz"), snapshot1)
+        assertEquals(MDC("foo", mapOf("bar1" to "baz1", "bbb" to "BBB")), snapshot2)
     }
 }

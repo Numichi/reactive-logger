@@ -7,6 +7,20 @@
       "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties"
     },
     {
+      "name": "reactive-logger.contextKey",
+      "type": "java.lang.String",
+      "description": "Default reactor context value.",
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties",
+      "defaultValue": "DEFAULT_REACTOR_CONTEXT_MDC_KEY"
+    },
+    {
+      "name": "reactive-logger.scheduler",
+      "type": "io.github.numichi.reactive.logger.SchedulerOptions",
+      "description": "Default scheduler for logging.",
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties",
+      "defaultValue": "bounded_elastic"
+    },
+    {
       "name": "reactive-logger.instances",
       "type": "java.util.Map<java.lang.String, io.github.numichi.reactive.logger.spring.properties.InstanceProperties>",
       "description": "Logger information pre-registering.",

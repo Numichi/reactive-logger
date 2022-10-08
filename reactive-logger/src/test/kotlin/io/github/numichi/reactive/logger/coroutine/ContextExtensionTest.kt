@@ -91,8 +91,8 @@ class ContextExtensionTest {
         run {
             val mdc1 = MDC("aaa" to "bbb")
             val mdc2 = MDC("foo", "aaa" to "bbb")
-            val ctx1 = context.merge(mdc1)
-            val ctx2 = context.merge(mdc2)
+            val ctx1 = context.modifyMdc(mdc1)
+            val ctx2 = context.modifyMdc(mdc2)
 
             val expected1 = mapOf("bar" to "baz")
             val expected2 = mapOf("bar" to "baz", "aaa" to "bbb")

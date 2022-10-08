@@ -27,7 +27,7 @@ public class ExampleComponent {
             .flatMap(data -> reactiveLogger.info(data).thenReturn(data))
             .flatMap(data -> MDCContext.snapshot())
             .map(MDC::getData)
-            .contextWrite(context -> MDCContext.merge(context, map));
+            .contextWrite(context -> MDCContext.modify(context, map));
     }
     
     public Mono<Void> example2() {
@@ -41,7 +41,7 @@ public class ExampleComponent {
                 if (signal.isOnComplete()) logger.info(foo);
                 if (signal.isOnError()) logger.warn(foo);
             }))
-            .contextWrite(context -> MDCContext.merge(context, map))
+            .contextWrite(context -> MDCContext.modify(context, map))
             .then();
     }
     
@@ -56,7 +56,7 @@ public class ExampleComponent {
                 if (signal.isOnComplete()) logger.info(foo);
                 if (signal.isOnError()) logger.warn(foo);
             }))
-            .contextWrite(context -> MDCContext.merge(context, map))
+            .contextWrite(context -> MDCContext.modify(context, map))
             .then();
     }
     
@@ -69,7 +69,7 @@ public class ExampleComponent {
             }));
     }
     
-    private String getFooValue(@NonNull Signal<MDC> signal)  {
+    private String getFooValue(@NonNull Signal<MDC> signal) {
         var mdc = signal.get();
         String foo = "null";
         

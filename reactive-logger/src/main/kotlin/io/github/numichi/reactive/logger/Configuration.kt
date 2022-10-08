@@ -6,12 +6,12 @@ import reactor.core.scheduler.Scheduler
 import reactor.core.scheduler.Schedulers
 
 object Configuration {
-    @set:JvmStatic
-    @get:JvmStatic
+    @JvmStatic
+    @Volatile
     var defaultReactorContextMdcKey: String = DEFAULT_REACTOR_CONTEXT_MDC_KEY
 
-    @set:JvmStatic
-    @get:JvmStatic
+    @JvmStatic
+    @Volatile
     var defaultScheduler: Scheduler = Schedulers.boundedElastic()
 
     @JvmStatic
