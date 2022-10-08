@@ -263,7 +263,7 @@ You can find coroutine specific functions in `io.github.numichi.reactive.logger.
 
 | source type           | extended functions | return    | description                          |
 |-----------------------|--------------------|-----------|--------------------------------------|
-| Context               | Context.modifyMdc  | `Context` | Similar to `MDCContext.modify`       |
+| Context               | modifyMdc          | `Context` | Similar to `MDCContext.modify`       |
 | Context & ContextView | getMdc             | `MDC`     | equals with above readMdc()          |
 | Context & ContextView | getOrDefaultMdc    | `MDC`     | equals with above readOrDefaultMdc() |
 | Context & ContextView | snapshotMdc        | `MDC`     | equals with above snapshotMdc()      |
