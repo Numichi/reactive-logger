@@ -148,8 +148,7 @@ jacoco {
 val jacocoIgnorePath = listOf(
     // unimportant
     "io/github/numichi/reactive/logger/spring/properties/**",
-    // false-positive
-//    "io/github/numichi/reactive/logger/reactor/kotlin/**"
+    "io/github/numichi/reactive/logger/spring/beans/helper/**",
 )
 
 tasks.jacocoTestReport {
