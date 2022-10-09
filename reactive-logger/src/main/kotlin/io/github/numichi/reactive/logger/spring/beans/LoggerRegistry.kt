@@ -4,6 +4,8 @@ import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
+import io.github.numichi.reactive.logger.spring.handler.ContentHandlerCoroutine
+import io.github.numichi.reactive.logger.spring.handler.ContentHandlerReactive
 import mu.KLogger
 import org.slf4j.Logger
 
@@ -29,4 +31,7 @@ interface LoggerRegistry {
     fun getCoroutineKLogger(instance: String, logger: String): CoroutineKLogger
     fun getCoroutineKLogger(instance: String, logger: Class<*>): CoroutineKLogger
     fun getCoroutineKLogger(instance: String, logger: KLogger): CoroutineKLogger
+
+    fun getContentHandlerReactive(instance: String): ContentHandlerReactive
+    fun getContentHandlerCoroutine(instance: String): ContentHandlerCoroutine
 }

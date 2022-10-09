@@ -2,6 +2,7 @@ package io.github.numichi.reactive.logger.spring
 
 import io.github.numichi.reactive.logger.Configuration as RLConfig
 import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.spring.beans.LoggerRegistry
 import io.github.numichi.reactive.logger.spring.beans.LoggerRegistryImpl
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -147,5 +148,16 @@ class ReactiveLoggerAutoConfigurationTest {
             assertEquals("bar2", l5.contextKey)
             assertSame(Schedulers.parallel(), l5.scheduler)
         }
+    }
+
+    @Test
+    fun handlerTest() {
+        val handler1 = loggerRegistry.getContentHandlerReactive("not-exist")
+        val handler2 = loggerRegistry.getContentHandlerReactive("example-instance-1")
+        val handler3 = loggerRegistry.getContentHandlerCoroutine("example-instance-1")
+
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, handler1.contextKey)
+        assertEquals("bar", handler2.contextKey)
+        assertEquals("bar", handler3.contextKey)
     }
 }

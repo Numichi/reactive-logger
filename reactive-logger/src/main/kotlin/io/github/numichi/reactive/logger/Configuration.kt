@@ -8,7 +8,7 @@ import reactor.core.scheduler.Schedulers
 object Configuration {
     @JvmStatic
     @Volatile
-    var defaultReactorContextMdcKey: String = DEFAULT_REACTOR_CONTEXT_MDC_KEY
+    var defaultReactorContextMdcKey: Any = DEFAULT_REACTOR_CONTEXT_MDC_KEY
 
     @JvmStatic
     @Volatile

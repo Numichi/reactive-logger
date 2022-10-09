@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.LoggerFactory
-import io.github.numichi.reactive.logger.MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE
 import io.github.numichi.reactive.logger.core.ReactiveCore
 import mu.KLogger
 import org.slf4j.Logger
@@ -12,30 +11,30 @@ import reactor.core.scheduler.Scheduler
 
 class ReactiveKLogger(
     override val logger: KLogger,
-    override val contextKey: String,
+    override val contextKey: Any,
     override val scheduler: Scheduler
 ) : ReactiveCore<KLogger>(), RKLogger {
 
     companion object {
         //region String base
         @JvmStatic
-        fun getLogger(string: String): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(string), null, null)
+        fun getLogger(name: String): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(name), null, null)
         }
 
         @JvmStatic
-        fun getLogger(string: String, contextKey: String): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(string), contextKey, null)
+        fun getLogger(name: String, contextKey: Any): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(name), contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(string: String, scheduler: Scheduler): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(string), null, scheduler)
+        fun getLogger(name: String, scheduler: Scheduler): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(name), null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(string: String, contextKey: String?, scheduler: Scheduler?): ReactiveKLogger {
-            return getLogger(LoggerFactory.getKLogger(string), contextKey, scheduler)
+        fun getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger {
+            return getLogger(LoggerFactory.getKLogger(name), contextKey, scheduler)
         }
         //endregion
 
@@ -46,7 +45,7 @@ class ReactiveKLogger(
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, contextKey: String): ReactiveKLogger {
+        fun getLogger(clazz: Class<*>, contextKey: Any): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(clazz), contextKey, null)
         }
 
@@ -56,7 +55,7 @@ class ReactiveKLogger(
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, contextKey: String?, scheduler: Scheduler?): ReactiveKLogger {
+        fun getLogger(clazz: Class<*>, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(clazz), contextKey, scheduler)
         }
         //endregion
@@ -68,17 +67,17 @@ class ReactiveKLogger(
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, contextKey: String?): ReactiveKLogger {
+        fun getLogger(logger: Logger, contextKey: Any): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(logger), contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, scheduler: Scheduler?): ReactiveKLogger {
+        fun getLogger(logger: Logger, scheduler: Scheduler): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(logger), null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, contextKey: String?, scheduler: Scheduler?): ReactiveKLogger {
+        fun getLogger(logger: Logger, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(logger), contextKey, scheduler)
         }
         //endregion
@@ -90,17 +89,17 @@ class ReactiveKLogger(
         }
 
         @JvmStatic
-        fun getLogger(contextKey: String, func: () -> Unit): ReactiveKLogger {
+        fun getLogger(func: () -> Unit, contextKey: Any): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(func), contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(scheduler: Scheduler, func: () -> Unit): ReactiveKLogger {
+        fun getLogger(func: () -> Unit, scheduler: Scheduler): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(func), null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(contextKey: String?, scheduler: Scheduler?, func: () -> Unit): ReactiveKLogger {
+        fun getLogger(func: () -> Unit, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger {
             return getLogger(LoggerFactory.getKLogger(func), contextKey, scheduler)
         }
         //endregion
@@ -112,7 +111,7 @@ class ReactiveKLogger(
         }
 
         @JvmStatic
-        fun getLogger(logger: KLogger, contextKey: String): ReactiveKLogger {
+        fun getLogger(logger: KLogger, contextKey: Any): ReactiveKLogger {
             return getLogger(logger, contextKey, null)
         }
 
@@ -122,11 +121,7 @@ class ReactiveKLogger(
         }
 
         @JvmStatic
-        fun getLogger(logger: KLogger, contextKey: String?, scheduler: Scheduler?): ReactiveKLogger {
-            contextKey?.also {
-                check(it.trim().isNotEmpty()) { MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE }
-            }
-
+        fun getLogger(logger: KLogger, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger {
             return ReactiveKLogger(
                 logger,
                 contextKey ?: Configuration.defaultReactorContextMdcKey,

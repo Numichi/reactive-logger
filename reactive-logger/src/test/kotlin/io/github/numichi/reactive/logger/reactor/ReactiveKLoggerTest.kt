@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
-import io.github.numichi.reactive.logger.MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE
 import io.github.numichi.reactive.logger.randomText
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Schedulers
 
@@ -87,10 +85,10 @@ internal class ReactiveKLoggerTest {
 
         run {
             val instance1 = ReactiveKLogger.getLogger {}
-            val instance2 = ReactiveKLogger.getLogger("foo") {}
-            val instance3 = ReactiveKLogger.getLogger(Schedulers.parallel()) {}
-            val instance4 = ReactiveKLogger.getLogger("foo", Schedulers.parallel()) {}
-            val instance5 = ReactiveKLogger.getLogger(null, null) {}
+            val instance2 = ReactiveKLogger.getLogger({}, "foo")
+            val instance3 = ReactiveKLogger.getLogger({}, Schedulers.parallel())
+            val instance4 = ReactiveKLogger.getLogger({}, "foo", Schedulers.parallel())
+            val instance5 = ReactiveKLogger.getLogger({}, null, null)
 
             assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", instance1.logger.name)
             assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveKLoggerTest", instance2.logger.name)
@@ -161,14 +159,6 @@ internal class ReactiveKLoggerTest {
             assertSame(Schedulers.parallel(), instance3.scheduler)
             assertSame(Schedulers.parallel(), instance4.scheduler)
             assertSame(Schedulers.boundedElastic(), instance5.scheduler)
-        }
-
-        run {
-            val error1 = assertThrows<IllegalStateException> { ReactiveKLogger.getLogger(logger, "") }
-            assertEquals(MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE, error1.message)
-
-            val error2 = assertThrows<IllegalStateException> { ReactiveKLogger.getLogger(logger, " ") }
-            assertEquals(MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE, error2.message)
         }
     }
 

@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
-import io.github.numichi.reactive.logger.MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE
 import io.github.numichi.reactive.logger.randomText
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Schedulers
@@ -108,14 +106,6 @@ internal class ReactiveLoggerTest {
             assertSame(Schedulers.parallel(), instance4.scheduler)
             assertSame(Schedulers.boundedElastic(), instance5.scheduler)
         }
-
-        run {
-            val error1 = assertThrows<IllegalStateException> { ReactiveLogger.getLogger(logger, "") }
-            assertEquals(MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE, error1.message)
-
-            val error2 = assertThrows<IllegalStateException> { ReactiveLogger.getLogger(logger, " ") }
-            assertEquals(MDC_CONTEXT_KEY_IS_EMPTY_MESSAGE, error2.message)
-        }
     }
 
     @Test
@@ -135,14 +125,6 @@ internal class ReactiveLoggerTest {
         val contextKey = "another-context-key"
         val loggerWithCustomScheduler = ReactiveLogger.getLogger(imperativeLogger, contextKey = contextKey)
         assertSame(loggerWithCustomScheduler.contextKey, contextKey)
-
-        assertThrows<IllegalStateException> {
-            ReactiveLogger.getLogger(imperativeLogger, contextKey = "")
-        }
-
-        assertThrows<IllegalStateException> {
-            ReactiveLogger.getLogger(imperativeLogger, contextKey = " ")
-        }
     }
 
     @Test

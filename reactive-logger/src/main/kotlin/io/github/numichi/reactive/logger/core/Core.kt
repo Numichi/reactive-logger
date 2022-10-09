@@ -12,7 +12,7 @@ import java.util.function.Supplier
 
 abstract class Core<L : Logger> {
     abstract val logger: L
-    abstract val contextKey: String
+    abstract val contextKey: Any
     abstract val scheduler: Scheduler
 
     fun wrapRunner(contextView: ContextView, runnable: Runnable) {

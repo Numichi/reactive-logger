@@ -153,7 +153,7 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun snapshot(contextKey: String): Mono<MDC> {
+    fun snapshot(contextKey: Any): Mono<MDC> {
         return Mono.deferContextual { contextView: ContextView ->
             Mono.just(snapshot(contextView, contextKey))
         }
@@ -165,7 +165,7 @@ object MDCContext {
     }
 
     @JvmStatic
-    fun snapshot(contextView: ContextView, contextKey: String): MDC {
+    fun snapshot(contextView: ContextView, contextKey: Any): MDC {
         return mdcReferenceContentLoad(contextView, MDC(contextKey))
     }
     //endregion

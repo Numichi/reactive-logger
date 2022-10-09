@@ -15,23 +15,23 @@ open class CoroutineLogger(
     companion object {
         //region String base
         @JvmStatic
-        fun getLogger(string: String): CoroutineLogger {
-            return getLogger(LoggerFactory.getLogger(string), null, null)
+        fun getLogger(name: String): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(name), null, null)
         }
 
         @JvmStatic
-        fun getLogger(string: String, contextKey: String): CoroutineLogger {
-            return getLogger(LoggerFactory.getLogger(string), contextKey, null)
+        fun getLogger(name: String, contextKey: Any): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(name), contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(string: String, scheduler: Scheduler): CoroutineLogger {
-            return getLogger(LoggerFactory.getLogger(string), null, scheduler)
+        fun getLogger(name: String, scheduler: Scheduler): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(name), null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(string: String, contextKey: String?, scheduler: Scheduler?): CoroutineLogger {
-            return getLogger(LoggerFactory.getLogger(string), contextKey, scheduler)
+        fun getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(name), contextKey, scheduler)
         }
         //endregion
 
@@ -42,7 +42,7 @@ open class CoroutineLogger(
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, contextKey: String): CoroutineLogger {
+        fun getLogger(clazz: Class<*>, contextKey: Any): CoroutineLogger {
             return getLogger(LoggerFactory.getLogger(clazz), contextKey, null)
         }
 
@@ -52,7 +52,7 @@ open class CoroutineLogger(
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, contextKey: String?, scheduler: Scheduler?): CoroutineLogger {
+        fun getLogger(clazz: Class<*>, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger {
             return getLogger(LoggerFactory.getLogger(clazz), contextKey, scheduler)
         }
         //endregion
@@ -64,7 +64,7 @@ open class CoroutineLogger(
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, contextKey: String): CoroutineLogger {
+        fun getLogger(logger: Logger, contextKey: Any): CoroutineLogger {
             return getLogger(logger, contextKey, null)
         }
 
@@ -74,7 +74,7 @@ open class CoroutineLogger(
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, contextKey: String?, scheduler: Scheduler?): CoroutineLogger {
+        fun getLogger(logger: Logger, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger {
             return CoroutineLogger(
                 ReactiveLogger(
                     logger,

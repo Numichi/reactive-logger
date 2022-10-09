@@ -149,7 +149,18 @@ val jacocoIgnorePath = listOf(
     // unimportant
     "io/github/numichi/reactive/logger/spring/properties/**",
     "io/github/numichi/reactive/logger/spring/beans/helper/**",
+    "io/github/numichi/reactive/logger/spring/handler/**",
 )
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.9".toBigDecimal()
+            }
+        }
+    }
+}
 
 tasks.jacocoTestReport {
     classDirectories.setFrom(files(classDirectories.files.map {

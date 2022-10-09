@@ -1,5 +1,6 @@
 package io.github.numichi.reactive.logger.coroutine
 
+import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.MDC
 import reactor.util.context.Context
 import reactor.util.context.ContextView
@@ -65,7 +66,7 @@ fun ContextView.getMdc(): MDC {
     return readMdc(this)
 }
 
-fun ContextView.getMdc(contextKey: String): MDC {
+fun ContextView.getMdc(contextKey: Any): MDC {
     return readMdc(this, contextKey)
 }
 
@@ -73,7 +74,7 @@ fun Context.getMdc(): MDC {
     return this.readOnly().getMdc()
 }
 
-fun Context.getMdc(contextKey: String): MDC {
+fun Context.getMdc(contextKey: Any): MDC {
     return this.readOnly().getMdc(contextKey)
 }
 
@@ -81,7 +82,7 @@ fun ContextView.getOrDefaultMdc(): MDC {
     return readOrDefaultMdc(this)
 }
 
-fun ContextView.getOrDefaultMdc(contextKey: String): MDC {
+fun ContextView.getOrDefaultMdc(contextKey: Any): MDC {
     return readOrDefaultMdc(this, contextKey)
 }
 
@@ -89,17 +90,17 @@ fun Context.getOrDefaultMdc(): MDC {
     return this.readOnly().getOrDefaultMdc()
 }
 
-fun Context.getOrDefaultMdc(contextKey: String): MDC {
+fun Context.getOrDefaultMdc(contextKey: Any): MDC {
     return this.readOnly().getOrDefaultMdc(contextKey)
 }
 //endregion
 
 //region snapshotMdc
 fun ContextView.snapshotMdc(): MDC {
-    return snapshotMdc(this)
+    return snapshotMdc(this, Configuration.defaultReactorContextMdcKey)
 }
 
-fun ContextView.snapshotMdc(contextKey: String): MDC {
+fun ContextView.snapshotMdc(contextKey: Any): MDC {
     return snapshotMdc(this, contextKey)
 }
 
@@ -107,7 +108,7 @@ fun Context.snapshotMdc(): MDC {
     return this.readOnly().snapshotMdc()
 }
 
-fun Context.snapshotMdc(contextKey: String): MDC {
+fun Context.snapshotMdc(contextKey: Any): MDC {
     return this.readOnly().snapshotMdc(contextKey)
 }
 //endregion

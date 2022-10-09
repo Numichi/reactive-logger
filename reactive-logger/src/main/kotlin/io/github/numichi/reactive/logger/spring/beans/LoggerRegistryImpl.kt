@@ -1,6 +1,7 @@
 package io.github.numichi.reactive.logger.spring.beans
 
 import io.github.numichi.reactive.logger.LoggerFactory
+import io.github.numichi.reactive.logger.Configuration as RLConfig
 import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
@@ -8,6 +9,8 @@ import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import io.github.numichi.reactive.logger.spring.DefaultValuesAutoConfiguration
 import io.github.numichi.reactive.logger.spring.beans.helper.CacheKKey
 import io.github.numichi.reactive.logger.spring.beans.helper.CacheKey
+import io.github.numichi.reactive.logger.spring.handler.ContentHandlerCoroutine
+import io.github.numichi.reactive.logger.spring.handler.ContentHandlerReactive
 import io.github.numichi.reactive.logger.spring.properties.InstanceProperties
 import io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties
 import mu.KLogger
@@ -25,6 +28,9 @@ open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) 
     private val storeReactiveKLogger = mutableMapOf<CacheKKey, ReactiveKLogger>()
     private val storeCoroutineLogger = mutableMapOf<CacheKey, CoroutineLogger>()
     private val storeCoroutineKLogger = mutableMapOf<CacheKKey, CoroutineKLogger>()
+
+    private val storeReactiveHandler = mutableMapOf<String, ContentHandlerReactive>()
+    private val storeCoroutineHandler = mutableMapOf<String, ContentHandlerCoroutine>()
 
     override fun reset() {
         DefaultValuesAutoConfiguration.reset(properties, true)
@@ -184,5 +190,25 @@ open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) 
         }
 
         return cached
+    }
+
+    override fun getContentHandlerReactive(instance: String): ContentHandlerReactive {
+        val contextKey = instances[instance]?.contextKey ?: RLConfig.defaultReactorContextMdcKey
+
+        if (storeReactiveHandler[instance] == null) {
+            storeReactiveHandler[instance] = ContentHandlerReactive(contextKey)
+        }
+
+        return storeReactiveHandler[instance]!!
+    }
+
+    override fun getContentHandlerCoroutine(instance: String): ContentHandlerCoroutine {
+        val contextKey = instances[instance]?.contextKey ?: RLConfig.defaultReactorContextMdcKey
+
+        if (storeCoroutineHandler[instance] == null) {
+            storeCoroutineHandler[instance] = ContentHandlerCoroutine(contextKey)
+        }
+
+        return storeCoroutineHandler[instance]!!
     }
 }

@@ -63,7 +63,7 @@ suspend fun snapshotMdc(): MDC {
     return snapshotMdc(Configuration.defaultReactorContextMdcKey)
 }
 
-suspend fun snapshotMdc(contextKey: String): MDC {
+suspend fun snapshotMdc(contextKey: Any): MDC {
     return snapshotMdc(reactorContextOrEmpty(), contextKey)
 }
 
@@ -71,7 +71,7 @@ fun snapshotMdc(contextView: ContextView): MDC {
     return snapshotMdc(contextView, Configuration.defaultReactorContextMdcKey)
 }
 
-fun snapshotMdc(contextView: ContextView, contextKey: String): MDC {
+fun snapshotMdc(contextView: ContextView, contextKey: Any): MDC {
     return mdcReferenceContentLoad(contextView, MDC(contextKey))
 }
 //endregion

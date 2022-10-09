@@ -15,7 +15,7 @@ import kotlin.coroutines.coroutineContext
 
 abstract class CoroutineCore<R : RLogger, L : Logger>(
     override val logger: L,
-    override val contextKey: String,
+    override val contextKey: Any,
     override val scheduler: Scheduler,
 ) : Core<L>() {
 

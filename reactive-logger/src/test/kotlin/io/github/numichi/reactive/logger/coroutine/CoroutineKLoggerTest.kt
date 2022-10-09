@@ -96,10 +96,10 @@ internal class CoroutineKLoggerTest {
 
         run {
             val instance1 = CoroutineKLogger.getLogger {}
-            val instance2 = CoroutineKLogger.getLogger("foo") {}
-            val instance3 = CoroutineKLogger.getLogger(Schedulers.parallel()) {}
-            val instance4 = CoroutineKLogger.getLogger("foo", Schedulers.parallel()) {}
-            val instance5 = CoroutineKLogger.getLogger(null, null) {}
+            val instance2 = CoroutineKLogger.getLogger({}, "foo")
+            val instance3 = CoroutineKLogger.getLogger({}, Schedulers.parallel())
+            val instance4 = CoroutineKLogger.getLogger({}, "foo", Schedulers.parallel())
+            val instance5 = CoroutineKLogger.getLogger({}, null, null)
 
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", instance1.logger.name)
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", instance2.logger.name)

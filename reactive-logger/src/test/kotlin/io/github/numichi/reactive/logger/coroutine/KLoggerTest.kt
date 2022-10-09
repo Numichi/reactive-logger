@@ -1052,8 +1052,7 @@ class KLoggerTest {
     fun catching() {
         runTest {
             val message: String = randomText()
-            val result = logger.catching(SimulatedException(message))
-//            Assertions.assertEquals(message, result.message) // TODO: ?
+            logger.catching(SimulatedException(message))
         }
     }
     //endregion
