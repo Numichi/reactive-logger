@@ -219,7 +219,7 @@ Under the key namespace, the basic requirement is that the value stays `Map<Stri
 
 You can use `MDCContext` in Java or Reactor environment and specific functions in Coroutine.
 
-There is an option to ignore the context key if you use only this library for modification. Thus, in this case, it is unnecessary to give in the following methods `contextKey` parameters. By default, this `contextKey` will be `"DEFAULT_REACTOR_CONTEXT_MDC_KEY"`. If you would like to use another default context key, see the configuration section.
+There is an option to ignore the context key if you use only this library for modification. Thus, in this case, it is unnecessary to give in the following methods `contextKey` parameters. By default, this `contextKey` will be `"DEFAULT_REACTOR_CONTEXT_MDC_KEY"`. If you would like to use another default context key, see the [configuration](#default-values) section.
 
 > **_NOTE:_** `io.github.numichi.reactive.logger.MDC` class represent one namespace with MDC information. Typically, some methods return with this, and you can manage your content through it.
 
