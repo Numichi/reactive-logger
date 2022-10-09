@@ -8,20 +8,22 @@
 [![Reactor Project](https://img.shields.io/badge/supported-Java%20and%20Kotlin%20Coroutine%20with%20Reactor-blue)](https://projectreactor.io/)
 
 - [Getting Started](#what-is-the-source-of-motivation)
-    - [What is the source of motivation?](#what-is-the-source-of-motivation)
-    - [Overview](#overview)
+  - [What is the source of motivation?](#what-is-the-source-of-motivation)
+  - [Overview](#overview)
 - [Quick Start](#getting-started)
-    - [Dependency](#dependency)
-    - [Logger library (optional)](#logger-library-optional)
-    - [Logging minimal usage](#logging-minimal-usage)
-    - [How does it storage MDC information?](#how-does-it-storage-mdc-information)
-    - [Context modification and reading](#context-modification-and-reading)
-    - [MDC](#mdc)
-    - [Extended MDC scope in coroutine (withMDCContext)](#extended-mdc-scope-in-coroutine-withmdccontext)
-- [Configuration](#getting-started)
-    - [Default values](#getting-started)
-    - [Hook](#getting-started)
-    - [Spring support](#getting-started)
+  - [Dependency](#dependency)
+  - [Logger library (optional)](#logger-library-optional)
+  - [Logging minimal usage](#logging-minimal-usage)
+  - [How does it storage MDC information?](#how-does-it-storage-mdc-information)
+  - [Context modification and reading](#context-modification-and-reading)
+  - [MDC](#mdc)
+  - [Extended MDC scope in coroutine (withMDCContext)](#extended-mdc-scope-in-coroutine-withmdccontext)
+- [Configuration](#configuration)
+  - [Default values](#default-values)
+  - [Hook configuration](#hook-configuration)
+  - [Spring support](#spring-support)
+- [Other helper method](#other-helper-method)
+  - [LoggerFactory](#loggerfactory)
 
 # Getting Started
 
@@ -319,6 +321,7 @@ suspend fun openNewScope() {
 ```
 
 ---
+
 # Configuration
 
 ## Default values
@@ -381,8 +384,182 @@ fun main(args: Array<String>) {
 }
 ```
 
-## Hook
-document is being written
+## Hook configuration
+The purpose of the hook is to transfer data into an MDC snapshot from outside the context key's scope. Example, you use Spring Boot Sleuth, and you would like to see `traceId` and `snapId`  in MDC information. These are information you can find in `org.springframework.cloud.sleuth.TraceContext` interface context key and may vary depending on run location (see spanId). Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
+
+There are two methods for adding a hook: `Configuration.addHook(...)` and `Configuration.addGenericHook(...)`. The difference between them is that `addHook` is not defined what type searched value, so you get an Object/Any type via `value`. In the case of the `addGenericHook`, it tries to cast the data to a generic value. 
+
+**Important!** Hooks can overwrite any current snapshot stored data. See the `order` parameter!
+
+**How you can skip or filter one or more hooks:** All registered hooks run in every log event, so you need to set up the logic to check you need it in current circumstances. If result map is empty, it cannot add anything. You can throw any exception that it interprets as not being able to add any data to the snapshot, so it works equal to a result empty map, and you never get this exception. Furthermore, you can reach the current snapshot instance via MDC and check the context key or snapshot content.
+
+| parameter  | property              | type                                        | description                                                                                             |
+|------------|-----------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| name       | required              | String                                      | Hook name identifier, if you would to overwrite or delete it later.                                     |
+| contextKey | required              | `Object` or `Any`                           | One key of the Reactor context that we want to reach.                                                   |
+| order      | optional (default: 0) | Integer                                     | A lower value has a higher priority for run. Snapshot be made from rector context between `-1` and `0`. |
+| hook       | required              | Function2<Object, MDC, Map<String, String>> | The new MDC instance will not contain the keys in the map. Like, remove by keys.                        |
+
+> **_NOTE:_** If you use `addGenericHook` replace `Function2<Object, ...>` with `Function2<GENERIC, ...>`.
+
+| Function2 parameter | property     | type                     | description                                                                                   |
+|---------------------|--------------|--------------------------|-----------------------------------------------------------------------------------------------|
+| value               | nullable     | `Object` or Generic type | Found data. It can be null when the context key is not found or can not cast to generic type. |
+| mdc                 | non-nullable | `MDC`                    | One key of the Reactor context that we want to reach.                                         |
+| return value        | non-nullable | Map<String, String>      | Write or overwrite into the snapshot. If key of map is null that will be skip.                |
+
+Example:
+```java
+// Java
+import org.springframework.cloud.sleuth.TraceContext;
+
+public static void main(String[] args) {
+    Configuration.<TraceContext>addGenericHook("hook-name", TraceContext.class, (traceContext, mdc) -> {
+        Objects.requireNonNull(traceContext, "traceContext must not be null");
+        
+        Map<String, String> map = new HashMap<>();
+        map.put("traceId", traceContext.traceId());
+        map.put("spanId", traceContext.spanId());
+        map.put("parentId", traceContext.parentId());
+        
+        return map;
+    });
+    // ...
+}
+```
+```kotlin
+// Kotlin
+import org.springframework.cloud.sleuth.TraceContext
+
+fun main(args: Array<String>) {
+    Configuration.addGenericHook<TraceContext>("hook-name", TraceContext::class.java) { traceContext, mdc ->
+        requireNotNull(traceContext) { "traceContext must not be null" }
+    
+        val map = mutableMapOf<String, String?>()
+        map["traceId"] = traceContext.traceId()
+        map["spanId"] = traceContext.spanId()
+        map["parentId"] = traceContext.parentId()
+    
+        map
+    }
+    // ...
+}
+```
 
 ## Spring support
-document is being written
+
+### Default value
+
+You also can configure via `application.properties` or `yml` default values. But, if you have configured the context key or scheduler via `Configuration`, your application.properties default setting will be skipped when it is not pre-defined value, because `Configuration` is the highest priority. In contrast, you can force setting in `application.properties` to override the current values with `forceUse` parameter set to true (default false).
+
+```properties
+reactive-logger.forceUse=true 
+reactive-logger.contextKey=true
+reactive-logger.scheduler=parallel
+```
+
+### Hook
+
+Hooks can be configured via Spring Bean, and you can add more same beans. An MDCHook class must be used instead of a configuration class. This class has the same parameters as `addHook` or `addGenericHook` methods, and you can decide what type value is expected in Generic.
+
+```java
+// Java
+import org.springframework.cloud.sleuth.TraceContext;
+import io.github.numichi.reactive.logger.hook.MDCHook;
+
+@Configuration
+public class HookConfiguration {
+
+    @Bean
+    @ConditionalOnClass(TraceContext.class)
+    public MDCHook<TraceContext> traceContextHook() {
+        return new MDCHook<>("hook-name", TraceContext.class, (traceContext, mdc) -> {
+            Objects.requireNonNull(traceContext, "traceContext must not be null");
+      
+            Map<String, String> result = new HashMap<>();
+            result.put("traceId", traceContext.traceId());
+            result.put("spanId", traceContext.spanId());
+            result.put("parentId", traceContext.parentId());
+      
+            return result;
+        });
+    }
+}
+```
+```kotlin
+// Kotlin
+import org.springframework.cloud.sleuth.TraceContext
+import io.github.numichi.reactive.logger.hook.MDCHook
+
+@Configuration
+class LoggerHookConfiguration {
+
+    @Bean
+    @ConditionalOnClass(TraceContext::class)
+    fun traceContextHook(): MDCHook<TraceContext> {
+        return MDCHook("traceContextHook", TraceContext::class.java) { traceContext, _ ->
+            requireNotNull(traceContext) { "traceContext must not be null" }
+      
+            val map = mutableMapOf<String, String?>()
+            map["traceId"] = traceContext.traceId()
+            map["spanId"] = traceContext.spanId()
+            map["parentId"] = traceContext.parentId()
+      
+            map
+        }
+}
+```
+
+### Logger registry
+
+In background is created a `LoggerRegistry` bean what basically a lazy logger instance creator from `application.properties` base information or configured default values. If you would not like a lot of logger instance in your project, LoggerRegistry can cache logger information and not make duplicate instance.
+
+```properties
+reactive-logger.instances.your-instance-name.logger = logger-name # you can it override via getter parameter
+reactive-logger.instances.your-instance-name.contextKey = your-context-key
+reactive-logger.instances.your-instance-name.scheduler = parallel
+```
+
+```java
+// Java (same in Kotlin)
+
+public class Example {
+    private final ReactiveLogger logger1; // looger name is "logger-name"
+    private final ReactiveLogger logger2; // logger name is Example class path
+    
+    public Example(LoggerRegistry loggerRegistry) {
+        this.logger1 = loggerRegistry.getReactiveLogger("your-instance-name");
+        this.logger2 = loggerRegistry.getReactiveLogger("your-instance-name", Example.class);
+        
+        var logger = loggerRegistry.getReactiveLogger("your-instance-name");
+        // logger == logger1 is same reference
+        // logger == logger2 is not same reference, because the logger information is different
+    }
+}
+```
+
+---
+
+# Other helper method
+
+## LoggerFactory
+
+There is `io.github.numichi.reactive.logger.LoggerFactory` similar to `org.slf4j.LoggerFactory` is available to Logger or KLogger creation.
+
+```java
+// Java
+Logger logger1 = org.slf4j.LoggerFactory.getLogger("foo")
+Logger logger2 = io.github.numichi.reactive.logger.getLogger("foo") 
+```
+```kotlin
+// Java
+val logger1: Logger = org.slf4j.LoggerFactory.getLogger("foo")
+val logger2: Logger = io.github.numichi.reactive.logger.LoggerFactory.getLogger("foo")
+
+val kLogger1: KLogger = mu.KotlinLogging.logger(logger1)
+val kLogger2: KLogger = mu.KotlinLogging.logger(logger2)
+
+val kLogger3: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger("foo")
+val kLogger4: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger(logger1)
+val kLogger5: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger(logger2)
+```
