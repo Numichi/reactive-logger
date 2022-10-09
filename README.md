@@ -24,6 +24,7 @@
   - [Spring support](#spring-support)
 - [Other helper method](#other-helper-method)
   - [LoggerFactory](#loggerfactory)
+- [FAQ](#faq)
 
 # Getting Started
 
@@ -563,3 +564,14 @@ val kLogger3: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogg
 val kLogger4: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger(logger1)
 val kLogger5: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger(logger2)
 ```
+
+---
+# FAQ
+
+> **_QUESTION_**: Can I use both approaches?
+
+Yes. For example, see a filter and controller in Kotlin coroutine-based reactive project. You cannot use approaches other than `Mono<Void>` in `WebFilter`, but you can use `suspend` method in controller.
+
+> **_QUESTION_**: Can I define a custom appender, encoder and layout in logback or log4j2? Will there be a conflict with this library?
+
+There will be no conflict because basically this library is a Map handler and slf4j caller. It does not deal with the slf4j implementation so you can use log4j2, logback, etc implementation and specific message formatter configuration. (Just in the test used log4j2 implementation and Lig4j2 plugin to log format.)
