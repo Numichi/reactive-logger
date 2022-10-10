@@ -71,7 +71,6 @@ The library has many goals:
 * Obey the rule restricting blocking I/O to bounded elastic schedulers without requiring a specific logging configuration to do so.
 * Provide the appropriate language approach for Java Reactor or Kotlin Coroutine code.
 
----
 
 # Quick Start
 
@@ -321,7 +320,6 @@ suspend fun openNewScope() {
 }
 ```
 
----
 
 # Configuration
 
@@ -513,6 +511,8 @@ class LoggerHookConfiguration {
 
 ### Logger registry
 
+#### Logger
+
 In background is created a `LoggerRegistry` bean what basically a lazy logger instance creator from `application.properties` base information or configured default values. If you would not like a lot of logger instance in your project, LoggerRegistry can cache logger information and not make duplicate instance.
 
 ```properties
@@ -539,7 +539,11 @@ public class Example {
 }
 ```
 
----
+#### Handler
+If you use more context keys for MDC data and would not use context key parameters in methods for accidental errors, you can use `getContentHandlerReactive` or `getContentHandlerCoroutine`. They are mainly proxy methods that already contain context key from instance configuration.
+
+If you would like to create a custom instance from the proxy class you can also use simple class initialization: `var handler = new ContentHandlerReactive(...)` or `val handler = ContentHandlerCoroutine(...)`
+
 
 # Other helper method
 
@@ -565,7 +569,6 @@ val kLogger4: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogg
 val kLogger5: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger(logger2)
 ```
 
----
 # FAQ
 
 > **_QUESTION_**: Can I use both approaches?
@@ -574,4 +577,4 @@ Yes. For example, see a filter and controller in Kotlin coroutine-based reactive
 
 > **_QUESTION_**: Can I define a custom appender, encoder and layout in logback or log4j2? Will there be a conflict with this library?
 
-There will be no conflict because basically this library is a Map handler and slf4j caller. It does not deal with the slf4j implementation so you can use log4j2, logback, etc implementation and specific message formatter configuration. (Just in the test used log4j2 implementation and Lig4j2 plugin to log format.)
+There will be no conflict because basically this library is a Map handler and slf4j caller. It does not deal with the slf4j implementation, so you can use log4j2, logback, etc... implementation and specific message formatter configuration. (Just in the test used log4j2 implementation and Lig4j2 plugin to log format.)
