@@ -52,23 +52,7 @@ When I created a parallel request, my first request ended later than my second r
 the following: MDC context data slipping to another request. I think it is unhealthy and misinforms when you review logs.
 
 **There is a `kotlinx.coroutines.slf4j.MDCContext`.**
-Sure, just this `MDCContext` (not my MDCContext) is planned for non-reactive environment. The basic method is to handle data in a reactive context, not at the ThreadLocal. Therefore, `MDC.put()` cannot be used in this way either.
-
-This example is in the original documentation in `kotlinx.coroutines.slf4j.MDCContext`:
-```
-MDC context element for CoroutineContext.
-Example:
-MDC.put("kotlin", "rocks") // Put a value into the MDC context
-
-launch(MDCContext()) {
-    logger.info { "..." }   // The MDC context contains the mapping here
-}
-
-Note that you cannot update MDC context from inside the coroutine simply using MDC.put. These updates are
-going to be lost on the next suspension and reinstalled to the MDC context that was captured or 
-explicitly specified in contextMap when this object was created on the next resumption. 
-Use withContext(MDCContext()) { ... } to capture updated map of MDC keys and values for the specified block of code.
-```
+Sure, just this `MDCContext` (not my MDCContext) is planned for non-reactive environment. The basic method is to handle data in a reactive context, not at the ThreadLocal. Therefore, `MDC.put()` cannot be used in this way either. You can see [kotlinx.coroutines.slf4j.MDCContext](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-slf4j/kotlinx.coroutines.slf4j/-m-d-c-context/) original documentation. I not recommend using it because you must manually ensure data transfer into reactor context if you would like to switch between coroutine and reactor environments. The `await...` methods from reactor to coroutine or `mono {}`/`flux {}` from coroutine to reactor methods ensure transfer reactor context. Thus, MDC information will follow us if we write MDC information into the reactor context from the beginning. In this case, the suspend method will be our friend, unlike in the other case (see [kotlinx.coroutines.slf4j.MDCContext](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-slf4j/kotlinx.coroutines.slf4j/-m-d-c-context/) documentation).
 
 **Goal:**
 So, I have been working to create an API for Reactor and Coroutine what solve the above problems. It provides the same interfaces to both
