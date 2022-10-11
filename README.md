@@ -166,7 +166,7 @@ class Example {
 ```kotlin
 // Kotlin example
 class Example {
-    private val CoroutineLogger logger = CoroutineLogger.getLogger(Example.class);
+    private val CoroutineLogger logger = CoroutineLogger.getLogger(Example::class.java);
     
     suspend fun minimal() {
         logger.info("minimal") // suspended
