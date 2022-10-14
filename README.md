@@ -456,7 +456,7 @@ You also can configure via `application.properties` or `yml` default values. But
 
 ```properties
 reactive-logger.forceUse=true 
-reactive-logger.contextKey=true
+reactive-logger.contextKey=mdcContextKey
 reactive-logger.scheduler=parallel
 ```
 
