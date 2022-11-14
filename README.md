@@ -108,11 +108,10 @@ else, you don't need additional dependencies.
 
 ### Log4j2 configuration
 
-When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency. Configure log4j2.xml as required. But it is already
-a [configuration](https://logging.apache.org/log4j/2.x/manual/configuration.html) of the logger library.
+When using Log4j2 you should 2 things. You have to deactivate Logback and import Log4j2 dependency.
 
 Many documentation can be found on the internet ([here](https://www.callicoder.com/spring-boot-log4j-2-example/) and [here](https://www.baeldung.com/spring-boot-logging)) on how can you change from
-Logback to Log4j2. The articles mainly use XML configuration, so I presented an example with Gradle Kotlin DSL configuration.
+Logback to Log4j2.
 
 ```kotlin
 // Gradle Kotlin DSL
