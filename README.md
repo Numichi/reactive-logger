@@ -470,10 +470,10 @@ import org.springframework.cloud.sleuth.TraceContext;
 import io.github.numichi.reactive.logger.hook.MDCHook;
 
 @Configuration
+@ConditionalOnClass(TraceContext.class)
 public class HookConfiguration {
 
     @Bean
-    @ConditionalOnClass(TraceContext.class)
     public MDCHook<TraceContext> traceContextHook() {
         return new MDCHook<>("hook-name", TraceContext.class, (traceContext, mdc) -> {
             Objects.requireNonNull(traceContext, "traceContext must not be null");
@@ -494,10 +494,10 @@ import org.springframework.cloud.sleuth.TraceContext
 import io.github.numichi.reactive.logger.hook.MDCHook
 
 @Configuration
+@ConditionalOnClass(TraceContext::class)
 class LoggerHookConfiguration {
 
     @Bean
-    @ConditionalOnClass(TraceContext::class)
     fun traceContextHook(): MDCHook<TraceContext> {
         return MDCHook("traceContextHook", TraceContext::class.java) { traceContext, _ ->
             requireNotNull(traceContext) { "traceContext must not be null" }
