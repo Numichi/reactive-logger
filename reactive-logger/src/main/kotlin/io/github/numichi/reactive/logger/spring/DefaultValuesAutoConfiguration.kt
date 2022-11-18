@@ -3,15 +3,12 @@ package io.github.numichi.reactive.logger.spring
 import io.github.numichi.reactive.logger.Configuration as ReactiveLoggerConfiguration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties
-import org.springframework.boot.autoconfigure.AutoConfigureOrder
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.Configuration
-import org.springframework.core.Ordered
 import reactor.core.scheduler.Schedulers
 
-@Configuration
+@AutoConfiguration(before = [MDCHookAutoConfiguration::class])
 @EnableConfigurationProperties(value = [ReactiveLoggerProperties::class])
-@AutoConfigureOrder(value = Ordered.HIGHEST_PRECEDENCE)
 open class DefaultValuesAutoConfiguration(properties: ReactiveLoggerProperties) {
 
     companion object {

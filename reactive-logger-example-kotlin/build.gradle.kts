@@ -22,7 +22,7 @@ configurations {
     }
 }
 
-extra["springCloudVersion"] = "2021.0.4"
+extra["springCloudVersion"] = "2021.0.5"
 
 dependencies {
     implementation(project(":reactive-logger"))
@@ -35,7 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
     implementation("com.lmax:disruptor:3.4.4")
-    implementation("org.springframework.boot:spring-boot-starter-log4j2:2.7.3")
+    implementation("org.springframework.boot:spring-boot-starter-log4j2:2.7.5")
     annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0") // For Log4j2 @Plugin
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

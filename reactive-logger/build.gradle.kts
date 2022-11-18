@@ -37,21 +37,28 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("io.projectreactor:reactor-core:3.4.23")
+    implementation("io.projectreactor:reactor-core:3.5.0")
     implementation("org.slf4j:slf4j-api:2.0.3")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("org.yaml:snakeyaml:1.33") // for Spring Boot Starter vulnerability resolver
-    implementation("org.springframework.boot:spring-boot-starter:2.7.4")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.7")
+    implementation("org.springframework.boot:spring-boot-starter:2.7.5") {
+        // Direct vulnerabilities: 4
+        // Vulnerabilities from dependencies: 1
+        // https://mvnrepository.com/artifact/org.yaml/snakeyaml/1.30
+        exclude("org.yaml", "snakeyaml")
+    }
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
-    api("io.github.microutils:kotlin-logging-jvm:3.0.0")
+    api("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.4")
-    testImplementation("io.projectreactor:reactor-test:3.4.23")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    // vulnerability free dependency
+    implementation("org.yaml:snakeyaml:1.33")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.5")
+    testImplementation("io.projectreactor:reactor-test:3.5.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
     testImplementation("org.apache.logging.log4j:log4j-core:2.19.0")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("io.mockk:mockk:1.13.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
