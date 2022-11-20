@@ -38,7 +38,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("io.projectreactor:reactor-core:3.5.0")
-    implementation("org.slf4j:slf4j-api:2.0.3")
+    implementation("org.slf4j:slf4j-api:2.0.4")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("org.springframework.boot:spring-boot-starter:2.7.5") {
         // Direct vulnerabilities: 4
