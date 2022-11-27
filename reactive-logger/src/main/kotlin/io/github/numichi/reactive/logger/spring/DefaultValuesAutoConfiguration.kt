@@ -2,12 +2,16 @@ package io.github.numichi.reactive.logger.spring
 
 import io.github.numichi.reactive.logger.Configuration as ReactiveLoggerConfiguration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+import io.github.numichi.reactive.logger.spring.beans.LoggerRegistryImpl
 import io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import reactor.core.scheduler.Schedulers
 
-@AutoConfiguration(before = [MDCHookAutoConfiguration::class])
+@AutoConfiguration(before = [
+    MDCHookAutoConfiguration::class,
+    LoggerRegistryImpl::class
+])
 @EnableConfigurationProperties(value = [ReactiveLoggerProperties::class])
 open class DefaultValuesAutoConfiguration(properties: ReactiveLoggerProperties) {
 

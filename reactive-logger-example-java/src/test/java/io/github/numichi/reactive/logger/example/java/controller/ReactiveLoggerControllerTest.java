@@ -21,11 +21,9 @@ class ReactiveLoggerControllerTest {
             .uri("/reactive/snapshot")
             .exchange()
             .expectBody()
-            .jsonPath("$.length()").isEqualTo(4)
+            .jsonPath("$.length()").isEqualTo(2)
             .jsonPath("$.userId").value(v -> isA(String.class))
-            .jsonPath("$.traceId").value(v -> isA(String.class))
-            .jsonPath("$.spanId").value(v -> isA(String.class))
-            .jsonPath("$.parentId").value(nullValue());
+            .jsonPath("$.example").value(v -> isA(String.class));
     }
     
     @Test
@@ -35,16 +33,13 @@ class ReactiveLoggerControllerTest {
             .exchange()
             .expectBody()
             .jsonPath("$.length()").isEqualTo(1)
-            .jsonPath("$.userId").value(v -> isA(String.class))
-            .jsonPath("$.traceId").doesNotExist()
-            .jsonPath("$.spanId").doesNotExist()
-            .jsonPath("$.parentId").doesNotExist();
+            .jsonPath("$.userId").value(v -> isA(String.class));
     }
     
     /**
      * Console example:
      * <pre>{@code
-     * {"message":"log0-information","context":{"spanId":"407116d8f3b75f95","traceId":"407116d8f3b75f95","userId":"875bc35e-136f-40a3-b999-312978e706d7","parentId":null}}
+     * {"message":"log0-information","context":{"userId":"c76cb63c-1742-4e77-9a52-d8593ce36236","example":"example"}}
      * }</pre>
      */
     @Test
@@ -58,7 +53,7 @@ class ReactiveLoggerControllerTest {
     /**
      * Console example:
      * <pre>{@code
-     * {"message":"log1-information","context":{"spanId":"e4ff28fe00e63ef5","traceId":"e4ff28fe00e63ef5","parentId":null,"foo":"bar"}}
+     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
      * }</pre>
      */
     @Test
@@ -72,7 +67,7 @@ class ReactiveLoggerControllerTest {
     /**
      * Console example:
      * <pre>{@code
-     * {"message":"log2-information","context":{"spanId":"57b177a1db629600","traceId":"57b177a1db629600","TraceContext.hashCode":"2033809386","parentId":null}}
+     * {"message":"log2-information","context":{"example":"n/a"}}
      * }</pre>
      */
     @Test

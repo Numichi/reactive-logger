@@ -4,9 +4,10 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/74b86e2f051a0c3c9e11/test_coverage)](https://codeclimate.com/github/Numichi/reactive-logger/test_coverage)
 [![Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.numichi/reactive-logger.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.numichi%22%20AND%20a:%22reactive-logger%22)
-![Tested on](https://img.shields.io/badge/tested%20on-jvm11-blue)
+![Tested on](https://img.shields.io/badge/tested%20on-jvm17-blue)
 [![Reactor Project](https://img.shields.io/badge/supported-Java%20and%20Kotlin%20Coroutine%20with%20Reactor-blue)](https://projectreactor.io/)
 
+- [Compatibility Matrix](#compatibility-matrix)
 - [Getting Started](#what-is-the-source-of-motivation)
   - [What is the source of motivation?](#what-is-the-source-of-motivation)
   - [Overview](#overview)
@@ -25,6 +26,21 @@
 - [Other helper method](#other-helper-method)
   - [LoggerFactory](#loggerfactory)
 - [FAQ](#faq)
+
+# Warning CVE
+
+| Package                 | Description                                                  | Severity | 
+|-------------------------|--------------------------------------------------------------|----------|
+| org.yaml:snakeyaml:1.33 | CVE-2022-41854 6.5 Stack-based Buffer Overflow vulnerability | medium   |
+
+I am watching when the new version comes out without the vulnerability.
+
+# Compatibility Matrix
+
+| Version | Compatibility | Min Java | GitHub Branch    | 
+|---------|---------------|----------|------------------|
+| v5.x.x  | Spring Boot 3 | Java 17  | master           |
+| v4.x.x  | Spring Boot 2 | Java 11  | SpringBoot-2.x.x |
 
 # Getting Started
 

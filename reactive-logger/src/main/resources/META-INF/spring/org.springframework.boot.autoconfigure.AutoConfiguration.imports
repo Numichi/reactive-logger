@@ -1,0 +1,3 @@
+io.github.numichi.reactive.logger.spring.DefaultValuesAutoConfiguration
+io.github.numichi.reactive.logger.spring.MDCHookAutoConfiguration
+io.github.numichi.reactive.logger.spring.beans.LoggerRegistryImpl

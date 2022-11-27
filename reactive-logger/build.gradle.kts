@@ -2,6 +2,7 @@ plugins {
     java
     jacoco
     kotlin("jvm")
+    kotlin("kapt")
     id("com.adarshr.test-logger")
     id("java-library")
     id("maven-publish")
@@ -12,11 +13,11 @@ group = project.property("group") as String
 version = project.property("version") as String
 
 val compileTestKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
-compileTestKotlin.kotlinOptions.jvmTarget = "11"
+compileTestKotlin.kotlinOptions.jvmTarget = "17"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
     withJavadocJar()
 }
@@ -40,20 +41,15 @@ dependencies {
     implementation("io.projectreactor:reactor-core:3.5.0")
     implementation("org.slf4j:slf4j-api:2.0.4")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("org.springframework.boot:spring-boot-starter:2.7.5") {
-        // Direct vulnerabilities: 4
-        // Vulnerabilities from dependencies: 1
-        // https://mvnrepository.com/artifact/org.yaml/snakeyaml/1.30
-        exclude("org.yaml", "snakeyaml")
-    }
+    implementation("org.springframework.boot:spring-boot-starter:3.0.0")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
     api("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
-    // vulnerability free dependency
-    implementation("org.yaml:snakeyaml:1.33")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.0.0")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:3.0.0")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.5")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.0.0")
     testImplementation("io.projectreactor:reactor-test:3.5.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
     testImplementation("org.apache.logging.log4j:log4j-core:2.19.0")

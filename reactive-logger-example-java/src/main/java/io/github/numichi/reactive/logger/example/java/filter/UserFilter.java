@@ -1,5 +1,6 @@
 package io.github.numichi.reactive.logger.example.java.filter;
 
+import io.github.numichi.reactive.logger.example.java.model.ExampleModel;
 import io.github.numichi.reactive.logger.reactor.MDCContext;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ public class UserFilter implements WebFilter {
     @Override
     public Mono<Void> filter(@NotNull ServerWebExchange exchange, WebFilterChain chain) {
         return chain.filter(exchange)
-            .contextWrite(context -> MDCContext.modify(context, mdc -> mdc.plus(Map.of("userId", UUID.randomUUID().toString()))));
+            .contextWrite(context -> MDCContext.modify(context, mdc -> mdc.plus(Map.of("userId", UUID.randomUUID().toString()))))
+            .contextWrite(context -> context.put(ExampleModel.class, new ExampleModel("example")));
     }
 }

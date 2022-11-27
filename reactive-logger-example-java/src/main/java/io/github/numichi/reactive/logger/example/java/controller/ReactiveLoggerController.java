@@ -53,10 +53,8 @@ public class ReactiveLoggerController {
      * Content-Length: 106
      *
      * {
-     *   "userId": "c8780d8a-0e59-4b33-b4f3-ff026d102b3c",
-     *   "traceId": "d3cc02d38cc222ad",
-     *   "spanId": "d3cc02d38cc222ad"
-     *   "parentId": null
+     *     "userId": "bbb57b94-7aa3-4a65-9631-2cab265cfe56",
+     *     "example": "example"
      * }
      * }</pre>
      * <p></p>
@@ -79,7 +77,7 @@ public class ReactiveLoggerController {
      * Content-Length: 106
      *
      * {
-     *   "userId": "4cab2469-fbcc-40dc-91a8-88f4d553f1eb"
+     *     "userId": "e7cd6a75-c543-458c-9d19-3df6ba3d67f6"
      * }
      * }</pre>
      * <p></p>
@@ -97,14 +95,7 @@ public class ReactiveLoggerController {
     /**
      * <h3>JSON Log format</h3>
      * <pre>{@code
-     * {
-     *   "message": "log1-information",
-     *   "context": {
-     *     "spanId": "ad864e3400b43977",
-     *     "traceId": "ad864e3400b43977",
-     *     "parentId": null,
-     *     "userId": "4cfd73ad-3f32-47f5-a2f4-4a2b54339d1c"
-     *   }
+     * {"message":"log0-information","context":{"userId":"c76cb63c-1742-4e77-9a52-d8593ce36236","example":"example"}}
      * }</pre>
      */
     @GetMapping("log0")
@@ -116,15 +107,7 @@ public class ReactiveLoggerController {
     /**
      * <h3>JSON Log format</h3>
      * <pre>{@code
-     * {
-     *   "message": "log1-information",
-     *   "context": {
-     *     "spanId": "f1f351a78bac867a",
-     *     "traceId": "f1f351a78bac867a"
-     *     "parentId": null,
-     *     "foo": "bar"
-     *   }
-     * }
+     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
      * }</pre>
      * <p></p>
      *
@@ -149,15 +132,7 @@ public class ReactiveLoggerController {
     /**
      * <h3>JSON Log format</h3>
      * <pre>{@code
-     * {
-     *   "message": "log2-information",
-     *   "context": {
-     *     "spanId": "14843eb53ff7b259",
-     *     "traceId": "14843eb53ff7b259",
-     *     "parentId": null,
-     *     "TraceContext.hashCode": "-697239192"
-     *   }
-     * }
+     * {"message":"log2-information","context":{"example":"n/a"}}
      * }</pre>
      * <p></p>
      *

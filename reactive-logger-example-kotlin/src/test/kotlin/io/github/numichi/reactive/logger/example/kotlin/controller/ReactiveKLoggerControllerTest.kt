@@ -1,12 +1,12 @@
 package io.github.numichi.reactive.logger.example.kotlin.controller
 
 import org.hamcrest.Matchers.isA
-import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -21,11 +21,9 @@ internal class ReactiveKLoggerControllerTest {
             .uri("/reactive/snapshot")
             .exchange()
             .expectBody()
-            .jsonPath("$.length()").isEqualTo(4)
-            .jsonPath("$.userId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.traceId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.spanId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.parentId").value<Any> { nullValue() }
+            .jsonPath("$.length()").isEqualTo(2)
+            .jsonPath("$.userId").value<Any> { isA<Any>(UUID::class.java) }
+            .jsonPath("$.example").isEqualTo("example")
     }
 
     @Test
@@ -35,16 +33,13 @@ internal class ReactiveKLoggerControllerTest {
             .exchange()
             .expectBody()
             .jsonPath("$.length()").isEqualTo(1)
-            .jsonPath("$.userId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.traceId").doesNotExist()
-            .jsonPath("$.spanId").doesNotExist()
-            .jsonPath("$.parentId").doesNotExist()
+            .jsonPath("$.userId").value<Any> { isA<Any>(UUID::class.java) }
     }
 
     /**
      * Console example:
      * ```
-     * {"message":"log0-information","context":{"spanId":"5a09cd61ad8429a6","traceId":"5a09cd61ad8429a6","userId":"de9a559a-0328-467c-8cbd-883062226d78","parentId":null}}
+     * {"message":"log0-information","context":{"userId":"b97c8da2-3b91-4d37-a4c3-98edbeeb1bc1","example":"example"}}
      * ```
      */
     @Test
@@ -58,7 +53,7 @@ internal class ReactiveKLoggerControllerTest {
     /**
      * Console example:
      * ```
-     * {"message":"log1-information","context":{"spanId":"2a185b36d676440c","traceId":"2a185b36d676440c","parentId":null,"foo":"bar"}}
+     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
      * ```
      */
     @Test
@@ -72,7 +67,7 @@ internal class ReactiveKLoggerControllerTest {
     /**
      * Console example:
      * ```
-     * {"message":"log2-information","context":{"spanId":"36ff90c5ead25d26","traceId":"36ff90c5ead25d26","TraceContext.hashCode":"-1191884682","parentId":null}}
+     * {"message":"log2-information","context":{"example":"n/a"}}
      * ```
      */
     @Test

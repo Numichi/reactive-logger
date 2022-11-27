@@ -1,12 +1,12 @@
 package io.github.numichi.reactive.logger.example.kotlin.controller
 
 import org.hamcrest.Matchers.isA
-import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -21,11 +21,9 @@ internal class CoroutineLoggerControllerTest {
             .uri("/coroutine/snapshot")
             .exchange()
             .expectBody()
-            .jsonPath("$.length()").isEqualTo(4)
-            .jsonPath("$.userId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.traceId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.spanId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.parentId").value<Any> { nullValue() }
+            .jsonPath("$.length()").isEqualTo(2)
+            .jsonPath("$.userId").value<Any> { isA<Any>(UUID::class.java) }
+            .jsonPath("$.example").isEqualTo("example")
     }
 
     @Test
@@ -35,16 +33,13 @@ internal class CoroutineLoggerControllerTest {
             .exchange()
             .expectBody()
             .jsonPath("$.length()").isEqualTo(1)
-            .jsonPath("$.userId").value<Any> { isA<Any>(String::class.java) }
-            .jsonPath("$.traceId").doesNotExist()
-            .jsonPath("$.spanId").doesNotExist()
-            .jsonPath("$.parentId").doesNotExist()
+            .jsonPath("$.userId").value<Any> { isA<Any>(UUID::class.java) }
     }
 
     /**
      * Console example:
      * ```
-     * {"message":"log0-information","context":{"spanId":"8a71c35ea16503dd","traceId":"8a71c35ea16503dd","userId":"57b512fc-d979-46e4-8b20-6c65ebd86916","parentId":null}}
+     * {"message":"log0-information","context":{"userId":"5c827c39-9f5b-478f-b17e-5b8d493f57a7","example":"example"}}
      * ```
      */
     @Test
@@ -56,10 +51,10 @@ internal class CoroutineLoggerControllerTest {
     }
 
     /**
-     * Console example (used logger 2x):
+     * Console example (used logger 2x, because called twice in controller):
      * ```
-     * {"message":"log1-information","context":{"spanId":"71cb0fdcaa1dcf48","traceId":"71cb0fdcaa1dcf48","parentId":null,"foo":"bar"}}
-     * {"message":"log1-information","context":{"spanId":"71cb0fdcaa1dcf48","traceId":"71cb0fdcaa1dcf48","parentId":null,"foo":"bar"}}
+     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
+     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
      * ```
      */
     @Test
@@ -74,7 +69,7 @@ internal class CoroutineLoggerControllerTest {
     /**
      * Console example:
      * ```
-     * {"message":"log2-information","context":{"spanId":"bdd6f60e89b518db","traceId":"bdd6f60e89b518db","TraceContext.hashCode":"-1527658078","parentId":null}}`
+     * {"message":"log2-information","context":{"example":"n/a"}}
      * ```
      */
     @Test

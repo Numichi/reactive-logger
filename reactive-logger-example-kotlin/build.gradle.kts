@@ -10,7 +10,8 @@ plugins {
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
@@ -35,7 +36,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
     implementation("com.lmax:disruptor:3.4.4")
-    implementation("org.springframework.boot:spring-boot-starter-log4j2:2.7.5")
+    implementation("org.springframework.boot:spring-boot-starter-log4j2:3.0.0")
     annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0") // For Log4j2 @Plugin
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -53,7 +54,7 @@ dependencyManagement {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 

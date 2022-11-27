@@ -54,9 +54,8 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
      * Content-Length: 106
      *
      * {
-     *   "userId": "c8780d8a-0e59-4b33-b4f3-ff026d102b3c",
-     *   "traceId": "d3cc02d38cc222ad",
-     *   "spanId": "d3cc02d38cc222ad"
+     *     "userId": "d50e311a-739b-4521-8143-033ad33af323",
+     *     "example": "example"
      * }
      * ```
      *
@@ -80,7 +79,7 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
      * Content-Length: 49
      *
      * {
-     *   "userId": "4cab2469-fbcc-40dc-91a8-88f4d553f1eb"
+     *     "userId": "4cab2469-fbcc-40dc-91a8-88f4d553f1eb"
      * }
      * ```
      *
@@ -98,15 +97,7 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
     /**
      * ### JSON Log format
      * ```json
-     * {
-     *   "message": "log1-information",
-     *   "context": {
-     *     "spanId": "ad864e3400b43977",
-     *     "traceId": "ad864e3400b43977"
-     *     "parentId": null,
-     *     "userId": "4cfd73ad-3f32-47f5-a2f4-4a2b54339d1c"
-     *   }
-     * }
+     * {"message":"log0-information","context":{"userId":"4ec3f71c-631c-470a-840f-c3cd697986eb","example":"example"}}
      * ```
      */
     @GetMapping("log0")
@@ -117,15 +108,7 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
     /**
      * ### JSON Log format
      * ```json
-     * {
-     *   "message": "log1-information",
-     *   "context": {
-     *     "spanId": "f1f351a78bac867a",
-     *     "traceId": "f1f351a78bac867a"
-     *     "parentId": null,
-     *     "foo": "bar"
-     *   }
-     * }
+     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
      * ```
      *
      * ### Description
@@ -149,15 +132,7 @@ class ReactiveKLoggerController(loggerRegistry: LoggerRegistry) {
      * ### JSON Log format
      *
      * ```json
-     * {
-     *   "message": "log2-information",
-     *   "context": {
-     *     "spanId": "14843eb53ff7b259",
-     *     "traceId": "14843eb53ff7b259",
-     *     "parentId": null,
-     *     "TraceContext.hashCode": "-697239192"
-     *   }
-     * }
+     * {"message":"log2-information","context":{"example":"n/a"}}
      * ```
      *
      * ### Description
