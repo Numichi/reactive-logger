@@ -7,7 +7,6 @@
 ![Tested on](https://img.shields.io/badge/tested%20on-jvm17-blue)
 [![Reactor Project](https://img.shields.io/badge/supported-Java%20and%20Kotlin%20Coroutine%20with%20Reactor-blue)](https://projectreactor.io/)
 
-- [Warning CVE](#warning-cve)
 - [Compatibility Matrix](#compatibility-matrix)
 - [Getting Started](#what-is-the-source-of-motivation)
   - [What is the source of motivation?](#what-is-the-source-of-motivation)
@@ -28,20 +27,12 @@
   - [LoggerFactory](#loggerfactory)
 - [FAQ](#faq)
 
-# Warning CVE
-
-| Package                 | Description                                                  | Severity | 
-|-------------------------|--------------------------------------------------------------|----------|
-| org.yaml:snakeyaml:1.33 | CVE-2022-41854 6.5 Stack-based Buffer Overflow vulnerability | medium   |
-
-I am watching when the new version comes out without the vulnerability.
-
 # Compatibility Matrix
 
-| Version | Current version | Compatibility | Min Java | GitHub Branch    | 
-|---------|-----------------|---------------|----------|------------------|
-| v5.x.x  | v5.0.0          | Spring Boot 3 | Java 17  | master           |
-| v4.x.x  | v4.0.4          | Spring Boot 2 | Java 11  | SpringBoot-2.x.x |
+| Version | Compatibility | Min Java | GitHub Branch    | 
+|---------|---------------|----------|------------------|
+| v5.x.x  | Spring Boot 3 | Java 17  | master           |
+| v4.x.x  | Spring Boot 2 | Java 11  | SpringBoot-2.x.x |
 
 # Getting Started
 
