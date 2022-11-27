@@ -38,10 +38,9 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("io.projectreactor:reactor-core:3.5.0")
-    implementation("org.slf4j:slf4j-api:2.0.4")
+    implementation("org.slf4j:slf4j-api:2.0.5")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("org.springframework.boot:spring-boot-starter:2.7.6")
-    implementation("org.yaml:snakeyaml:1.33")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
     api("io.github.microutils:kotlin-logging-jvm:3.0.4")
