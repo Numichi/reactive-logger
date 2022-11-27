@@ -38,10 +38,10 @@ I am watching when the new version comes out without the vulnerability.
 
 # Compatibility Matrix
 
-| Version | Compatibility | Min Java | GitHub Branch    | 
-|---------|---------------|----------|------------------|
-| v5.x.x  | Spring Boot 3 | Java 17  | master           |
-| v4.x.x  | Spring Boot 2 | Java 11  | SpringBoot-2.x.x |
+| Version | Current version | Compatibility | Min Java | GitHub Branch    | 
+|---------|-----------------|---------------|----------|------------------|
+| v5.x.x  | v5.0.0          | Spring Boot 3 | Java 17  | master           |
+| v4.x.x  | v4.0.4          | Spring Boot 2 | Java 11  | SpringBoot-2.x.x |
 
 # Getting Started
 
