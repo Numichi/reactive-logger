@@ -34,7 +34,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
     implementation("com.lmax:disruptor:3.4.4")
     implementation("org.springframework.boot:spring-boot-starter-log4j2:3.0.0")
     annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0") // For Log4j2 @Plugin
