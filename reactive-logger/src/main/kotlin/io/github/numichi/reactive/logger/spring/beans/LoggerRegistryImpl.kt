@@ -16,12 +16,10 @@ import io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerPropert
 import mu.KLogger
 import org.slf4j.Logger
 import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @AutoConfiguration(after = [DefaultValuesAutoConfiguration::class])
 @EnableConfigurationProperties(value = [ReactiveLoggerProperties::class])
-@AutoConfigureAfter(DefaultValuesAutoConfiguration::class)
 open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) : LoggerRegistry {
     private val instances: Map<String, InstanceProperties> = properties.instances
     private val storeReactiveLogger = mutableMapOf<CacheKey, ReactiveLogger>()
