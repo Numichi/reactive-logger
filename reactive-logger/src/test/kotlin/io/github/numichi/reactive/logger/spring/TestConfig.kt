@@ -3,7 +3,6 @@ package io.github.numichi.reactive.logger.spring
 import io.github.numichi.reactive.logger.hook.MDCContextHook
 import io.github.numichi.reactive.logger.hook.MDCHook
 import io.github.numichi.reactive.logger.hook.Position
-import io.mockk.every
 import io.mockk.mockk
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -34,7 +33,7 @@ open class TestConfig {
 
     @Bean
     open fun hook4(): MDCContextHook {
-        return MDCContextHook(Position.AFTER) { ctx, _ ->
+        return MDCContextHook { ctx, _ ->
             mapOf("after" to ctx["after"])
         }
     }

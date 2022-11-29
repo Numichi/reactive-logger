@@ -394,6 +394,27 @@ fun main(args: Array<String>) {
 ```
 
 ## Hook configuration
+The purpose of the hook is to transfer data into an MDC snapshot from the current context view. For example, if you or another component saved data in reactive context, you can configure them data transfer into MDC snapshot for every log event. Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
+
+There is a method for adding a hook: `Configuration.addContextHook(...)`. If you use `@Bean` with `MDCContextHook` type, not need used `Configuration` class.
+
+Hooks can overwrite any current snapshot stored data. You can set your activation position. `BEFORE` position means trigger before reading the current MDC, and `BEFORE` will define the base snapshot if configured. When the current MDC will be read, it may override this snapshot by records or create a default snapshot. Logically, `AFTER` will be run after them and can add or modify this snapshot.
+
+**Important:** If any exception occurs in a hook function, the entire hook will be ignored.
+
+| parameter | property                  | type                                             | description                                                                                             |
+|-----------|---------------------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| position  | optional (default: AFTER) | Position (enum)                                  | When should it run?                                                                                     |
+| hook      | required                  | Function2<ContextView, MDC, Map<String, String>> | The new MDC instance will not contain the keys in the map. Like, remove by keys.                        |
+
+| Function2 parameter | property     | type                | description                                                                                     |
+|---------------------|--------------|---------------------|-------------------------------------------------------------------------------------------------|
+| contextView         | non-nullable | ContextView         | Currently reactor context                                                                       |
+| mdc                 | non-nullable | MDC                 | One key of the Reactor context that we want to reach. (If position is BEFORE, it will be empty) |
+| return value        | non-nullable | Map<String, String> | Write or overwrite into the snapshot. If key of map is null that will be skip.                  |
+
+### Deprecated
+
 The purpose of the hook is to transfer data into an MDC snapshot from outside the context key's scope. Example, you use Spring Boot Sleuth, and you would like to see `traceId` and `snapId`  in MDC information. These are information you can find in `org.springframework.cloud.sleuth.TraceContext` interface context key and may vary depending on run location (see spanId). Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
 
 There are two methods for adding a hook: `Configuration.addHook(...)` and `Configuration.addGenericHook(...)`. The difference between them is that `addHook` is not defined what type searched value, so you get an Object/Any type via `value`. In the case of the `addGenericHook`, it tries to cast the data to a generic value. 

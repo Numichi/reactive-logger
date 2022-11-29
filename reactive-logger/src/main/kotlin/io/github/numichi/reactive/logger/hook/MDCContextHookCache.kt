@@ -21,7 +21,7 @@ internal object MDCContextHookCache {
     }
 
     fun addHook(hook: MDCContextHook) {
-        if (hook.beforeSnapshot == Position.BEFORE) {
+        if (hook.position == Position.BEFORE) {
             store[Position.BEFORE] = hook
         } else {
             store[Position.AFTER] = hook

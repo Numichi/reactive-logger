@@ -11,8 +11,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 open class MDCContextHookAutoConfiguration(mdcHooks: List<MDCContextHook>) {
     init {
         mdcHooks.forEach {
-            if (MDCContextHookCache.existsHook(it.beforeSnapshot)) {
-                throw ContextHookNameAlreadyExistException("MDCContextHook in ${it.beforeSnapshot.name} position already exist!")
+            if (MDCContextHookCache.existsHook(it.position)) {
+                throw ContextHookNameAlreadyExistException("MDCContextHook in ${it.position.name} position already exist!")
             }
 
             MDCContextHookCache.addHook(it)
