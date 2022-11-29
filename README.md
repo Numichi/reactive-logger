@@ -21,7 +21,8 @@
   - [Extended MDC scope in coroutine (withMDCContext)](#extended-mdc-scope-in-coroutine-withmdccontext)
 - [Configuration](#configuration)
   - [Default values](#default-values)
-  - [Hook configuration](#hook-configuration)
+  - [Hook configuration](#hook-configuration-from-v510)
+    - [Deprecated version](#deprecated-from-v510) 
   - [Spring support](#spring-support)
 - [Other helper method](#other-helper-method)
   - [LoggerFactory](#loggerfactory)
@@ -393,7 +394,8 @@ fun main(args: Array<String>) {
 }
 ```
 
-## Hook configuration
+## Hook configuration (From: v5.1.0)
+
 The purpose of the hook is to transfer data into an MDC snapshot from the current context view. For example, if you or another component saved data in reactive context, you can configure them data transfer into MDC snapshot for every log event. Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
 
 There is a method for adding a hook: `Configuration.addContextHook(...)`. If you use `@Bean` with `MDCContextHook` type, not need used `Configuration` class.
@@ -413,7 +415,7 @@ Hooks can overwrite any current snapshot stored data. You can set your activatio
 | mdc                 | non-nullable | MDC                 | One key of the Reactor context that we want to reach. (If position is BEFORE, it will be empty) |
 | return value        | non-nullable | Map<String, String> | Write or overwrite into the snapshot. If key of map is null that will be skip.                  |
 
-### Deprecated
+### Deprecated (From: v5.1.0)
 
 The purpose of the hook is to transfer data into an MDC snapshot from outside the context key's scope. Example, you use Spring Boot Sleuth, and you would like to see `traceId` and `snapId`  in MDC information. These are information you can find in `org.springframework.cloud.sleuth.TraceContext` interface context key and may vary depending on run location (see spanId). Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
 
