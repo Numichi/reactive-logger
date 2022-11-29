@@ -30,10 +30,10 @@
 
 # Compatibility Matrix
 
-| Version (current) | Compatibility | Min Java | GitHub Branch    | 
-|-------------------|---------------|----------|------------------|
-| [5.0.1](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/5.0.1)             | Spring Boot 3 | Java 17  | master           |
-| [4.0.5](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/4.0.5)             | Spring Boot 2 | Java 11  | [SpringBoot-2.x.x](https://github.com/Numichi/reactive-logger/tree/SpringBoot-2.x.x) |
+| Version (current)                                                                   | Compatibility | Min Java | GitHub Branch                                                                        | 
+|-------------------------------------------------------------------------------------|---------------|----------|--------------------------------------------------------------------------------------|
+| [5.0.1](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/5.0.1) | Spring Boot 3 | Java 17  | master                                                                               |
+| [4.0.5](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/4.0.5) | Spring Boot 2 | Java 11  | [SpringBoot-2.x.x](https://github.com/Numichi/reactive-logger/tree/SpringBoot-2.x.x) |
 
 # Getting Started
 
@@ -404,16 +404,16 @@ Hooks can overwrite any current snapshot stored data. You can set your activatio
 
 **Important:** If any exception occurs in a hook function, the entire hook will be ignored.
 
-| parameter | property                  | type                                             | description                                                                                             |
-|-----------|---------------------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| position  | optional (default: AFTER) | Position (enum)                                  | When should it run?                                                                                     |
-| hook      | required                  | Function2<ContextView, MDC, Map<String, String>> | The new MDC instance will not contain the keys in the map. Like, remove by keys.                        |
+| parameter | property                  | type                                             | description                           |
+|-----------|---------------------------|--------------------------------------------------|---------------------------------------|
+| position  | optional (default: AFTER) | Position (enum)                                  | When should it run?                   |
+| hook      | required                  | Function2<ContextView, MDC, Map<String, String>> | This hook will be trigger every logs. |
 
-| Function2 parameter | property     | type                | description                                                                                     |
-|---------------------|--------------|---------------------|-------------------------------------------------------------------------------------------------|
-| contextView         | non-nullable | ContextView         | Currently reactor context                                                                       |
-| mdc                 | non-nullable | MDC                 | One key of the Reactor context that we want to reach. (If position is BEFORE, it will be empty) |
-| return value        | non-nullable | Map<String, String> | Write or overwrite into the snapshot. If key of map is null that will be skip.                  |
+| Function2 parameter | property     | type                | description                                                                    |
+|---------------------|--------------|---------------------|--------------------------------------------------------------------------------|
+| contextView         | non-nullable | ContextView         | Currently reactor context                                                      |
+| mdc                 | non-nullable | MDC                 | Current MDC snapshot. Immutable. (If position is BEFORE, it will be empty)     |
+| return value        | non-nullable | Map<String, String> | Write or overwrite into the snapshot. If key of map is null that will be skip. |
 
 ### Deprecated (From: v5.1.0)
 

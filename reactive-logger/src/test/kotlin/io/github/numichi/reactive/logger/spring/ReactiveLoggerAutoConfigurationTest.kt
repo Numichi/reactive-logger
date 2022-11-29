@@ -56,7 +56,7 @@ class ReactiveLoggerAutoConfigurationTest {
         val hooks = RLConfig.getHooks()
         val ctxHooks = RLConfig.getContextHooks()
         assertEquals(2, hooks.size)
-        assertEquals(1, ctxHooks.size)
+        assertEquals(2, ctxHooks.size)
     }
 
     @Test
