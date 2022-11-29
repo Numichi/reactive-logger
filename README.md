@@ -415,6 +415,36 @@ Hooks can overwrite any current snapshot stored data. You can set your activatio
 | mdc                 | non-nullable | MDC                 | Current MDC snapshot. Immutable. (If position is BEFORE, it will be empty)     |
 | return value        | non-nullable | Map<String, String> | Write or overwrite into the snapshot. If key of map is null that will be skip. |
 
+Kotlin example with Micrometer in Spring Boot 3+:
+```kotlin
+import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
+import io.github.numichi.reactive.logger.hook.MDCContextHook
+import io.micrometer.context.ContextSnapshot
+import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor
+import io.micrometer.tracing.Tracer
+import org.springframework.context.annotation.Configuration
+
+@Configuration
+class MDCContextHookConfiguration(private val tracer: Tracer) {
+
+    @Bean
+    fun hook(): MDCContextHook {
+        return MDCContextHook { contextView: ContextView, _: MDC ->
+            val map = mutableMapOf<String, String>()
+
+            ContextSnapshot.setThreadLocalsFrom(contextView, ObservationThreadLocalAccessor.KEY).use {
+                val context = this.tracer.currentSpan()?.context()
+                map["traceId"] = context?.traceId() ?: "n/a"
+                map["spanId"] = context?.spanId() ?: "n/a"
+                map["parentId"] = context?.parentId() ?: "n/a"
+            }
+
+            map
+        }
+    }
+}
+```
+
 ### Deprecated (From: v5.1.0)
 
 The purpose of the hook is to transfer data into an MDC snapshot from outside the context key's scope. Example, you use Spring Boot Sleuth, and you would like to see `traceId` and `snapId`  in MDC information. These are information you can find in `org.springframework.cloud.sleuth.TraceContext` interface context key and may vary depending on run location (see spanId). Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
