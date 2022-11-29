@@ -415,7 +415,7 @@ Hooks can overwrite any current snapshot stored data. You can set your activatio
 | mdc                 | non-nullable | MDC                 | Current MDC snapshot. Immutable. (If position is BEFORE, it will be empty)     |
 | return value        | non-nullable | Map<String, String> | Write or overwrite into the snapshot. If key of map is null that will be skip. |
 
-Kotlin example with Micrometer in Spring Boot 3+:
+Kotlin example with Micrometer in Spring Boot 3+ ([source](https://github.com/micrometer-metrics/micrometer-samples/blob/main/webflux/src/main/java/com/example/micrometer/WebFluxApplication.java)):
 ```kotlin
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.hook.MDCContextHook
