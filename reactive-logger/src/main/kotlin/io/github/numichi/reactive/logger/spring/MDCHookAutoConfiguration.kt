@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 
 @AutoConfiguration(after = [DefaultValuesAutoConfiguration::class])
 @ConditionalOnBean(value = [MDCHook::class])
+@Deprecated("MDCContextHook behavior will replace it. See: MDCContextHookAutoConfiguration")
 open class MDCHookAutoConfiguration(mdcHooks: List<MDCHook<*>>) {
     init {
         val nameCheck = mutableSetOf<String>()

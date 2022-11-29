@@ -31,7 +31,11 @@
       "name": "reactive-logger.instances",
       "type": "java.util.Map<java.lang.String, io.github.numichi.reactive.logger.spring.properties.InstanceProperties>",
       "description": "Logger information pre-registering.",
-      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties"
+      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties",
+      "deprecation": {
+        "level": "warning",
+        "reason": "It will be remove."
+      }
     }
   ]
 }

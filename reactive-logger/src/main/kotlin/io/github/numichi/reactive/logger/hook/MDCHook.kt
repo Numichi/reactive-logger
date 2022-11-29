@@ -4,6 +4,7 @@ import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.toSafeMdcMap
 import reactor.util.context.ContextView
 
+@Deprecated("Use: MDCContextHook")
 class MDCHook<T>(
     val name: String,
     val contextKey: Any,

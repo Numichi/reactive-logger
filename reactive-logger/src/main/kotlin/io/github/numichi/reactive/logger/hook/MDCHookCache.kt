@@ -1,5 +1,6 @@
 package io.github.numichi.reactive.logger.hook
 
+@Deprecated("Remove with MDCHook")
 internal object MDCHookCache {
     var listBefore: Array<MDCHook<*>> = arrayOf()
     var listAfter: Array<MDCHook<*>> = arrayOf()

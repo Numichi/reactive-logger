@@ -3,20 +3,30 @@ package io.github.numichi.reactive.logger.spring
 import io.github.numichi.reactive.logger.Configuration as RLConfig
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
+import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.spring.beans.LoggerRegistry
 import io.github.numichi.reactive.logger.spring.beans.LoggerRegistryImpl
+import io.mockk.clearMocks
+import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.reactor.asCoroutineContext
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import reactor.core.scheduler.Schedulers
+import reactor.util.context.Context
 
 @SpringBootTest(
     classes = [
-        TestConfiguration::class,
+        TestConfig::class,
         MDCHookAutoConfiguration::class,
+        MDCContextHookAutoConfiguration::class,
         LoggerRegistryImpl::class
     ]
 )
@@ -24,6 +34,9 @@ class ReactiveLoggerAutoConfigurationTest {
 
     @Autowired
     lateinit var loggerRegistry: LoggerRegistry
+
+    @Autowired
+    lateinit var hookMock: HookMock
 
     companion object {
         @BeforeAll
@@ -33,10 +46,17 @@ class ReactiveLoggerAutoConfigurationTest {
         }
     }
 
+    @BeforeEach
+    fun beforeEach() {
+        clearMocks(hookMock.mock)
+    }
+
     @Test
     fun hookCheck() {
         val hooks = RLConfig.getHooks()
+        val ctxHooks = RLConfig.getContextHooks()
         assertEquals(2, hooks.size)
+        assertEquals(1, ctxHooks.size)
     }
 
     @Test
@@ -159,5 +179,19 @@ class ReactiveLoggerAutoConfigurationTest {
         assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, handler1.contextKey)
         assertEquals("bar", handler2.contextKey)
         assertEquals("bar", handler3.contextKey)
+    }
+
+    @Test
+    @ExperimentalCoroutinesApi
+    fun contextHookTest() {
+        runTest {
+            val logger = CoroutineLogger.getLogger(ReactiveLoggerAutoConfigurationTest::class.java)
+
+            withContext(Context.of("before", "aaa").asCoroutineContext()) {
+                logger.info("")
+            }
+
+            verify { hookMock.mock("aaa") }
+        }
     }
 }

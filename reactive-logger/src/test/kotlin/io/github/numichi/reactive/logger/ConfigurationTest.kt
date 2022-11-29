@@ -1,6 +1,7 @@
 package io.github.numichi.reactive.logger
 
 import io.github.numichi.reactive.logger.hook.MDCHookCache
+import io.github.numichi.reactive.logger.hook.Position
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertSame
@@ -60,6 +61,23 @@ class ConfigurationTest {
         assertEquals(0, Configuration.getHooks().size)
         assertEquals(0, MDCHookCache.listBefore.size)
         assertEquals(0, MDCHookCache.listAfter.size)
+    }
+
+    @Test
+    fun `MDCContextHook configuration by Configuration class`() {
+        Configuration.addHook(Position.AFTER) { _, _ -> mapOf("foo1" to "bar1") }
+        Configuration.addHook(Position.BEFORE) { _, _ -> mapOf("foo2" to "bar2") }
+
+        assertEquals(2, Configuration.getContextHooks().size)
+        assertEquals(true, Configuration.existsHook(Position.BEFORE))
+        assertEquals(true, Configuration.existsHook(Position.AFTER))
+
+        Configuration.removeHook(Position.AFTER)
+
+        assertEquals(1, Configuration.getContextHooks().size)
+        assertEquals(true, Configuration.existsHook(Position.BEFORE))
+        assertEquals(false, Configuration.existsHook(Position.AFTER))
+
     }
 
     @Test

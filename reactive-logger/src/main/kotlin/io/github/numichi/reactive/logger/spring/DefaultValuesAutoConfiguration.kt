@@ -10,6 +10,7 @@ import reactor.core.scheduler.Schedulers
 
 @AutoConfiguration(before = [
     MDCHookAutoConfiguration::class,
+    MDCContextHookAutoConfiguration::class,
     LoggerRegistryImpl::class
 ])
 @EnableConfigurationProperties(value = [ReactiveLoggerProperties::class])
