@@ -7,6 +7,8 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("signing")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 }
 
 group = project.property("group") as String
@@ -38,26 +40,26 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("io.projectreactor:reactor-core:3.5.0")
-    implementation("org.slf4j:slf4j-api:2.0.5")
+    implementation("io.projectreactor:reactor-core:3.5.5")
+    implementation("org.slf4j:slf4j-api")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("org.springframework.boot:spring-boot-starter:3.0.0")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
-    api("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    api("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.0.0")
-    kapt("org.springframework.boot:spring-boot-configuration-processor:3.0.0")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.0.0")
-    testImplementation("io.projectreactor:reactor-test:3.5.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testImplementation("org.apache.logging.log4j:log4j-core:2.19.0")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("io.mockk:mockk:1.13.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test:3.5.5")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.apache.logging.log4j:log4j-core")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+    testImplementation("io.mockk:mockk:1.13.5")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -70,9 +72,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 publishing {
     publications {
         create<MavenPublication>("main") {
-            groupId = project.property("group") as String
+            groupId = project.property("group") as String? ?: ""
             artifactId = "reactive-logger"
-            version = project.property("version") as String
+            version = project.property("version") as String? ?: ""
             from(components["java"])
 
             pom {
@@ -83,9 +85,9 @@ publishing {
 
                 developers {
                     developer {
-                        id.set(project.property("developerId") as String)
-                        name.set(project.property("developerName") as String)
-                        email.set(project.property("developerEmail") as String)
+                        id.set(project.property("developerId") as String? ?: "")
+                        name.set(project.property("developerName") as String? ?: "")
+                        email.set(project.property("developerEmail") as String? ?: "")
                     }
                 }
 

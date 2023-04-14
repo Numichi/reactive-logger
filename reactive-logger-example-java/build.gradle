@@ -15,7 +15,7 @@ repositories {
 }
 
 configurations {
-   all {
+   configureEach {
        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
    }
 }
@@ -24,8 +24,8 @@ dependencies {
     implementation project(":reactive-logger")
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.lmax:disruptor:3.4.4'
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2:3.0.0'
-    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.19.0' // For Log4j2 @Plugin
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core' // For Log4j2 @Plugin
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'

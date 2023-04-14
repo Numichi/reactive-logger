@@ -23,8 +23,6 @@ configurations {
     }
 }
 
-extra["springCloudVersion"] = "2021.0.5"
-
 dependencies {
     implementation(project(":reactive-logger"))
 
@@ -35,19 +33,13 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("com.lmax:disruptor:3.4.4")
-    implementation("org.springframework.boot:spring-boot-starter-log4j2:3.0.0")
-    annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0") // For Log4j2 @Plugin
+    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    annotationProcessor("org.apache.logging.log4j:log4j-core") // For Log4j2 @Plugin
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("io.mockk:mockk:1.13.2")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-    }
 }
 
 tasks.withType<KotlinCompile> {

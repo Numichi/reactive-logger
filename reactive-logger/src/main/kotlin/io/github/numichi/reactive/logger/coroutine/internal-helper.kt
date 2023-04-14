@@ -5,10 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.asCoroutineContext
 import reactor.util.context.Context
-import reactor.util.context.ContextView
 import kotlin.coroutines.coroutineContext
-
-internal typealias ContextResolver = suspend () -> ContextView?
+import kotlinx.coroutines.withContext
 
 internal suspend fun reactorContextOrEmpty(): Context {
     return rectorContext() ?: Context.empty()
@@ -19,18 +17,20 @@ internal suspend fun rectorContext(): Context? {
 }
 
 internal fun mdcCollectionIntoContext(context: Context, iterator: Iterator<MDC>): Context {
-    val addedKeys = mutableSetOf<Any>()
+    val addedKeys = mutableSetOf<String>()
     var writableContext = context
-    iterator.forEach {
-        check(!addedKeys.contains(it.contextKey)) { "Duplicate context key writing." }
-        addedKeys.add(it.contextKey)
-        writableContext = writableContext.put(it.contextKey, it.data)
+
+    for (mdc in iterator) {
+        check(mdc.contextKey !in addedKeys) { "Duplicate context key writing." }
+        addedKeys += mdc.contextKey.toString()
+        writableContext = writableContext.put(mdc.contextKey, mdc.data)
     }
+
     return writableContext
 }
 
 internal suspend fun <T> withContextBlock(context: Context, iterator: Iterator<MDC>, block: suspend CoroutineScope.() -> T): T {
-    return kotlinx.coroutines.withContext(mdcCollectionIntoContext(context, iterator).asCoroutineContext()) {
+    return withContext(mdcCollectionIntoContext(context, iterator).asCoroutineContext()) {
         block()
     }
 }
