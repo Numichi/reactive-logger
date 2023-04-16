@@ -32,8 +32,8 @@
 
 | Version (current)                                                                   | Compatibility | Min Java | GitHub Branch                                                                        | 
 |-------------------------------------------------------------------------------------|---------------|----------|--------------------------------------------------------------------------------------|
-| [5.1.0](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/5.1.0) | Spring Boot 3 | Java 17  | master                                                                               |
-| [4.0.5](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/4.0.5) | Spring Boot 2 | Java 11  | [SpringBoot-2.x.x](https://github.com/Numichi/reactive-logger/tree/SpringBoot-2.x.x) |
+| [5.1.1](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/5.1.1) | Spring Boot 3 | Java 17  | master                                                                               |
+| [4.0.5](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/4.0.5) (maintenance) | Spring Boot 2 | Java 11  | [SpringBoot-2.x.x](https://github.com/Numichi/reactive-logger/tree/SpringBoot-2.x.x) |
 
 # Getting Started
 
