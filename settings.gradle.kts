@@ -3,10 +3,10 @@ rootProject.name = "reactive-logger"
 pluginManagement {
     plugins {
         kotlin("jvm") version "1.8.20"
-        kotlin("plugin.spring") version "1.8.20"
         kotlin("kapt") version "1.8.20"
+        kotlin("plugin.spring") version "1.8.20"
         id("com.adarshr.test-logger") version "3.2.0"
-        id("org.springframework.boot") version "3.0.5"
+        id("org.springframework.boot") version "3.0.6"
         id("io.spring.dependency-management") version "1.1.0"
     }
 }
