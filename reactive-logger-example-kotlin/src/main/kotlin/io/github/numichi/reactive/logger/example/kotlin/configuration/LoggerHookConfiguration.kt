@@ -13,7 +13,7 @@ class LoggerHookConfiguration {
 
     @Bean
     fun mdcContextHook(): MDCContextHook {
-        return MDCContextHook label@{ ctx: ContextView, mdc: MDC ->
+        return MDCContextHook { ctx: ContextView, mdc: MDC ->
             val result = mutableMapOf<String, String?>()
 
             ctx[ExampleModel::class.java].also {
