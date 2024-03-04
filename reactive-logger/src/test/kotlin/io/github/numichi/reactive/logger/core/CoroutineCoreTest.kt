@@ -7,13 +7,13 @@ import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.coroutine.withMDCContext
 import io.github.numichi.reactive.logger.exceptions.NotEmittedValueException
 import io.github.numichi.reactive.logger.reactor.MDCContext
+import io.github.oshai.kotlinlogging.KLogger
 import io.mockk.clearMocks
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.reactor.mono
 import kotlinx.coroutines.test.runTest
-import mu.KLogger
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
@@ -74,10 +74,11 @@ class CoroutineCoreTest {
     @Test
     fun getSnapshotTest() {
         val logger: Logger = mockk(relaxed = true)
+        val kLogger: KLogger = mockk(relaxed = true)
         val coroutineLogger1 = CoroutineLogger.getLogger(logger)
         val coroutineLogger2 = CoroutineLogger.getLogger(logger, contextKey = "foo")
-        val coroutineKLogger1 = CoroutineKLogger.getLogger(logger)
-        val coroutineKLogger2 = CoroutineKLogger.getLogger(logger, contextKey = "foo")
+        val coroutineKLogger1 = CoroutineKLogger.getLogger(kLogger)
+        val coroutineKLogger2 = CoroutineKLogger.getLogger(kLogger, contextKey = "foo")
 
         runTest {
             val mdc = MDC("Foo" to "Bar")
@@ -132,7 +133,7 @@ class CoroutineCoreTest {
 
     @Test
     fun `should get MDC data from snapshot (Logger)`() {
-        val logger = CoroutineLogger.getLogger(mockk<KLogger>(relaxed = true))
+        val logger = CoroutineLogger.getLogger(mockk<Logger>(relaxed = true))
 
         val x = mono { logger.snapshot()["foo"] }
             .contextWrite {

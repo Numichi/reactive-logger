@@ -1,15 +1,14 @@
 package io.github.numichi.reactive.logger.core
 
 import io.github.numichi.reactive.logger.Configuration
-import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
+import io.github.oshai.kotlinlogging.KLogger
 import io.mockk.clearAllMocks
 import io.mockk.mockk
 import io.mockk.verify
-import mu.KLogger
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,7 +23,7 @@ import java.util.*
 internal class CoreTest {
     private val contextKey = UUID.randomUUID().toString()
     private val logger: Logger = mockk(relaxed = true)
-    private val kLogger: KLogger = LoggerFactory.getKLogger(logger)
+    private val kLogger: KLogger = mockk(relaxed = true)
     private val reactiveLogger = ReactiveLogger.getLogger(logger, contextKey, null)
     private val reactiveKLogger = ReactiveKLogger.getLogger(kLogger)
     private val coroutineLogger = CoroutineLogger.getLogger(logger)
@@ -39,11 +38,9 @@ internal class CoreTest {
     @Test
     fun getLoggerTest() {
         assertEquals(logger, reactiveLogger.logger)
-        assertEquals(logger, reactiveKLogger.logger.underlyingLogger)
         assertEquals(kLogger, reactiveKLogger.logger)
 
         assertEquals(logger, coroutineLogger.logger)
-        assertEquals(logger, coroutineKLogger.logger.underlyingLogger)
         assertEquals(kLogger, coroutineKLogger.logger)
     }
 

@@ -10,7 +10,7 @@ import java.util.function.BiConsumer
 import java.util.function.Consumer
 import java.util.function.Supplier
 
-abstract class Core<L : Logger> {
+abstract class Core<L> {
     abstract val logger: L
     abstract val contextKey: Any
     abstract val scheduler: Scheduler
@@ -25,7 +25,7 @@ abstract class Core<L : Logger> {
         }
     }
 
-    fun <T> logOnEach(consumer: BiConsumer<Logger, Signal<T>>): Consumer<Signal<T>> {
+    fun <T> logOnEach(consumer: BiConsumer<L, Signal<T>>): Consumer<Signal<T>> {
         return Consumer { signal ->
             wrapRunner(signal.contextView) { consumer.accept(logger, signal) }
         }

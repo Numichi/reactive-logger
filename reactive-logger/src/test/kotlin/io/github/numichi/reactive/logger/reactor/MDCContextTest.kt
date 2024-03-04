@@ -310,26 +310,4 @@ internal class MDCContextTest {
             assertEquals(MDC("foo", "bar1" to "baz1"), snapshot2)
         }
     }
-
-    @Test
-    fun `snapshot -- create snapshot from MDC and `() {
-        Configuration.addHook("name", "aaa") { value, mdc ->
-            check(value is String && mdc.contextKey == "foo")
-            mapOf("bbb" to value.uppercase())
-        }
-
-        val context = Context.of(
-            mapOf(
-                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
-                "foo" to mapOf("bar1" to "baz1"),
-                "aaa" to "bbb"
-            )
-        )
-
-        val snapshot1 = MDCContext.snapshot(context)
-        val snapshot2 = MDCContext.snapshot(context, "foo")
-
-        assertEquals(MDC("bar" to "baz"), snapshot1)
-        assertEquals(MDC("foo", mapOf("bar1" to "baz1", "bbb" to "BBB")), snapshot2)
-    }
 }

@@ -1,9 +1,9 @@
 package io.github.numichi.reactive.logger.spring.beans
 
-import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.Configuration as RLConfig
 import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
+import io.github.numichi.reactive.logger.internal.LoggerFactory
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import io.github.numichi.reactive.logger.spring.DefaultValuesAutoConfiguration
@@ -13,7 +13,7 @@ import io.github.numichi.reactive.logger.spring.handler.ContentHandlerCoroutine
 import io.github.numichi.reactive.logger.spring.handler.ContentHandlerReactive
 import io.github.numichi.reactive.logger.spring.properties.InstanceProperties
 import io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties
-import mu.KLogger
+import io.github.oshai.kotlinlogging.KLogger
 import org.slf4j.Logger
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -68,14 +68,14 @@ open class LoggerRegistryImpl(private val properties: ReactiveLoggerProperties) 
     override fun getReactiveLogger(instance: String, logger: String): ReactiveLogger {
         return getReactiveLogger(
             instance,
-            createKLogger(logger, ReactiveLogger::class.java)
+            createLogger(logger, ReactiveLogger::class.java)
         )
     }
 
     override fun getReactiveLogger(instance: String, logger: Class<*>): ReactiveLogger {
         return getReactiveLogger(
             instance,
-            createKLogger(logger, ReactiveLogger::class.java)
+            createLogger(logger, ReactiveLogger::class.java)
         )
     }
 

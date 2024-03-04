@@ -6,8 +6,8 @@ import io.github.numichi.reactive.logger.coroutine.readMdc
 import io.github.numichi.reactive.logger.coroutine.readOrDefaultMdc
 import io.github.numichi.reactive.logger.exceptions.ReadException
 import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
-import io.github.numichi.reactive.logger.toSafeMdcMap
-import io.github.numichi.reactive.logger.toSafeMdcPair
+import io.github.numichi.reactive.logger.internal.toSafeMdcMap
+import io.github.numichi.reactive.logger.internal.toSafeMdcPair
 import reactor.core.publisher.Mono
 import reactor.util.context.Context
 import reactor.util.context.ContextView

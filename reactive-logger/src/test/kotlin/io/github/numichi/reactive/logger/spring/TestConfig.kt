@@ -1,7 +1,6 @@
 package io.github.numichi.reactive.logger.spring
 
 import io.github.numichi.reactive.logger.hook.MDCContextHook
-import io.github.numichi.reactive.logger.hook.MDCHook
 import io.github.numichi.reactive.logger.hook.Position
 import io.mockk.mockk
 import org.springframework.boot.test.context.TestConfiguration
@@ -11,12 +10,6 @@ data class HookMock(val mock: (String?) -> Unit)
 
 @TestConfiguration
 open class TestConfig {
-
-    @Bean
-    open fun hook1() = MDCHook<String>("hook1", "") { _, _ -> mapOf() }
-
-    @Bean
-    open fun hook2() = MDCHook<Int>("hook2", "") { _, _ -> mapOf() }
 
     @Bean
     open fun hookMock(): HookMock {

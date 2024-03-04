@@ -22,7 +22,6 @@ import reactor.core.scheduler.Schedulers
     ],
     classes = [
         DefaultValuesAutoConfiguration::class,
-        MDCHookAutoConfiguration::class,
         LoggerRegistryImpl::class
     ]
 )

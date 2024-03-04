@@ -6,7 +6,7 @@ import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import io.github.numichi.reactive.logger.spring.handler.ContentHandlerCoroutine
 import io.github.numichi.reactive.logger.spring.handler.ContentHandlerReactive
-import mu.KLogger
+import io.github.oshai.kotlinlogging.KLogger
 import org.slf4j.Logger
 
 interface LoggerRegistry {

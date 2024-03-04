@@ -15,7 +15,6 @@ import reactor.core.scheduler.Schedulers
 @SpringBootTest(
     classes = [
         DefaultValuesAutoConfiguration::class,
-        MDCHookAutoConfiguration::class,
         LoggerRegistryImpl::class
     ]
 )

@@ -6,5 +6,6 @@ import reactor.util.context.ContextView
 
 interface RSnapshot {
     fun snapshot(): Mono<MDC>
+
     fun snapshot(contextView: ContextView): Mono<MDC>
 }

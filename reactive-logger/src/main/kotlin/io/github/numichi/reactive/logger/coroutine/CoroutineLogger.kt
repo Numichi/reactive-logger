@@ -1,8 +1,8 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
-import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.core.CoroutineCore
+import io.github.numichi.reactive.logger.internal.LoggerFactory
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import org.slf4j.Logger
 import org.slf4j.Marker
@@ -87,7 +87,7 @@ open class CoroutineLogger(
     }
 
     override val isTraceEnabled: Boolean
-        get() = reactiveLogger.isTraceEnabled
+        get() = reactiveLogger.isTraceEnabled()
 
     override fun isTraceEnabled(marker: Marker?): Boolean = reactiveLogger.isTraceEnabled(marker)
     override suspend fun trace(msg: String?) = wrapUnit { it.trace(msg) }
@@ -102,7 +102,7 @@ open class CoroutineLogger(
     override suspend fun trace(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.trace(marker, msg, t) }
 
     override val isDebugEnabled: Boolean
-        get() = reactiveLogger.isDebugEnabled
+        get() = reactiveLogger.isDebugEnabled()
 
     override fun isDebugEnabled(marker: Marker?): Boolean = reactiveLogger.isDebugEnabled(marker)
     override suspend fun debug(msg: String?) = wrapUnit { it.debug(msg) }
@@ -117,7 +117,7 @@ open class CoroutineLogger(
     override suspend fun debug(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.debug(marker, msg, t) }
 
     override val isInfoEnabled: Boolean
-        get() = reactiveLogger.isInfoEnabled
+        get() = reactiveLogger.isInfoEnabled()
 
     override fun isInfoEnabled(marker: Marker?): Boolean = reactiveLogger.isInfoEnabled(marker)
     override suspend fun info(msg: String?) = wrapUnit { it.info(msg) }
@@ -132,7 +132,7 @@ open class CoroutineLogger(
     override suspend fun info(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.info(marker, msg, t) }
 
     override val isWarnEnabled: Boolean
-        get() = reactiveLogger.isWarnEnabled
+        get() = reactiveLogger.isWarnEnabled()
 
     override fun isWarnEnabled(marker: Marker?): Boolean = reactiveLogger.isWarnEnabled(marker)
     override suspend fun warn(msg: String?) = wrapUnit { it.warn(msg) }
@@ -147,7 +147,7 @@ open class CoroutineLogger(
     override suspend fun warn(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.warn(marker, msg, t) }
 
     override val isErrorEnabled: Boolean
-        get() = reactiveLogger.isErrorEnabled
+        get() = reactiveLogger.isErrorEnabled()
 
     override fun isErrorEnabled(marker: Marker?): Boolean = reactiveLogger.isErrorEnabled(marker)
     override suspend fun error(msg: String?) = wrapUnit { it.error(msg) }
@@ -164,6 +164,7 @@ open class CoroutineLogger(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CoroutineLogger) return false
+
         if (reactiveLogger != other.reactiveLogger) return false
         if (isTraceEnabled != other.isTraceEnabled) return false
         if (isDebugEnabled != other.isDebugEnabled) return false

@@ -28,9 +28,9 @@ class LoggerTest {
     @Test
     fun traceEnabled() {
         every { imperativeLogger.isTraceEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isTraceEnabled, "trace not enabled when it should be")
-        Assertions.assertFalse(logger.isTraceEnabled, "trace enabled when it should not be")
-        Assertions.assertTrue(logger.isTraceEnabled, "trace not enabled when it should be")
+        Assertions.assertTrue(logger.isTraceEnabled(), "trace not enabled when it should be")
+        Assertions.assertFalse(logger.isTraceEnabled(), "trace enabled when it should not be")
+        Assertions.assertTrue(logger.isTraceEnabled(), "trace not enabled when it should be")
     }
 
     @Test
@@ -45,9 +45,9 @@ class LoggerTest {
     @Test
     fun debugEnabled() {
         every { imperativeLogger.isDebugEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
-        Assertions.assertFalse(logger.isDebugEnabled, "debug enabled when it should not be")
-        Assertions.assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
+        Assertions.assertTrue(logger.isDebugEnabled(), "debug not enabled when it should be")
+        Assertions.assertFalse(logger.isDebugEnabled(), "debug enabled when it should not be")
+        Assertions.assertTrue(logger.isDebugEnabled(), "debug not enabled when it should be")
     }
 
     @Test
@@ -62,9 +62,9 @@ class LoggerTest {
     @Test
     fun infoEnabled() {
         every { imperativeLogger.isInfoEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
-        Assertions.assertFalse(logger.isInfoEnabled, "info enabled when it should not be")
-        Assertions.assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
+        Assertions.assertTrue(logger.isInfoEnabled(), "info not enabled when it should be")
+        Assertions.assertFalse(logger.isInfoEnabled(), "info enabled when it should not be")
+        Assertions.assertTrue(logger.isInfoEnabled(), "info not enabled when it should be")
     }
 
     @Test
@@ -79,9 +79,9 @@ class LoggerTest {
     @Test
     fun warnEnabled() {
         every { imperativeLogger.isWarnEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
-        Assertions.assertFalse(logger.isWarnEnabled, "warn enabled when it should not be")
-        Assertions.assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
+        Assertions.assertTrue(logger.isWarnEnabled(), "warn not enabled when it should be")
+        Assertions.assertFalse(logger.isWarnEnabled(), "warn enabled when it should not be")
+        Assertions.assertTrue(logger.isWarnEnabled(), "warn not enabled when it should be")
     }
 
     @Test
@@ -96,9 +96,9 @@ class LoggerTest {
     @Test
     fun errorEnabled() {
         every { imperativeLogger.isErrorEnabled } returnsMany listOf(true, false, true)
-        Assertions.assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
-        Assertions.assertFalse(logger.isErrorEnabled, "error enabled when it should not be")
-        Assertions.assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
+        Assertions.assertTrue(logger.isErrorEnabled(), "error not enabled when it should be")
+        Assertions.assertFalse(logger.isErrorEnabled(), "error enabled when it should not be")
+        Assertions.assertTrue(logger.isErrorEnabled(), "error not enabled when it should be")
     }
 
     @Test

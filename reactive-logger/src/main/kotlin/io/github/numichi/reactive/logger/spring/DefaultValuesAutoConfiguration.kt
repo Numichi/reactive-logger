@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import reactor.core.scheduler.Schedulers
 
 @AutoConfiguration(before = [
-    MDCHookAutoConfiguration::class,
     MDCContextHookAutoConfiguration::class,
     LoggerRegistryImpl::class
 ])
@@ -21,7 +20,8 @@ open class DefaultValuesAutoConfiguration(properties: ReactiveLoggerProperties) 
         fun reset(properties: ReactiveLoggerProperties, force: Boolean) {
             val contextKey = properties.contextKey
             val scheduler = properties.scheduler
-            val alreadyConfigured = ReactiveLoggerConfiguration.defaultReactorContextMdcKey == DEFAULT_REACTOR_CONTEXT_MDC_KEY && ReactiveLoggerConfiguration.defaultScheduler == Schedulers.boundedElastic()
+            val alreadyConfigured = ReactiveLoggerConfiguration.defaultReactorContextMdcKey == DEFAULT_REACTOR_CONTEXT_MDC_KEY
+                    && ReactiveLoggerConfiguration.defaultScheduler == Schedulers.boundedElastic()
 
             if ((alreadyConfigured && contextKey != null) || (force && contextKey != null)) {
                 ReactiveLoggerConfiguration.defaultReactorContextMdcKey = contextKey

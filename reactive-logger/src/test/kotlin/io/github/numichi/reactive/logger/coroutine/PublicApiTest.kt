@@ -106,33 +106,33 @@ class PublicApiTest {
             assertEquals(MDC("foo"), snapshotMdc(Context.empty(), "foo"))
         }
 
-        run {
-            Configuration.addHook("hookName", "aaa") { value, mdc ->
-                check(mdc.contextKey == "foo" && value is String)
-                mapOf("aaa" to value.uppercase())
-            }
-
-            val context = Context.of(
-                mapOf(
-                    DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
-                    "foo" to mapOf("bar1" to "baz1"),
-                    "aaa" to "bbb"
-                )
-            )
-
-            val expected1 = MDC(mapOf("bar" to "baz"))
-            val expected2 = MDC("foo", mapOf("bar1" to "baz1", "aaa" to "BBB"))
-
-            withContext(context.asCoroutineContext()) {
-                val mdc1 = snapshotMdc()
-                val mdc2 = snapshotMdc("foo")
-                assertEquals(expected1, mdc1)
-                assertEquals(expected2, mdc2)
-            }
-
-            assertEquals(expected1, snapshotMdc(context))
-            assertEquals(expected2, snapshotMdc(context, "foo"))
-        }
+//        run {
+//            Configuration.addHook("hookName", "aaa") { value, mdc ->
+//                check(mdc.contextKey == "foo" && value is String)
+//                mapOf("aaa" to value.uppercase())
+//            }
+//
+//            val context = Context.of(
+//                mapOf(
+//                    DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
+//                    "foo" to mapOf("bar1" to "baz1"),
+//                    "aaa" to "bbb"
+//                )
+//            )
+//
+//            val expected1 = MDC(mapOf("bar" to "baz"))
+//            val expected2 = MDC("foo", mapOf("bar1" to "baz1", "aaa" to "BBB"))
+//
+//            withContext(context.asCoroutineContext()) {
+//                val mdc1 = snapshotMdc()
+//                val mdc2 = snapshotMdc("foo")
+//                assertEquals(expected1, mdc1)
+//                assertEquals(expected2, mdc2)
+//            }
+//
+//            assertEquals(expected1, snapshotMdc(context))
+//            assertEquals(expected2, snapshotMdc(context, "foo"))
+//        }
     }
 
     @Test

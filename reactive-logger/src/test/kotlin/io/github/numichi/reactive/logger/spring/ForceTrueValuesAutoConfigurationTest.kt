@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest
     ],
     classes = [
         DefaultValuesAutoConfiguration::class,
-        MDCHookAutoConfiguration::class,
         LoggerRegistryImpl::class
     ]
 )

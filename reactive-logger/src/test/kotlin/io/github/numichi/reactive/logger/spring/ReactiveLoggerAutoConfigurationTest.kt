@@ -25,7 +25,6 @@ import reactor.util.context.Context
 @SpringBootTest(
     classes = [
         TestConfig::class,
-        MDCHookAutoConfiguration::class,
         MDCContextHookAutoConfiguration::class,
         LoggerRegistryImpl::class
     ]
@@ -53,10 +52,8 @@ class ReactiveLoggerAutoConfigurationTest {
 
     @Test
     fun hookCheck() {
-        val hooks = RLConfig.getHooks()
-        val ctxHooks = RLConfig.getContextHooks()
+        val hooks = RLConfig.getContextHooks()
         assertEquals(2, hooks.size)
-        assertEquals(2, ctxHooks.size)
     }
 
     @Test

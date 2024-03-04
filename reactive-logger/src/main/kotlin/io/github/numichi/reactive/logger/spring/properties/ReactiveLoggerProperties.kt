@@ -9,6 +9,5 @@ data class ReactiveLoggerProperties(
     var contextKey: String? = null,
     var scheduler: SchedulerOptions? = null,
 
-    @Deprecated("It will be remove.")
     var instances: Map<String, InstanceProperties> = mapOf()
 )

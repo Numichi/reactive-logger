@@ -2,9 +2,11 @@ package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.coroutine.internal.reactorContextOrEmpty
+import io.github.numichi.reactive.logger.coroutine.internal.withContextBlock
 import io.github.numichi.reactive.logger.exceptions.ReadException
 import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
-import io.github.numichi.reactive.logger.toSafeMdcMap
+import io.github.numichi.reactive.logger.internal.toSafeMdcMap
 import kotlinx.coroutines.CoroutineScope
 import reactor.util.context.Context
 import reactor.util.context.ContextView

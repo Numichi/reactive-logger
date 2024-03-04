@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger.hook
 
 import io.github.numichi.reactive.logger.MDC
-import io.github.numichi.reactive.logger.toSafeMdcMap
+import io.github.numichi.reactive.logger.internal.toSafeMdcMap
 import reactor.util.context.ContextView
 
 class MDCContextHook(val position: Position, private val hook: (contextView: ContextView, MDC) -> Map<String, String?>) {

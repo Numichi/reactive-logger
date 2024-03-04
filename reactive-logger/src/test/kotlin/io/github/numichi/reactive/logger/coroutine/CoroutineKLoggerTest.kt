@@ -3,19 +3,18 @@ package io.github.numichi.reactive.logger.coroutine
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.randomText
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import mu.KLogger
-import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Schedulers
 
 @ExperimentalCoroutinesApi
@@ -40,8 +39,7 @@ internal class CoroutineKLoggerTest {
 
     @Test
     fun creationTest() {
-        val logger = LoggerFactory.getLogger(this::class.java)
-        val klogger = KotlinLogging.logger(logger)
+        val logger = KotlinLogging.logger(this::class.java.name)
 
         run {
             val instance1 = CoroutineKLogger.getLogger(logger)
@@ -69,11 +67,11 @@ internal class CoroutineKLoggerTest {
         }
 
         run {
-            val instance1 = CoroutineKLogger.getLogger(klogger)
-            val instance2 = CoroutineKLogger.getLogger(klogger, "foo")
-            val instance3 = CoroutineKLogger.getLogger(klogger, Schedulers.parallel())
-            val instance4 = CoroutineKLogger.getLogger(klogger, "foo", Schedulers.parallel())
-            val instance5 = CoroutineKLogger.getLogger(klogger, null, null)
+            val instance1 = CoroutineKLogger.getLogger(logger)
+            val instance2 = CoroutineKLogger.getLogger(logger, "foo")
+            val instance3 = CoroutineKLogger.getLogger(logger, Schedulers.parallel())
+            val instance4 = CoroutineKLogger.getLogger(logger, "foo", Schedulers.parallel())
+            val instance5 = CoroutineKLogger.getLogger(logger, null, null)
 
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", instance1.logger.name)
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", instance2.logger.name)
@@ -183,7 +181,6 @@ internal class CoroutineKLoggerTest {
     @Test
     fun sameLoggerTest() {
         assertSame(logger.reactiveLogger.logger, imperativeLogger)
-        assertSame(logger.reactiveLogger.logger.underlyingLogger, imperativeLogger.underlyingLogger)
     }
 
     @Test

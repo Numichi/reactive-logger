@@ -1,4 +1,4 @@
-package io.github.numichi.reactive.logger.coroutine
+package io.github.numichi.reactive.logger.coroutine.internal
 
 import io.github.numichi.reactive.logger.MDC
 import kotlinx.coroutines.CoroutineScope
