@@ -1,3 +1,7 @@
+⚠️ **The README has not yet been updated to v6.0.0.**
+
+Change information can be found under the release version label. In general use, it is not significant compared to v5.
+
 # Reactive-Logger
 
 [![CircleCI](https://circleci.com/gh/Numichi/reactive-logger/tree/master.svg?style=shield)](https://circleci.com/gh/Numichi/reactive-logger/tree/develop)
@@ -32,7 +36,7 @@
 
 | Version (current)                                                                   | Compatibility | Min Java | GitHub Branch                                                                        | 
 |-------------------------------------------------------------------------------------|---------------|----------|--------------------------------------------------------------------------------------|
-| [5.1.4](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/5.1.1) | Spring Boot 3 | Java 17  | master                                                                               |
+| [6.0.0](https://central.sonatype.com/search?q=io.github.numichi%3Areactive-logger&smo=true) | Spring Boot 3 | Java 17  | master                                                                               |
 | [4.0.5](https://mvnrepository.com/artifact/io.github.numichi/reactive-logger/4.0.5) (maintenance) | Spring Boot 2 | Java 11  | [SpringBoot-2.x.x](https://github.com/Numichi/reactive-logger/tree/SpringBoot-2.x.x) |
 
 # Getting Started
