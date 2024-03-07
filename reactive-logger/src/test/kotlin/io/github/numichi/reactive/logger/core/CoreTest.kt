@@ -49,10 +49,11 @@ internal class CoreTest {
         val randomKey = UUID.randomUUID().toString()
         val randomValue = UUID.randomUUID().toString()
         val mdc = mapOf(randomKey to randomValue)
-        val contextContext = mapOf<Any, Any>(
-            UUID.randomUUID() to UUID.randomUUID(),
-            contextKey to mdc
-        )
+        val contextContext =
+            mapOf<Any, Any>(
+                UUID.randomUUID() to UUID.randomUUID(),
+                contextKey to mdc,
+            )
         val context = Context.of(contextContext)
 
         reactiveLogger.wrapRunner(context) {
@@ -62,8 +63,9 @@ internal class CoreTest {
 
     @Test
     fun logOnEachNextTest() {
-        val mono = Mono.just("test")
-            .doOnEach(reactiveLogger.logOnEach { logger, value -> logger.info(value.get()) })
+        val mono =
+            Mono.just("test")
+                .doOnEach(reactiveLogger.logOnEach { logger, value -> logger.info(value.get()) })
 
         StepVerifier.create(mono)
             .expectNext("test")
@@ -74,12 +76,15 @@ internal class CoreTest {
 
     @Test
     fun logOnEachErrorTest() {
-        val mono = Mono.defer { Mono.error<Exception>(Exception("error")) }
-            .doOnEach(reactiveLogger.logOnEach { logger, signal ->
-                if (signal.type == SignalType.ON_ERROR) {
-                    logger.info(signal.throwable?.message)
-                }
-            })
+        val mono =
+            Mono.defer { Mono.error<Exception>(Exception("error")) }
+                .doOnEach(
+                    reactiveLogger.logOnEach { logger, signal ->
+                        if (signal.type == SignalType.ON_ERROR) {
+                            logger.info(signal.throwable?.message)
+                        }
+                    },
+                )
 
         StepVerifier.create(mono)
             .expectError()

@@ -26,7 +26,6 @@ import reactor.util.context.Context
 
 @ExperimentalCoroutinesApi
 class CoroutineCoreTest {
-
     @BeforeEach
     fun afterEach() {
         Configuration.reset()
@@ -38,30 +37,31 @@ class CoroutineCoreTest {
         val coroutineLogger = CoroutineLogger.getLogger(logger)
 
         run {
-            val mono = Mono.just("test")
-                .doOnEach { s ->
-                    if (s.isOnNext) {
-                        coroutineLogger.logOnSignal(s) { it.info(s.get()) }
+            val mono =
+                Mono.just("test")
+                    .doOnEach { s ->
+                        if (s.isOnNext) {
+                            coroutineLogger.logOnSignal(s) { it.info(s.get()) }
+                        }
                     }
-                }
 
             StepVerifier.create(mono)
                 .expectNext("test")
                 .verifyComplete()
 
             verify(exactly = 1) { logger.info("test") }
-
         }
 
         clearMocks(logger)
 
         run {
-            val mono = Mono.error<Exception>(Exception("error"))
-                .doOnEach { s ->
-                    if (s.isOnError) {
-                        coroutineLogger.logOnSignal(s) { it.info(s.throwable?.message) }
+            val mono =
+                Mono.error<Exception>(Exception("error"))
+                    .doOnEach { s ->
+                        if (s.isOnError) {
+                            coroutineLogger.logOnSignal(s) { it.info(s.throwable?.message) }
+                        }
                     }
-                }
 
             StepVerifier.create(mono)
                 .expectError()
@@ -121,10 +121,11 @@ class CoroutineCoreTest {
     fun `should get MDC data from snapshot (KLogger)`() {
         val logger = CoroutineKLogger.getLogger(mockk<KLogger>(relaxed = true))
 
-        val x = mono { logger.snapshot()["foo"] }
-            .contextWrite {
-                MDCContext.put(it, MDC("foo" to "bar"))
-            }
+        val x =
+            mono { logger.snapshot()["foo"] }
+                .contextWrite {
+                    MDCContext.put(it, MDC("foo" to "bar"))
+                }
 
         StepVerifier.create(x)
             .expectNext("bar")
@@ -135,15 +136,15 @@ class CoroutineCoreTest {
     fun `should get MDC data from snapshot (Logger)`() {
         val logger = CoroutineLogger.getLogger(mockk<Logger>(relaxed = true))
 
-        val x = mono { logger.snapshot()["foo"] }
-            .contextWrite {
-                MDCContext.put(it, MDC("foo" to "bar"))
-            }
+        val x =
+            mono { logger.snapshot()["foo"] }
+                .contextWrite {
+                    MDCContext.put(it, MDC("foo" to "bar"))
+                }
 
         StepVerifier.create(x)
             .expectNext("bar")
             .verifyComplete()
-
     }
 
     @Test
@@ -155,13 +156,13 @@ class CoroutineCoreTest {
             verify(exactly = 1) { log.info("message") }
         }
 
-
         runTest {
             val log = mockk<Logger>(relaxed = true)
             val logger = CoroutineLogger.getLogger(log)
-            val error = assertThrows<NotEmittedValueException> {
-                logger.wrap<Any> { Mono.empty() }
-            }
+            val error =
+                assertThrows<NotEmittedValueException> {
+                    logger.wrap<Any> { Mono.empty() }
+                }
 
             assertEquals("Did not emit any value", error.message)
             assertSame(NoSuchElementException::class.java, error.cause?.javaClass)

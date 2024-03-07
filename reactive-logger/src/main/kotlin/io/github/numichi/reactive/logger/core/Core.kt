@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.core
 
 import io.github.numichi.reactive.logger.coroutine.snapshotMdc
 import io.github.numichi.reactive.logger.reactor.MDCSnapshot
-import org.slf4j.Logger
 import reactor.core.publisher.Signal
 import reactor.core.scheduler.Scheduler
 import reactor.util.context.ContextView
@@ -15,11 +14,17 @@ abstract class Core<L> {
     abstract val contextKey: Any
     abstract val scheduler: Scheduler
 
-    fun wrapRunner(contextView: ContextView, runnable: Runnable) {
+    fun wrapRunner(
+        contextView: ContextView,
+        runnable: Runnable,
+    ) {
         wrapRunner(contextView, Supplier { runnable.run() })
     }
 
-    fun <T> wrapRunner(contextView: ContextView, supplier: Supplier<T>): T {
+    fun <T> wrapRunner(
+        contextView: ContextView,
+        supplier: Supplier<T>,
+    ): T {
         return MDCSnapshot.of(snapshotMdc(contextView, contextKey).data).use {
             supplier.get()
         }
@@ -31,7 +36,10 @@ abstract class Core<L> {
         }
     }
 
-    fun <V> logOnSignal(signal: Signal<V>, fn: Consumer<L>) {
+    fun <V> logOnSignal(
+        signal: Signal<V>,
+        fn: Consumer<L>,
+    ) {
         wrapRunner(signal.contextView) { fn.accept(logger) }
     }
 }

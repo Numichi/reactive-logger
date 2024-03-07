@@ -2,15 +2,12 @@ package io.github.numichi.reactive.logger
 
 import io.github.numichi.reactive.logger.hook.Position
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertSame
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.core.scheduler.Schedulers
 
 class ConfigurationTest {
-
     @BeforeEach
     fun setUp() {
         Configuration.reset()
@@ -18,11 +15,11 @@ class ConfigurationTest {
 
     @Test
     fun `defaultReactorContextMdcKey modify test`() {
-        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY,  Configuration.defaultReactorContextMdcKey)
+        assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, Configuration.defaultReactorContextMdcKey)
 
         Configuration.defaultReactorContextMdcKey = "foo"
 
-        assertEquals("foo",  Configuration.defaultReactorContextMdcKey)
+        assertEquals("foo", Configuration.defaultReactorContextMdcKey)
     }
 
     @Test
@@ -39,7 +36,6 @@ class ConfigurationTest {
         assertEquals(1, Configuration.getContextHooks().size)
         assertEquals(true, Configuration.existsHook(Position.BEFORE))
         assertEquals(false, Configuration.existsHook(Position.AFTER))
-
     }
 
     @Test

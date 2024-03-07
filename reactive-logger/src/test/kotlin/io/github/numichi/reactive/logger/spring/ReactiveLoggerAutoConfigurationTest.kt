@@ -20,10 +20,9 @@ import reactor.util.context.Context
     classes = [
         TestConfig::class,
         MDCContextHookAutoConfiguration::class,
-    ]
+    ],
 )
 class ReactiveLoggerAutoConfigurationTest {
-
     @Autowired
     lateinit var hookMock: HookMock
 

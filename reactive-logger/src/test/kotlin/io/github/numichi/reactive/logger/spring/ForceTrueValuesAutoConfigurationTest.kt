@@ -15,10 +15,9 @@ import reactor.core.scheduler.Schedulers
     ],
     classes = [
         DefaultValuesAutoConfiguration::class,
-    ]
+    ],
 )
 class ForceTrueValuesAutoConfigurationTest {
-
     companion object {
         @BeforeAll
         @JvmStatic

@@ -16,19 +16,19 @@ import reactor.util.function.Tuples
 
 @ExperimentalCoroutinesApi
 class ContextExtensionTest {
-
     private lateinit var context: Context
 
     @BeforeEach
     fun beforeEach() {
         Configuration.reset()
-        context = Context.of(
-            mapOf(
-                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
-                "foo" to mapOf("fooBar" to "fooBaz"),
-                "aaa" to "bbb"
+        context =
+            Context.of(
+                mapOf(
+                    DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
+                    "foo" to mapOf("fooBar" to "fooBaz"),
+                    "aaa" to "bbb",
+                ),
             )
-        )
     }
 
     @Test

@@ -2,7 +2,7 @@ package io.github.numichi.reactive.logger.hook
 
 enum class Position {
     BEFORE,
-    AFTER
+    AFTER,
 }
 
 internal object MDCContextHookCache {

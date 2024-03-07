@@ -4,7 +4,10 @@ import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.coroutine.readMdc
 import reactor.util.context.ContextView
 
-internal fun mdcReferenceContentLoad(contextView: ContextView, mdc: MDC): MDC {
+internal fun mdcReferenceContentLoad(
+    contextView: ContextView,
+    mdc: MDC,
+): MDC {
     var mdcInstance = mdc
 
     MDCContextHookCache.getHooks()[Position.BEFORE]?.hookEvent(contextView, mdcInstance)?.run {

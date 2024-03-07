@@ -100,14 +100,14 @@ class ConvertKtTest {
         assertNotEquals(kLogger2.logger, logger3.logger.toKLogger())
         assertNotEquals(kLogger2.logger, logger4.logger.toKLogger())
 
-        assertEquals(logger1.logger.name,  kLogger1.logger.toSlf4j().name)
-        assertEquals(logger2.logger.name,  kLogger1.logger.toSlf4j().name)
-        assertEquals(logger1.logger.name,  kLogger1.logger.toSlf4j().name)
-        assertEquals(logger2.logger.name,  kLogger1.logger.toSlf4j().name)
+        assertEquals(logger1.logger.name, kLogger1.logger.toSlf4j().name)
+        assertEquals(logger2.logger.name, kLogger1.logger.toSlf4j().name)
+        assertEquals(logger1.logger.name, kLogger1.logger.toSlf4j().name)
+        assertEquals(logger2.logger.name, kLogger1.logger.toSlf4j().name)
 
-        assertEquals(logger3.logger.name,  kLogger2.logger.toSlf4j().name)
-        assertEquals(logger4.logger.name,  kLogger2.logger.toSlf4j().name)
-        assertEquals(logger3.logger.name,  kLogger2.logger.toSlf4j().name)
-        assertEquals(logger4.logger.name,  kLogger2.logger.toSlf4j().name)
+        assertEquals(logger3.logger.name, kLogger2.logger.toSlf4j().name)
+        assertEquals(logger4.logger.name, kLogger2.logger.toSlf4j().name)
+        assertEquals(logger3.logger.name, kLogger2.logger.toSlf4j().name)
+        assertEquals(logger4.logger.name, kLogger2.logger.toSlf4j().name)
     }
 }

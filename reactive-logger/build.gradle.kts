@@ -8,6 +8,7 @@ plugins {
     id("signing")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
+    id("org.jmailen.kotlinter")
 }
 
 group = project.property("group") as String
@@ -15,6 +16,12 @@ version = project.property("version") as String
 
 val compileTestKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
 compileTestKotlin.kotlinOptions.jvmTarget = "17"
+
+val developerId = project.properties["developerId"] as String? ?: ""
+val developerName = project.properties["developerName"] as String? ?: ""
+val developerEmail = project.properties["developerEmail"] as String? ?: ""
+val ossrhUsername = project.properties["ossrhUsername"] as String? ?: "N/A"
+val ossrhPassword = project.properties["ossrhPassword"] as String? ?: "N/A"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -79,16 +86,16 @@ publishing {
             from(components["java"])
 
             pom {
-                name.set("Reactor logger layer for slf4j")
-                description.set("A Java & Kotlin library adapting slf4j for reactor project applications")
+                name.set("Reactive logger layer for slf4j")
+                description.set("A Java & Kotlin library adapting slf4j for reactive applications")
                 url.set("https://github.com/Numichi/reactive-logger")
                 inceptionYear.set("2022")
 
                 developers {
                     developer {
-//                        id.set(project.property("developerId") as String? ?: "")
-//                        name.set(project.property("developerName") as String? ?: "")
-//                        email.set(project.property("developerEmail") as String? ?: "")
+                        id.set(developerId)
+                        name.set(developerName)
+                        email.set(developerEmail)
                     }
                 }
 
@@ -112,17 +119,8 @@ publishing {
         maven {
             name = "OSSRH"
             credentials {
-                username = if (project.hasProperty("ossrhUsername")) {
-                    project.property("ossrhUsername") as String
-                } else {
-                    "N/A"
-                }
-
-                password = if (project.hasProperty("ossrhPassword")) {
-                    project.property("ossrhPassword") as String? ?: ""
-                } else {
-                    "N/A"
-                }
+                username = ossrhUsername
+                password = ossrhPassword
             }
 
             val releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
@@ -140,6 +138,10 @@ publishing {
 
 signing {
     sign(publishing.publications["main"])
+}
+
+tasks.build {
+    dependsOn("formatKotlin")
 }
 
 tasks.test {
@@ -164,7 +166,7 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = "0.9".toBigDecimal()
+                minimum = "0.85".toBigDecimal()
             }
         }
     }

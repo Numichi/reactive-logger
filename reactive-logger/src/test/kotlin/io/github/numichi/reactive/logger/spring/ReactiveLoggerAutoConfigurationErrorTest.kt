@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class ReactiveLoggerAutoConfigurationErrorTest {
-
     companion object {
         @BeforeAll
         @JvmStatic
@@ -22,13 +21,14 @@ class ReactiveLoggerAutoConfigurationErrorTest {
     @Test
     fun autoConfigurationError() {
         run {
-            val error = assertThrows<ContextHookNameAlreadyExistException> {
-                val list = mutableListOf<MDCContextHook>()
-                list.add(MDCContextHook(Position.BEFORE) { _, _ -> mapOf() })
-                list.add(MDCContextHook(Position.BEFORE) { _, _ -> mapOf() })
+            val error =
+                assertThrows<ContextHookNameAlreadyExistException> {
+                    val list = mutableListOf<MDCContextHook>()
+                    list.add(MDCContextHook(Position.BEFORE) { _, _ -> mapOf() })
+                    list.add(MDCContextHook(Position.BEFORE) { _, _ -> mapOf() })
 
-                MDCContextHookAutoConfiguration(list)
-            }
+                    MDCContextHookAutoConfiguration(list)
+                }
 
             assertEquals("MDCContextHook in BEFORE position already exist!", error.message)
         }

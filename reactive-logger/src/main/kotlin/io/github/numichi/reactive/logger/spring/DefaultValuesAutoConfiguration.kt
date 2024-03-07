@@ -10,14 +10,17 @@ import io.github.numichi.reactive.logger.Configuration as ReactiveLoggerConfigur
 @AutoConfiguration(before = [MDCContextHookAutoConfiguration::class])
 @EnableConfigurationProperties(value = [ReactiveLoggerProperties::class])
 open class DefaultValuesAutoConfiguration(properties: ReactiveLoggerProperties) {
-
     companion object {
         @JvmStatic
-        fun reset(properties: ReactiveLoggerProperties, force: Boolean) {
+        fun reset(
+            properties: ReactiveLoggerProperties,
+            force: Boolean,
+        ) {
             val contextKey = properties.contextKey
             val scheduler = properties.scheduler
-            val alreadyConfigured = ReactiveLoggerConfiguration.defaultReactorContextMdcKey == DEFAULT_REACTOR_CONTEXT_MDC_KEY
-                    && ReactiveLoggerConfiguration.defaultScheduler == Schedulers.boundedElastic()
+            val alreadyConfigured =
+                ReactiveLoggerConfiguration.defaultReactorContextMdcKey == DEFAULT_REACTOR_CONTEXT_MDC_KEY &&
+                    ReactiveLoggerConfiguration.defaultScheduler == Schedulers.boundedElastic()
 
             if ((alreadyConfigured && contextKey != null) || (force && contextKey != null)) {
                 ReactiveLoggerConfiguration.defaultReactorContextMdcKey = contextKey

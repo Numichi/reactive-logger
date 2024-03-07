@@ -1,0 +1,6 @@
+# noinspection EditorConfigKeyCorrectness
+[*.{kt,kts}]
+charset = utf-8
+indent_style = space
+indent_size = 4
+ktlint_code_style = ktlint_official

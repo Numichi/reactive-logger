@@ -9,7 +9,6 @@ import org.junit.jupiter.api.assertThrows
 import reactor.util.function.Tuples
 
 internal class MDCTest {
-
     lateinit var a: String
 
     @BeforeEach
@@ -134,7 +133,7 @@ internal class MDCTest {
         assertEquals(expected0, mdc.keep("000"))
 
         val expected1 = MDC(mapOf("111" to "222"))
-        assertEquals(expected1, mdc.keep( "111"))
+        assertEquals(expected1, mdc.keep("111"))
 
         val expected2 = MDC(mapOf("111" to "222", "333" to "444"))
         assertEquals(expected2, mdc.keep(setOf("111", "777", "333")))

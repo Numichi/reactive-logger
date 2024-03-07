@@ -1,7 +1,7 @@
 package io.github.numichi.reactive.logger
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.slf4j.Logger
 
 object LoggerFactory {

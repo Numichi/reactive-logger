@@ -10,7 +10,6 @@ data class HookMock(val mock: (String?) -> Unit)
 
 @TestConfiguration
 open class TestConfig {
-
     @Bean
     open fun hookMock(): HookMock {
         return HookMock(mockk())

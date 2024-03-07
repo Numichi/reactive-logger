@@ -17,7 +17,10 @@ object Configuration {
     var defaultScheduler: Scheduler = Schedulers.boundedElastic()
 
     @JvmStatic
-    fun addHook(beforeSnapshot: Position, hook: (ContextView, MDC) -> Map<String, String?>) {
+    fun addHook(
+        beforeSnapshot: Position,
+        hook: (ContextView, MDC) -> Map<String, String?>,
+    ) {
         return MDCContextHookCache.addHook(MDCContextHook(beforeSnapshot, hook))
     }
 

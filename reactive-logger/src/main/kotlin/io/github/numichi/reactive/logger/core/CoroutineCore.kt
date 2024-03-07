@@ -2,7 +2,6 @@ package io.github.numichi.reactive.logger.core
 
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.exceptions.NotEmittedValueException
-import io.github.numichi.reactive.logger.reactor.RLogger
 import kotlinx.coroutines.reactor.ReactorContext
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -17,7 +16,6 @@ abstract class CoroutineCore<R : RSnapshot, L>(
     override val contextKey: Any,
     override val scheduler: Scheduler,
 ) : Core<L>() {
-
     abstract val reactiveLogger: R
 
     private suspend fun getContextView(): ContextView {

@@ -2,8 +2,6 @@ package io.github.numichi.reactive.logger
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KMarkerFactory
-import io.github.oshai.kotlinlogging.Marker as KMarker
-import io.github.oshai.kotlinlogging.Level as KLevel
 import io.github.oshai.kotlinlogging.slf4j.internal.Slf4jLogger
 import io.github.oshai.kotlinlogging.slf4j.toKLogger
 import io.github.oshai.kotlinlogging.slf4j.toSlf4j
@@ -11,6 +9,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.Marker
 import org.slf4j.event.Level
+import io.github.oshai.kotlinlogging.Level as KLevel
+import io.github.oshai.kotlinlogging.Marker as KMarker
 
 fun KMarker.toSlf4j(): Marker = this.toSlf4j()
 
@@ -41,5 +41,3 @@ fun Level.toKLevel(off: Boolean = false): KLevel {
         Level.ERROR -> KLevel.ERROR
     }
 }
-
-
