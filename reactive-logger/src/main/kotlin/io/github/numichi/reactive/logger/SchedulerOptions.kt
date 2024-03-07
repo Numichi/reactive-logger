@@ -7,7 +7,8 @@ enum class SchedulerOptions {
     BOUNDED_ELASTIC,
     PARALLEL,
     IMMEDIATE,
-    SINGLE;
+    SINGLE,
+    ;
 
     fun toScheduler(): Scheduler {
         return when (this) {

@@ -2,9 +2,11 @@ package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.MDC
+import io.github.numichi.reactive.logger.coroutine.internal.reactorContextOrEmpty
+import io.github.numichi.reactive.logger.coroutine.internal.withContextBlock
 import io.github.numichi.reactive.logger.exceptions.ReadException
 import io.github.numichi.reactive.logger.hook.mdcReferenceContentLoad
-import io.github.numichi.reactive.logger.toSafeMdcMap
+import io.github.numichi.reactive.logger.internal.toSafeMdcMap
 import kotlinx.coroutines.CoroutineScope
 import reactor.util.context.Context
 import reactor.util.context.ContextView
@@ -22,7 +24,10 @@ fun readMdc(contextView: ContextView): MDC {
     return readMdc(contextView, Configuration.defaultReactorContextMdcKey)
 }
 
-fun readMdc(contextView: ContextView, contextKey: Any): MDC {
+fun readMdc(
+    contextView: ContextView,
+    contextKey: Any,
+): MDC {
     return try {
         val mdcMap = contextView.get<Map<Any?, Any?>>(contextKey).toSafeMdcMap()
         MDC(contextKey, mdcMap)
@@ -45,7 +50,10 @@ fun readOrDefaultMdc(contextView: ContextView): MDC {
     return readOrDefaultMdc(contextView, Configuration.defaultReactorContextMdcKey)
 }
 
-fun readOrDefaultMdc(contextView: ContextView, contextKey: Any): MDC {
+fun readOrDefaultMdc(
+    contextView: ContextView,
+    contextKey: Any,
+): MDC {
     return try {
         readMdc(contextView, contextKey)
     } catch (e: ReadException) {
@@ -71,17 +79,27 @@ fun snapshotMdc(contextView: ContextView): MDC {
     return snapshotMdc(contextView, Configuration.defaultReactorContextMdcKey)
 }
 
-fun snapshotMdc(contextView: ContextView, contextKey: Any): MDC {
+fun snapshotMdc(
+    contextView: ContextView,
+    contextKey: Any,
+): MDC {
     return mdcReferenceContentLoad(contextView, MDC(contextKey))
 }
 //endregion
 
 //region withMDCContext
-suspend fun <T> withMDCContext(vararg mdc: MDC, block: suspend CoroutineScope.() -> T): T {
+suspend fun <T> withMDCContext(
+    vararg mdc: MDC,
+    block: suspend CoroutineScope.() -> T,
+): T {
     return withContextBlock(reactorContextOrEmpty(), mdc.iterator(), block)
 }
 
-suspend fun <T> withMDCContext(context: Context, vararg mdc: MDC, block: suspend CoroutineScope.() -> T): T {
+suspend fun <T> withMDCContext(
+    context: Context,
+    vararg mdc: MDC,
+    block: suspend CoroutineScope.() -> T,
+): T {
     return withContextBlock(context, mdc.iterator(), block)
 }
 //endregion

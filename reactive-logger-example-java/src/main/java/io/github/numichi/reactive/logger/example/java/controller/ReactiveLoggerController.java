@@ -1,12 +1,15 @@
 package io.github.numichi.reactive.logger.example.java.controller;
 
 import io.github.numichi.reactive.logger.MDC;
+import io.github.numichi.reactive.logger.example.java.configuration.LoggerHookConfiguration;
+import io.github.numichi.reactive.logger.example.java.filter.UserFilter;
 import io.github.numichi.reactive.logger.reactor.MDCContext;
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger;
-import io.github.numichi.reactive.logger.spring.beans.LoggerRegistry;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -14,38 +17,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("reactive")
 public class ReactiveLoggerController {
-    
-    /**
-     * <h3>Manual like</h3>
-     * <pre>{@code
-     * ReactiveLogger.getLogger("io.github.numichi.reactive.logger.example.controllers.ReactiveLoggerController", "context-key-from-yml")
-     * }</pre>
-     *
-     * <p>"example-instance" from application.yml</p>
-     */
-    private final ReactiveLogger logger1;
-    
-    /**
-     * <h3>Manual like</h2>
-     * <pre>{@code
-     * ReactiveLogger.getLogger(ReactiveLoggerController::class.java, "another-context-key-from-yml", Schedulers.parallel())
-     * }</pre>
-     *
-     * <p>"another-example-instance" from application.yml</p>
-     */
-    private final ReactiveLogger logger2;
-    
-    /**
-     * Manual logger creation
-     */
+
     private final ReactiveLogger logger = ReactiveLogger.getLogger(ReactiveLoggerController.class);
-    
-    public ReactiveLoggerController(LoggerRegistry loggerRegistry) {
-        this.logger1 = loggerRegistry.getReactiveLogger("example-instance");
-        this.logger2 = loggerRegistry.getReactiveLogger("another-example-instance", ReactiveLoggerController.class);
-    }
-    
+    private final ReactiveLogger logger1 = ReactiveLogger.getLogger("log-name-1", "context-key-1");
+    private final ReactiveLogger logger2 = ReactiveLogger.getLogger("log-name-2", ReactiveLoggerController.class);
+
     /**
+     * <p>The snapshot give MDC information and will be triggered MDC hooks.</p>
+     * <p></p>
+     *
      * <h3>Response example</h2>
      * <pre>{@code
      * HTTP/1.1 200 OK
@@ -59,17 +39,19 @@ public class ReactiveLoggerController {
      * }</pre>
      * <p></p>
      *
-     * <h3>Description</h2>
-     * <p>The snapshot give MDC information and will be triggered MDC hooks.</p>
-     *
-     * @see io.github.numichi.reactive.logger.example.java.filter.UserFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.web.server.WebFilterChain)
+     * @see UserFilter#filter(ServerWebExchange, WebFilterChain)
+     * @see LoggerHookConfiguration#mdcContextHook()
      */
     @GetMapping("snapshot")
     public Mono<Map<String, String>> getSnapshot() {
         return MDCContext.snapshot().map(MDC::getData);
     }
-    
+
     /**
+     * <p>It's like a snapshot (!) without MDC Hook information.</p>
+     * <p>The filter component added "userId", so there is one element of data.</p>
+     * <p></p>
+     *
      * <h3>Response example</h2>
      * <pre>{@code
      * HTTP/1.1 200 OK
@@ -80,74 +62,78 @@ public class ReactiveLoggerController {
      *     "userId": "e7cd6a75-c543-458c-9d19-3df6ba3d67f6"
      * }
      * }</pre>
-     * <p></p>
      *
-     * <h3>Description</h2>
-     * <p>It's like a snapshot, except for MDC Hook information. The filter component added "userId", so there is one element of data.</p>
-     *
-     * @see io.github.numichi.reactive.logger.example.java.filter.UserFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.web.server.WebFilterChain)
+     * @see UserFilter#filter(ServerWebExchange, WebFilterChain)
      */
     @GetMapping("read")
     public Mono<Map<String, String>> getRead() {
         return MDCContext.read().map(MDC::getData);
     }
-    
+
     /**
+     * <p>Logging by the normal way with MDC information appended from reactor context.</p>
+     * <p>The default log context key is the current MDC scope.
+     * Due to the <code>LoggerHookConfiguration</code>, the <code>ExampleModel.class</code> specified in the UserFilter gets mapped.
+     * Additionally, in the <code>UserFilter</code>, we add <code>"userId"</code> to the default MDC.
+     * These will be present in the log.</p>
+     * <p></p>
+     *
      * <h3>JSON Log format</h3>
      * <pre>{@code
-     * {"message":"log0-information","context":{"userId":"c76cb63c-1742-4e77-9a52-d8593ce36236","example":"example"}}
+     * {"message":"log0-information","context":{"userId":"8d4d003c-eadf-407b-8fdc-712535b72362","example":"example"}}
      * }</pre>
+     *
+     * @see UserFilter#filter(ServerWebExchange, WebFilterChain)
+     * @see LoggerHookConfiguration#mdcContextHook()
      */
     @GetMapping("log0")
     public Mono<Void> doInfo0() {
         return Mono.just("log0-information")
-            .flatMap(logger::info);
+                .flatMap(logger::info);
     }
-    
+
     /**
-     * <h3>JSON Log format</h3>
-     * <pre>{@code
-     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
-     * }</pre>
+     * <p>Logging by the normal way with MDC information appended from reactor context.</p>
+     * <p>The current context key is not the default but the configured <code>"context-key-1"</code>, causing a change in the experienced behavior.
+     * On the hand, a <code>{"example":"n/a"}</code> has appeared due to a condition in the hook explicitly matching this context key.
+     * Additionally, <code>{"foo":"bar"}</code> has been added because of this context key used in MDC modification.
+     * The <code>"will-not-appear"</code> is tied to the default log context key, so it does not participate in the current MDC.</p>
      * <p></p>
      *
-     * <h3>Description</h3>
+     * <h3>JSON Log format</h3>
+     * <pre>{@code
+     * {"message":"log1-information","context":{"example":"n/a","foo":"bar"}}
+     * }</pre>
      *
-     * <p>Logging by the normal way with MDC information appended from reactor context.</p>
-     * <p>You can see, "userId" isn't shown here. It attached to default context key (DEFAULT_REACTOR_CONTEXT_MDC_KEY) in filter,
-     * not the current context key (context-key-from-yml).
-     * The hook will activate for all context keys, so there is "spanId" and "traceId".</p>
-     *
-     * @see io.github.numichi.reactive.logger.example.java.configuration.LoggerHookConfiguration#traceContextHook()
-     * @see io.github.numichi.reactive.logger.example.java.ExamplePlugin
+     * @see LoggerHookConfiguration#mdcContextHook()
      */
     @GetMapping("log1")
     public Mono<Void> doInfo1() {
         return Mono.just("log1-information")
-            .flatMap(logger1::info)
-            .contextWrite(context -> MDCContext.modify(context, logger1.getContextKey(), Map.of("foo", "bar")))
-            .contextWrite(context -> MDCContext.modify(context, Map.of("will-not-appear", "will-not-appear")));
+                .flatMap(logger1::info)
+                .contextWrite(context -> MDCContext.modify(context, logger1.getContextKey(), Map.of("foo", "bar")))
+                .contextWrite(context -> MDCContext.modify(context, Map.of("will-not-appear", "will-not-appear")));
     }
-    
+
     /**
-     * <h3>JSON Log format</h3>
-     * <pre>{@code
-     * {"message":"log2-information","context":{"example":"n/a"}}
-     * }</pre>
+     * <p>Logging by the normal way with MDC information appended from reactor context.</p>
+     * <p>The current log context key is the <code>ReactiveLoggerController.class</code>.
+     * Currently, only <code>{"example":"example"}</code> appears in the context log here.
+     * On one hand, <code>"userId"</code> is saved as the default log key, so it does not match the current one,
+     * meaning it will not be logged. The Example.class goes into the reactor context and is added in the <code>LoggerHookConfiguration</code>.</p>
      * <p></p>
      *
-     * <h3>Description</h3>
-     * <p>
-     * Like previous method {@link io.github.numichi.reactive.logger.example.java.controller.ReactiveLoggerController#doInfo1()}, just it used "another-context-key-from-yml" context key.
-     * With this key, it will enable the other hook, which throws an exception for all other keys.
+     * <h3>JSON Log format</h3>
+     * <pre>{@code
+     * {"message":"log2-information","context":{"example":"example"}}
+     * }</pre>
      *
-     * @see io.github.numichi.reactive.logger.example.java.configuration.LoggerHookConfiguration#traceContextHook()
-     * @see io.github.numichi.reactive.logger.example.java.configuration.LoggerHookConfiguration#anotherTraceContextHook()
-     * @see io.github.numichi.reactive.logger.example.java.ExamplePlugin
+     * @see UserFilter#filter(ServerWebExchange, WebFilterChain)
+     * @see LoggerHookConfiguration#mdcContextHook()
      */
     @GetMapping("log2")
     public Mono<Void> doInfo2() {
         return Mono.just("log2-information")
-            .flatMap(logger2::info);
+                .flatMap(logger2::info);
     }
 }

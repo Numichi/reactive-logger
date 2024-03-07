@@ -3,16 +3,20 @@ package io.github.numichi.reactive.logger.coroutine
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.core.CoroutineCore
+import io.github.numichi.reactive.logger.coroutine.extend.ExtendedCKLogger
+import io.github.numichi.reactive.logger.reactor.RKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
-import mu.KLogger
-import mu.Marker
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KLoggingEventBuilder
+import io.github.oshai.kotlinlogging.Level
+import io.github.oshai.kotlinlogging.Marker
 import org.slf4j.Logger
 import reactor.core.scheduler.Scheduler
 
 class CoroutineKLogger(
-    override val reactiveLogger: ReactiveKLogger
-) : CoroutineCore<ReactiveKLogger, KLogger>(reactiveLogger.logger, reactiveLogger.contextKey, reactiveLogger.scheduler), CKLogger {
-
+    override val reactiveLogger: ReactiveKLogger,
+    override val name: String = reactiveLogger.name,
+) : CoroutineCore<RKLogger, KLogger>(reactiveLogger.logger, reactiveLogger.contextKey, reactiveLogger.scheduler), ExtendedCKLogger {
     companion object {
         //region String base
         @JvmStatic
@@ -21,17 +25,27 @@ class CoroutineKLogger(
         }
 
         @JvmStatic
-        fun getLogger(name: String, contextKey: Any): CoroutineKLogger {
+        fun getLogger(
+            name: String,
+            contextKey: Any,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(name), contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(name: String, scheduler: Scheduler): CoroutineKLogger {
+        fun getLogger(
+            name: String,
+            scheduler: Scheduler,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(name), null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger {
+        fun getLogger(
+            name: String,
+            contextKey: Any?,
+            scheduler: Scheduler?,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(name), contextKey, scheduler)
         }
         //endregion
@@ -43,17 +57,27 @@ class CoroutineKLogger(
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, contextKey: Any): CoroutineKLogger {
+        fun getLogger(
+            clazz: Class<*>,
+            contextKey: Any,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(clazz), contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, scheduler: Scheduler): CoroutineKLogger {
+        fun getLogger(
+            clazz: Class<*>,
+            scheduler: Scheduler,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(clazz), null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(clazz: Class<*>, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger {
+        fun getLogger(
+            clazz: Class<*>,
+            contextKey: Any?,
+            scheduler: Scheduler?,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(clazz), contextKey, scheduler)
         }
         //endregion
@@ -61,21 +85,31 @@ class CoroutineKLogger(
         //region Logger base
         @JvmStatic
         fun getLogger(logger: Logger): CoroutineKLogger {
-            return getLogger(LoggerFactory.getKLogger(logger), null, null)
+            return getLogger(logger, null, null)
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, contextKey: Any): CoroutineKLogger {
-            return getLogger(LoggerFactory.getKLogger(logger), contextKey, null)
+        fun getLogger(
+            logger: Logger,
+            contextKey: Any,
+        ): CoroutineKLogger {
+            return getLogger(logger, contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, scheduler: Scheduler): CoroutineKLogger {
-            return getLogger(LoggerFactory.getKLogger(logger), null, scheduler)
+        fun getLogger(
+            logger: Logger,
+            scheduler: Scheduler,
+        ): CoroutineKLogger {
+            return getLogger(logger, null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(logger: Logger, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger {
+        fun getLogger(
+            logger: Logger,
+            contextKey: Any?,
+            scheduler: Scheduler?,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(logger), contextKey, scheduler)
         }
         //endregion
@@ -87,17 +121,27 @@ class CoroutineKLogger(
         }
 
         @JvmStatic
-        fun getLogger(func: () -> Unit, contextKey: Any): CoroutineKLogger {
+        fun getLogger(
+            func: () -> Unit,
+            contextKey: Any,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(func), contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(func: () -> Unit, scheduler: Scheduler): CoroutineKLogger {
+        fun getLogger(
+            func: () -> Unit,
+            scheduler: Scheduler,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(func), null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(func: () -> Unit, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger {
+        fun getLogger(
+            func: () -> Unit,
+            contextKey: Any?,
+            scheduler: Scheduler?,
+        ): CoroutineKLogger {
             return getLogger(LoggerFactory.getKLogger(func), contextKey, scheduler)
         }
         //endregion
@@ -109,153 +153,204 @@ class CoroutineKLogger(
         }
 
         @JvmStatic
-        fun getLogger(logger: KLogger, contextKey: Any): CoroutineKLogger {
+        fun getLogger(
+            logger: KLogger,
+            contextKey: Any,
+        ): CoroutineKLogger {
             return getLogger(logger, contextKey, null)
         }
 
         @JvmStatic
-        fun getLogger(logger: KLogger, scheduler: Scheduler): CoroutineKLogger {
+        fun getLogger(
+            logger: KLogger,
+            scheduler: Scheduler,
+        ): CoroutineKLogger {
             return getLogger(logger, null, scheduler)
         }
 
         @JvmStatic
-        fun getLogger(logger: KLogger, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger {
+        fun getLogger(
+            logger: KLogger,
+            contextKey: Any?,
+            scheduler: Scheduler?,
+        ): CoroutineKLogger {
             return CoroutineKLogger(
                 ReactiveKLogger(
                     logger,
                     contextKey ?: Configuration.defaultReactorContextMdcKey,
-                    scheduler ?: Configuration.defaultScheduler
-                )
+                    scheduler ?: Configuration.defaultScheduler,
+                ),
             )
         }
         //endregion
     }
 
-    override val isTraceEnabled: Boolean
-        get() = reactiveLogger.isTraceEnabled
+    override fun isLoggingOff(marker: Marker?): Boolean = reactiveLogger.isLoggingOff(marker)
+
+    override fun isLoggingEnabledFor(
+        level: Level,
+        marker: Marker?,
+    ): Boolean = reactiveLogger.isLoggingEnabledFor(level, marker)
 
     override fun isTraceEnabled(marker: Marker?): Boolean = reactiveLogger.isTraceEnabled(marker)
-    override suspend fun trace(msg: String?) = wrapUnit { it.trace(msg) }
-    override suspend fun trace(format: String?, arg: Any?) = wrapUnit { it.trace(format, arg) }
-    override suspend fun trace(format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.trace(format, arg1, arg2) }
-    override suspend fun trace(format: String?, vararg arguments: Any?) = wrapUnit { it.trace(format, *arguments) }
-    override suspend fun trace(msg: String?, t: Throwable?) = wrapUnit { it.trace(msg, t) }
-    override suspend fun trace(marker: Marker?, msg: String?) = wrapUnit { it.trace(marker, msg) }
-    override suspend fun trace(marker: Marker?, format: String?, arg: Any?) = wrapUnit { it.trace(marker, format, arg) }
-    override suspend fun trace(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.trace(marker, format, arg1, arg2) }
-    override suspend fun trace(marker: Marker?, format: String?, vararg argArray: Any?) = wrapUnit { it.trace(marker, format, *argArray) }
-    override suspend fun trace(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.trace(marker, msg, t) }
-    override suspend fun trace(msg: () -> Any?) = wrapUnit { it.trace(msg) }
-    override suspend fun trace(t: Throwable?, msg: () -> Any?) = wrapUnit { it.trace(t, msg) }
-    override suspend fun trace(marker: Marker?, msg: () -> Any?) = wrapUnit { it.trace(marker, msg) }
-    override suspend fun trace(marker: Marker?, t: Throwable?, msg: () -> Any?) = wrapUnit { it.trace(marker, t, msg) }
 
-    override val isDebugEnabled: Boolean
-        get() = reactiveLogger.isDebugEnabled
+    override suspend fun trace(message: () -> Any?) = wrapUnit { it.trace(message) }
+
+    override suspend fun trace(
+        throwable: Throwable?,
+        message: () -> Any?,
+    ) = wrapUnit { it.trace(throwable, message) }
+
+    override suspend fun trace(
+        throwable: Throwable?,
+        marker: Marker?,
+        message: () -> Any?,
+    ) = wrapUnit {
+        it.trace(
+            throwable,
+            marker,
+            message,
+        )
+    }
 
     override fun isDebugEnabled(marker: Marker?): Boolean = reactiveLogger.isDebugEnabled(marker)
-    override suspend fun debug(msg: String?) = wrapUnit { it.debug(msg) }
-    override suspend fun debug(format: String?, arg: Any?) = wrapUnit { it.debug(format, arg) }
-    override suspend fun debug(format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.debug(format, arg1, arg2) }
-    override suspend fun debug(format: String?, vararg arguments: Any?) = wrapUnit { it.debug(format, *arguments) }
-    override suspend fun debug(msg: String?, t: Throwable?) = wrapUnit { it.debug(msg, t) }
-    override suspend fun debug(marker: Marker?, msg: String?) = wrapUnit { it.debug(marker, msg) }
-    override suspend fun debug(marker: Marker?, format: String?, arg: Any?) = wrapUnit { it.debug(marker, format, arg) }
-    override suspend fun debug(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.debug(marker, format, arg1, arg2) }
-    override suspend fun debug(marker: Marker?, format: String?, vararg argArray: Any?) = wrapUnit { it.debug(marker, format, *argArray) }
-    override suspend fun debug(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.debug(marker, msg, t) }
-    override suspend fun debug(msg: () -> Any?) = wrapUnit { it.debug(msg) }
-    override suspend fun debug(t: Throwable?, msg: () -> Any?) = wrapUnit { it.debug(t, msg) }
-    override suspend fun debug(marker: Marker?, msg: () -> Any?) = wrapUnit { it.debug(marker, msg) }
-    override suspend fun debug(marker: Marker?, t: Throwable?, msg: () -> Any?) = wrapUnit { it.debug(marker, t, msg) }
 
-    override val isInfoEnabled: Boolean
-        get() = reactiveLogger.isInfoEnabled
+    override suspend fun debug(message: () -> Any?) = wrapUnit { it.debug(message) }
+
+    override suspend fun debug(
+        throwable: Throwable?,
+        message: () -> Any?,
+    ) = wrapUnit { it.debug(throwable, message) }
+
+    override suspend fun debug(
+        throwable: Throwable?,
+        marker: Marker?,
+        message: () -> Any?,
+    ) = wrapUnit {
+        it.debug(
+            throwable,
+            marker,
+            message,
+        )
+    }
 
     override fun isInfoEnabled(marker: Marker?): Boolean = reactiveLogger.isInfoEnabled(marker)
-    override suspend fun info(msg: String?) = wrapUnit { it.info(msg) }
-    override suspend fun info(format: String?, arg: Any?) = wrapUnit { it.info(format, arg) }
-    override suspend fun info(format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.info(format, arg1, arg2) }
-    override suspend fun info(format: String?, vararg arguments: Any?) = wrapUnit { it.info(format, *arguments) }
-    override suspend fun info(msg: String?, t: Throwable?) = wrapUnit { it.info(msg, t) }
-    override suspend fun info(marker: Marker?, msg: String?) = wrapUnit { it.info(marker, msg) }
-    override suspend fun info(marker: Marker?, format: String?, arg: Any?) = wrapUnit { it.info(marker, format, arg) }
-    override suspend fun info(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.info(marker, format, arg1, arg2) }
-    override suspend fun info(marker: Marker?, format: String?, vararg argArray: Any?) = wrapUnit { it.info(marker, format, *argArray) }
-    override suspend fun info(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.info(marker, msg, t) }
-    override suspend fun info(msg: () -> Any?) = wrapUnit { it.info(msg) }
-    override suspend fun info(t: Throwable?, msg: () -> Any?) = wrapUnit { it.info(t, msg) }
-    override suspend fun info(marker: Marker?, msg: () -> Any?) = wrapUnit { it.info(marker, msg) }
-    override suspend fun info(marker: Marker?, t: Throwable?, msg: () -> Any?) = wrapUnit { it.info(marker, t, msg) }
 
-    override val isWarnEnabled: Boolean
-        get() = reactiveLogger.isWarnEnabled
+    override suspend fun info(message: () -> Any?) = wrapUnit { it.info(message) }
+
+    override suspend fun info(
+        throwable: Throwable?,
+        message: () -> Any?,
+    ) = wrapUnit { it.info(throwable, message) }
+
+    override suspend fun info(
+        throwable: Throwable?,
+        marker: Marker?,
+        message: () -> Any?,
+    ) = wrapUnit {
+        it.info(
+            throwable,
+            marker,
+            message,
+        )
+    }
 
     override fun isWarnEnabled(marker: Marker?): Boolean = reactiveLogger.isWarnEnabled(marker)
-    override suspend fun warn(msg: String?) = wrapUnit { it.warn(msg) }
-    override suspend fun warn(format: String?, arg: Any?) = wrapUnit { it.warn(format, arg) }
-    override suspend fun warn(format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.warn(format, arg1, arg2) }
-    override suspend fun warn(format: String?, vararg arguments: Any?) = wrapUnit { it.warn(format, *arguments) }
-    override suspend fun warn(msg: String?, t: Throwable?) = wrapUnit { it.warn(msg, t) }
-    override suspend fun warn(marker: Marker?, msg: String?) = wrapUnit { it.warn(marker, msg) }
-    override suspend fun warn(marker: Marker?, format: String?, arg: Any?) = wrapUnit { it.warn(marker, format, arg) }
-    override suspend fun warn(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.warn(marker, format, arg1, arg2) }
-    override suspend fun warn(marker: Marker?, format: String?, vararg argArray: Any?) = wrapUnit { it.warn(marker, format, *argArray) }
-    override suspend fun warn(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.warn(marker, msg, t) }
-    override suspend fun warn(msg: () -> Any?) = wrapUnit { it.warn(msg) }
-    override suspend fun warn(t: Throwable?, msg: () -> Any?) = wrapUnit { it.warn(t, msg) }
-    override suspend fun warn(marker: Marker?, msg: () -> Any?) = wrapUnit { it.warn(marker, msg) }
-    override suspend fun warn(marker: Marker?, t: Throwable?, msg: () -> Any?) = wrapUnit { it.warn(marker, t, msg) }
 
-    override val isErrorEnabled: Boolean
-        get() = reactiveLogger.isErrorEnabled
+    override suspend fun warn(message: () -> Any?) = wrapUnit { it.warn(message) }
+
+    override suspend fun warn(
+        throwable: Throwable?,
+        message: () -> Any?,
+    ) = wrapUnit { it.warn(throwable, message) }
+
+    override suspend fun warn(
+        throwable: Throwable?,
+        marker: Marker?,
+        message: () -> Any?,
+    ) = wrapUnit {
+        it.warn(
+            throwable,
+            marker,
+            message,
+        )
+    }
 
     override fun isErrorEnabled(marker: Marker?): Boolean = reactiveLogger.isErrorEnabled(marker)
-    override suspend fun error(msg: String?) = wrapUnit { it.error(msg) }
-    override suspend fun error(format: String?, arg: Any?) = wrapUnit { it.error(format, arg) }
-    override suspend fun error(format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.error(format, arg1, arg2) }
-    override suspend fun error(format: String?, vararg arguments: Any?) = wrapUnit { it.error(format, *arguments) }
-    override suspend fun error(msg: String?, t: Throwable?) = wrapUnit { it.error(msg, t) }
-    override suspend fun error(marker: Marker?, msg: String?) = wrapUnit { it.error(marker, msg) }
-    override suspend fun error(marker: Marker?, format: String?, arg: Any?) = wrapUnit { it.error(marker, format, arg) }
-    override suspend fun error(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.error(marker, format, arg1, arg2) }
-    override suspend fun error(marker: Marker?, format: String?, vararg argArray: Any?) = wrapUnit { it.error(marker, format, *argArray) }
-    override suspend fun error(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.error(marker, msg, t) }
-    override suspend fun error(msg: () -> Any?) = wrapUnit { it.error(msg) }
-    override suspend fun error(t: Throwable?, msg: () -> Any?) = wrapUnit { it.error(t, msg) }
-    override suspend fun error(marker: Marker?, msg: () -> Any?) = wrapUnit { it.error(marker, msg) }
-    override suspend fun error(marker: Marker?, t: Throwable?, msg: () -> Any?) = wrapUnit { it.error(marker, t, msg) }
 
-    override suspend fun entry(vararg argArray: Any?) = wrapUnit { it.entry(*argArray) }
+    override suspend fun error(message: () -> Any?) = wrapUnit { it.error(message) }
+
+    override suspend fun error(
+        throwable: Throwable?,
+        message: () -> Any?,
+    ) = wrapUnit { it.error(throwable, message) }
+
+    override suspend fun error(
+        throwable: Throwable?,
+        marker: Marker?,
+        message: () -> Any?,
+    ) = wrapUnit {
+        it.error(
+            throwable,
+            marker,
+            message,
+        )
+    }
+
+    override suspend fun atTrace(
+        marker: Marker?,
+        block: KLoggingEventBuilder.() -> Unit,
+    ) = wrapUnit { it.atTrace(marker, block) }
+
+    override suspend fun atTrace(block: KLoggingEventBuilder.() -> Unit) = wrapUnit { it.atTrace(block) }
+
+    override suspend fun atDebug(
+        marker: Marker?,
+        block: KLoggingEventBuilder.() -> Unit,
+    ) = wrapUnit { it.atDebug(marker, block) }
+
+    override suspend fun atDebug(block: KLoggingEventBuilder.() -> Unit) = wrapUnit { it.atDebug(block) }
+
+    override suspend fun atInfo(
+        marker: Marker?,
+        block: KLoggingEventBuilder.() -> Unit,
+    ) = wrapUnit { it.atInfo(marker, block) }
+
+    override suspend fun atInfo(block: KLoggingEventBuilder.() -> Unit) = wrapUnit { it.atInfo(block) }
+
+    override suspend fun atWarn(
+        marker: Marker?,
+        block: KLoggingEventBuilder.() -> Unit,
+    ) = wrapUnit { it.atWarn(marker, block) }
+
+    override suspend fun atWarn(block: KLoggingEventBuilder.() -> Unit) = wrapUnit { it.atWarn(block) }
+
+    override suspend fun atError(
+        marker: Marker?,
+        block: KLoggingEventBuilder.() -> Unit,
+    ) = wrapUnit { it.atError(marker, block) }
+
+    override suspend fun atError(block: KLoggingEventBuilder.() -> Unit) = wrapUnit { it.atError(block) }
+
+    override suspend fun at(
+        level: Level,
+        marker: Marker?,
+        block: KLoggingEventBuilder.() -> Unit,
+    ) = wrapUnit {
+        it.at(
+            level,
+            marker,
+            block,
+        )
+    }
+
+    override suspend fun entry(vararg arguments: Any?) = wrapUnit { it.entry(*arguments) }
+
     override suspend fun exit() = wrapUnit { it.exit() }
+
     override suspend fun <T> exit(result: T) = wrap { it.exit(result) }
+
     override suspend fun <T : Throwable> throwing(throwable: T) = wrap { it.throwing(throwable) }
+
     override suspend fun <T : Throwable> catching(throwable: T) = wrapUnit { it.catching(throwable) }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is CoroutineKLogger) return false
-        if (reactiveLogger != other.reactiveLogger) return false
-        if (isTraceEnabled != other.isTraceEnabled) return false
-        if (isDebugEnabled != other.isDebugEnabled) return false
-        if (isInfoEnabled != other.isInfoEnabled) return false
-        if (isWarnEnabled != other.isWarnEnabled) return false
-        if (isErrorEnabled != other.isErrorEnabled) return false
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = reactiveLogger.hashCode()
-        result = 31 * result + isTraceEnabled.hashCode()
-        result = 31 * result + isDebugEnabled.hashCode()
-        result = 31 * result + isInfoEnabled.hashCode()
-        result = 31 * result + isWarnEnabled.hashCode()
-        result = 31 * result + isErrorEnabled.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "CoroutineKLogger(reactiveLogger=$reactiveLogger, isTraceEnabled=$isTraceEnabled, isDebugEnabled=$isDebugEnabled, isInfoEnabled=$isInfoEnabled, isWarnEnabled=$isWarnEnabled, isErrorEnabled=$isErrorEnabled)"
-    }
 }
-

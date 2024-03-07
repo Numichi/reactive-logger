@@ -12,10 +12,16 @@ fun stepVerifierEmpty(logger: () -> Mono<*>) {
     StepVerifier.create(logger()).verifyComplete()
 }
 
-fun <T : Any> stepVerifierError(expect: Class<out Throwable>, logger: () -> Mono<T>) {
+fun <T : Any> stepVerifierError(
+    expect: Class<out Throwable>,
+    logger: () -> Mono<T>,
+) {
     StepVerifier.create(logger()).verifyError(expect)
 }
 
-fun <T : Any> stepVerifier(expect: T, logger: () -> Mono<T>) {
+fun <T : Any> stepVerifier(
+    expect: T,
+    logger: () -> Mono<T>,
+) {
     StepVerifier.create(logger()).expectNext(expect).verifyComplete()
 }

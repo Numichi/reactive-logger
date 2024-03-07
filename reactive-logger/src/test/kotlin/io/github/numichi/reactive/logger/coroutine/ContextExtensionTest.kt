@@ -4,6 +4,7 @@ import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.exceptions.ReadException
+import io.github.numichi.reactive.logger.hook.Position
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -15,19 +16,19 @@ import reactor.util.function.Tuples
 
 @ExperimentalCoroutinesApi
 class ContextExtensionTest {
-
     private lateinit var context: Context
 
     @BeforeEach
     fun beforeEach() {
         Configuration.reset()
-        context = Context.of(
-            mapOf(
-                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
-                "foo" to mapOf("fooBar" to "fooBaz"),
-                "aaa" to "bbb"
+        context =
+            Context.of(
+                mapOf(
+                    DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
+                    "foo" to mapOf("fooBar" to "fooBaz"),
+                    "aaa" to "bbb",
+                ),
             )
-        )
     }
 
     @Test
@@ -142,9 +143,10 @@ class ContextExtensionTest {
 
     @Test
     fun snapshotMdcTest() {
-        Configuration.addHook("hookName", "aaa") { value, mdc ->
-            check(mdc.contextKey == "foo" && value is String)
-            mapOf("aaa" to value.uppercase())
+        Configuration.addHook(Position.BEFORE) { _, mdc ->
+            check(mdc.contextKey == "foo")
+
+            mapOf("aaa" to "BBB")
         }
 
         assertEquals(MDC("bar" to "baz"), context.snapshotMdc())

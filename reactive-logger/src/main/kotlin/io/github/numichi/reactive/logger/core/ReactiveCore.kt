@@ -2,13 +2,11 @@ package io.github.numichi.reactive.logger.core
 
 import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.coroutine.snapshotMdc
-import org.slf4j.Logger
 import reactor.core.publisher.Mono
 import reactor.util.context.ContextView
 import java.util.function.Supplier
 
-abstract class ReactiveCore<L : Logger> : Core<L>(), RSnapshot {
-
+abstract class ReactiveCore<L> : Core<L>(), RSnapshot {
     override fun snapshot(contextView: ContextView): Mono<MDC> {
         return Mono.just(snapshotMdc(contextView, contextKey))
     }

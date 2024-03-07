@@ -31,27 +31,45 @@ fun Context.modifyMdc(modify: Array<Tuple2<String, String?>>): Context {
     return modifyMdc(readOrDefaultMdc(this).plus(modify))
 }
 
-fun Context.modifyMdc(contextKey: Any, modify: (MDC) -> MDC): Context {
+fun Context.modifyMdc(
+    contextKey: Any,
+    modify: (MDC) -> MDC,
+): Context {
     return modifyMdc(modify(readOrDefaultMdc(this, contextKey)))
 }
 
-fun Context.modifyMdc(contextKey: Any, modify: Map<String, String?>): Context {
+fun Context.modifyMdc(
+    contextKey: Any,
+    modify: Map<String, String?>,
+): Context {
     return modifyMdc(readOrDefaultMdc(this, contextKey).plus(modify))
 }
 
-fun Context.modifyMdc(contextKey: Any, modify: Pair<String, String?>): Context {
+fun Context.modifyMdc(
+    contextKey: Any,
+    modify: Pair<String, String?>,
+): Context {
     return modifyMdc(readOrDefaultMdc(this, contextKey).plus(modify))
 }
 
-fun Context.modifyMdc(contextKey: Any, modify: Tuple2<String, String?>): Context {
+fun Context.modifyMdc(
+    contextKey: Any,
+    modify: Tuple2<String, String?>,
+): Context {
     return modifyMdc(readOrDefaultMdc(this, contextKey).plus(modify))
 }
 
-fun Context.modifyMdc(contextKey: Any, modify: Array<Pair<String, String?>>): Context {
+fun Context.modifyMdc(
+    contextKey: Any,
+    modify: Array<Pair<String, String?>>,
+): Context {
     return modifyMdc(readOrDefaultMdc(this, contextKey).plus(modify))
 }
 
-fun Context.modifyMdc(contextKey: Any, modify: Array<Tuple2<String, String?>>): Context {
+fun Context.modifyMdc(
+    contextKey: Any,
+    modify: Array<Tuple2<String, String?>>,
+): Context {
     return modifyMdc(readOrDefaultMdc(this, contextKey).plus(modify))
 }
 

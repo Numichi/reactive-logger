@@ -1,13 +1,11 @@
 package io.github.numichi.reactive.logger
 
+import io.github.numichi.reactive.logger.internal.toSafeMdcMap
+import io.github.numichi.reactive.logger.internal.toSafeMdcPair
 import reactor.util.function.Tuple2
 
 class MDC(val contextKey: Any, data: Map<String, String?>) {
-    val data: Map<String, String?>
-
-    init {
-        this.data = data.toSafeMdcMap()
-    }
+    val data: Map<String, String?> = data.toSafeMdcMap()
 
     constructor() : this(Configuration.defaultReactorContextMdcKey, mapOf())
     constructor(mdcMap: Map<String, String?>) : this(Configuration.defaultReactorContextMdcKey, mdcMap.toSafeMdcMap())

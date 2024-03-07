@@ -1,46 +1,76 @@
 package io.github.numichi.reactive.logger.example.java.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.Duration;
+import java.util.function.Consumer;
 
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 class ReactiveLoggerControllerTest {
-    
+    public static final Logger log = LoggerFactory.getLogger(ReactiveLoggerControllerTest.class);
+
+    public static Consumer<EntityExchangeResult<byte[]>> consumer() {
+        return entityExchangeResult -> {
+            byte[] responseBody = entityExchangeResult.getResponseBody();
+            assert responseBody != null;
+            String responseBodyString = new String(responseBody);
+
+            log.info(responseBodyString);
+        };
+    }
+
     @Autowired
-    WebTestClient webTestClient;
-    
+    private WebTestClient webTestClient;
+
+    @BeforeEach
+    public void setUp() {
+        webTestClient = webTestClient.mutate()
+            .responseTimeout(Duration.ofMinutes(1))
+            .build();
+    }
+
+    /**
+     * @see ReactiveLoggerController#getSnapshot()
+     */
     @Test
     void getSnapshotTest() {
         webTestClient.get()
             .uri("/reactive/snapshot")
             .exchange()
             .expectBody()
+            .consumeWith(consumer())
             .jsonPath("$.length()").isEqualTo(2)
             .jsonPath("$.userId").value(v -> isA(String.class))
             .jsonPath("$.example").value(v -> isA(String.class));
     }
-    
+
+    /**
+     * @see ReactiveLoggerController#getRead()
+     */
     @Test
     void getReadTest() {
         webTestClient.get()
             .uri("/reactive/read")
             .exchange()
             .expectBody()
+            .consumeWith(consumer())
             .jsonPath("$.length()").isEqualTo(1)
             .jsonPath("$.userId").value(v -> isA(String.class));
     }
-    
+
     /**
-     * Console example:
-     * <pre>{@code
-     * {"message":"log0-information","context":{"userId":"c76cb63c-1742-4e77-9a52-d8593ce36236","example":"example"}}
-     * }</pre>
+     * @see ReactiveLoggerController#doInfo0()
      */
     @Test
     void doInfo0Test() {
@@ -49,12 +79,9 @@ class ReactiveLoggerControllerTest {
             .exchange()
             .expectStatus().isOk();
     }
-    
+
     /**
-     * Console example:
-     * <pre>{@code
-     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
-     * }</pre>
+     * @see ReactiveLoggerController#doInfo1()
      */
     @Test
     void doInfo1Test() {
@@ -63,12 +90,9 @@ class ReactiveLoggerControllerTest {
             .exchange()
             .expectStatus().isOk();
     }
-    
+
     /**
-     * Console example:
-     * <pre>{@code
-     * {"message":"log2-information","context":{"example":"n/a"}}
-     * }</pre>
+     * @see ReactiveLoggerController#doInfo2()
      */
     @Test
     void doInfo2Test() {

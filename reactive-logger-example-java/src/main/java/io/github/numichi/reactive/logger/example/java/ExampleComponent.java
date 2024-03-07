@@ -10,6 +10,7 @@ import reactor.util.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ExampleComponent {
     
@@ -64,7 +65,7 @@ public class ExampleComponent {
         return MDCContext.read()
             .doOnEach(reactiveLogger.logOnEach((Logger logger, Signal<MDC> signal) -> {
                 if (signal.isOnError()) {
-                    logger.error(signal.getThrowable().getMessage());
+                    logger.error(Objects.requireNonNull(signal.getThrowable()).getMessage());
                 }
             }));
     }

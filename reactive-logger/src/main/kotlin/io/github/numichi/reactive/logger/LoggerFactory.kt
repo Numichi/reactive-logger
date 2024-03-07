@@ -1,20 +1,28 @@
 package io.github.numichi.reactive.logger
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.slf4j.Logger
 
 object LoggerFactory {
     @JvmStatic
     fun getLogger(string: String): Logger = org.slf4j.LoggerFactory.getLogger(string)
+
     @JvmStatic
     fun getLogger(clazz: Class<*>): Logger = org.slf4j.LoggerFactory.getLogger(clazz)
 
     @JvmStatic
-    fun getKLogger(string: String) = KotlinLogging.logger(string)
+    fun getLogger(logger: KLogger): Logger = logger.toSlf4j()
+
     @JvmStatic
-    fun getKLogger(logger: Logger) = KotlinLogging.logger(logger)
+    fun getKLogger(string: String): KLogger = KotlinLogging.logger(string)
+
     @JvmStatic
-    fun getKLogger(clazz: Class<*>) = KotlinLogging.logger(org.slf4j.LoggerFactory.getLogger(clazz))
+    fun getKLogger(logger: Logger): KLogger = logger.toKLogger()
+
     @JvmStatic
-    fun getKLogger(func: () -> Unit) = KotlinLogging.logger(func)
+    fun getKLogger(clazz: Class<*>): KLogger = KotlinLogging.logger(clazz.name)
+
+    @JvmStatic
+    fun getKLogger(func: () -> Unit): KLogger = KotlinLogging.logger(func)
 }

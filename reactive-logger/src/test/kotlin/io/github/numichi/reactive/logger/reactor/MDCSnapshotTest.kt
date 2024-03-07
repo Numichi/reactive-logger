@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 import org.slf4j.MDC
 
 internal class MDCSnapshotTest {
-
     @Test
     fun populateAndClear() {
         val expected: MutableMap<String, String?> = mutableMapOf()

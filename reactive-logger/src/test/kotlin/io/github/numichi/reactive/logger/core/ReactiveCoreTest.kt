@@ -5,8 +5,8 @@ import io.github.numichi.reactive.logger.MDC
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
 import io.github.numichi.reactive.logger.stepVerifier
-import io.github.numichi.reactive.logger.stepVerifierError
 import io.github.numichi.reactive.logger.stepVerifierEmpty
+import io.github.numichi.reactive.logger.stepVerifierError
 import io.mockk.clearAllMocks
 import io.mockk.mockk
 import io.mockk.verify
@@ -18,7 +18,6 @@ import reactor.test.StepVerifier
 import java.util.function.Supplier
 
 internal class ReactiveCoreTest {
-
     @BeforeEach
     fun afterEach() {
         clearAllMocks()
@@ -57,8 +56,9 @@ internal class ReactiveCoreTest {
             val mdc = MDC(contextKey, content)
             val logger = ReactiveLogger.getLogger("", contextKey = contextKey)
 
-            val mono = Mono.deferContextual { logger.snapshot(it) }
-                .contextWrite { it.put(contextKey, content) }
+            val mono =
+                Mono.deferContextual { logger.snapshot(it) }
+                    .contextWrite { it.put(contextKey, content) }
 
             StepVerifier.create(mono)
                 .expectNext(mdc)
@@ -71,8 +71,9 @@ internal class ReactiveCoreTest {
             val mdc = MDC(contextKey, content)
             val logger = ReactiveLogger.getLogger("", contextKey = contextKey)
 
-            val mono = Mono.defer { logger.snapshot() }
-                .contextWrite { it.put(contextKey, content) }
+            val mono =
+                Mono.defer { logger.snapshot() }
+                    .contextWrite { it.put(contextKey, content) }
 
             StepVerifier.create(mono)
                 .expectNext(mdc)

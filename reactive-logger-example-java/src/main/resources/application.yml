@@ -1,9 +1,0 @@
-reactive-logger:
-  instances:
-    example-instance:
-      logger: "custom logger name"
-      contextKey: "context-key-from-yml"
-      scheduler: bounded_elastic
-    another-example-instance:
-      context-key: "another-context-key-from-yml"
-      scheduler: parallel

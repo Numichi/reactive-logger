@@ -527,7 +527,6 @@ Hooks can be configured via Spring Bean, and you can add more same beans. An MDC
 ```java
 // Java
 import org.springframework.cloud.sleuth.TraceContext;
-import io.github.numichi.reactive.logger.hook.MDCHook;
 
 @Configuration
 @ConditionalOnClass(TraceContext.class)
@@ -551,7 +550,6 @@ public class HookConfiguration {
 ```kotlin
 // Kotlin
 import org.springframework.cloud.sleuth.TraceContext
-import io.github.numichi.reactive.logger.hook.MDCHook
 
 @Configuration
 @ConditionalOnClass(TraceContext::class)

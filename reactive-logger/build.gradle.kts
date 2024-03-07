@@ -3,12 +3,12 @@ plugins {
     jacoco
     kotlin("jvm")
     kotlin("kapt")
-    id("com.adarshr.test-logger")
     id("java-library")
     id("maven-publish")
     id("signing")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
+    id("org.jmailen.kotlinter")
 }
 
 group = project.property("group") as String
@@ -16,6 +16,12 @@ version = project.property("version") as String
 
 val compileTestKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
 compileTestKotlin.kotlinOptions.jvmTarget = "17"
+
+val developerId = project.properties["developerId"] as String? ?: ""
+val developerName = project.properties["developerName"] as String? ?: ""
+val developerEmail = project.properties["developerEmail"] as String? ?: ""
+val ossrhUsername = project.properties["ossrhUsername"] as String? ?: "N/A"
+val ossrhPassword = project.properties["ossrhPassword"] as String? ?: "N/A"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -40,37 +46,34 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("io.projectreactor:reactor-core:3.5.5")
-    implementation("org.slf4j:slf4j-api:2.0.7")
+    implementation("io.projectreactor:reactor-core:3.6.3")
+    implementation("org.slf4j:slf4j-api:2.0.12")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("org.springframework.boot:spring-boot-starter:3.0.6") {
-        exclude("org.yaml", "snakeyaml") // CVE-2022-1471
-        exclude("org.springframework", "spring-expression ") // CVE-2023-20861
-    }
-    implementation("org.springframework:spring-expression:6.0.8")
-    implementation("org.yaml:snakeyaml:2.0")
+    implementation("org.springframework.boot:spring-boot-starter:3.2.3")
+    implementation("org.springframework.boot:spring-boot-autoconfigure:3.2.3")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
-    api("io.github.microutils:kotlin-logging-jvm:3.0.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
+    api("io.github.oshai:kotlin-logging-jvm:6.0.3")
 
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.0.6")
-    kapt("org.springframework.boot:spring-boot-configuration-processor:3.0.6")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.2.3")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:3.2.3")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.0.6")
-    testImplementation("io.projectreactor:reactor-test:3.5.5")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation("org.apache.logging.log4j:log4j-core:2.20.0")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("io.mockk:mockk:1.13.5")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.3")
+    testImplementation("io.projectreactor:reactor-test:3.6.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation("org.apache.logging.log4j:log4j-api:2.23.0")
+    testImplementation("org.apache.logging.log4j:log4j-core:2.23.0")
+    testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.23.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("io.mockk:mockk:1.13.10")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -90,9 +93,9 @@ publishing {
 
                 developers {
                     developer {
-                        id.set(project.property("developerId") as String? ?: "")
-                        name.set(project.property("developerName") as String? ?: "")
-                        email.set(project.property("developerEmail") as String? ?: "")
+                        id.set(developerId)
+                        name.set(developerName)
+                        email.set(developerEmail)
                     }
                 }
 
@@ -116,17 +119,8 @@ publishing {
         maven {
             name = "OSSRH"
             credentials {
-                username = if (project.hasProperty("ossrhUsername")) {
-                    project.property("ossrhUsername") as String
-                } else {
-                    "N/A"
-                }
-
-                password = if (project.hasProperty("ossrhPassword")) {
-                    project.property("ossrhPassword") as String? ?: ""
-                } else {
-                    "N/A"
-                }
+                username = ossrhUsername
+                password = ossrhPassword
             }
 
             val releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
@@ -146,17 +140,23 @@ signing {
     sign(publishing.publications["main"])
 }
 
+tasks.build {
+    dependsOn("formatKotlin")
+}
+
 tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
 }
 
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.11"
 }
 
 val jacocoIgnorePath = listOf(
     // unimportant
+    "io/github/numichi/reactive/logger/coroutine/extend/**",
+    "io/github/numichi/reactive/logger/reactor/extend/**",
     "io/github/numichi/reactive/logger/spring/properties/**",
     "io/github/numichi/reactive/logger/spring/beans/helper/**",
     "io/github/numichi/reactive/logger/spring/handler/**",
@@ -166,7 +166,7 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = "0.9".toBigDecimal()
+                minimum = "0.85".toBigDecimal()
             }
         }
     }

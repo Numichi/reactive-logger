@@ -26,16 +26,6 @@
       "description": "Force defaults to be set, even if they have been set by configuration.",
       "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties",
       "defaultValue": false
-    },
-    {
-      "name": "reactive-logger.instances",
-      "type": "java.util.Map<java.lang.String, io.github.numichi.reactive.logger.spring.properties.InstanceProperties>",
-      "description": "Logger information pre-registering.",
-      "sourceType": "io.github.numichi.reactive.logger.spring.properties.ReactiveLoggerProperties",
-      "deprecation": {
-        "level": "warning",
-        "reason": "It will be remove."
-      }
     }
   ]
 }

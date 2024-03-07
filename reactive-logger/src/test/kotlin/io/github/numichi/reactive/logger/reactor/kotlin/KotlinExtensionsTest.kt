@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
 class KotlinExtensionsTest {
-
     private val logger = mockk<Logger>(relaxed = true)
     private val reactiveLogger = ReactiveLogger.getLogger(logger)
     private val coroutineLogger = CoroutineLogger.getLogger(logger)
@@ -29,8 +28,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnNextMonoTest() {
-        val mono = Mono.just("test")
-            .logOnNext { reactiveLogger.info(it) }
+        val mono =
+            Mono.just("test")
+                .logOnNext { reactiveLogger.info(it) }
 
         stepVerifier("test") { mono }
         verify(exactly = 1) { logger.info("test") }
@@ -38,8 +38,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnNextFluxTest() {
-        val flux = Flux.just("test")
-            .logOnNext { reactiveLogger.info(it) }
+        val flux =
+            Flux.just("test")
+                .logOnNext { reactiveLogger.info(it) }
 
         StepVerifier.create(flux).expectNext("test").verifyComplete()
         verify(exactly = 1) { logger.info("test") }
@@ -47,8 +48,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnErrorMonoTest() {
-        val mono = Mono.error<RuntimeException>(RuntimeException("error"))
-            .logOnError { reactiveLogger.error(it.message) }
+        val mono =
+            Mono.error<RuntimeException>(RuntimeException("error"))
+                .logOnError { reactiveLogger.error(it.message) }
 
         stepVerifierError(RuntimeException::class.java) { mono }
         verify(exactly = 1) { logger.error("error") }
@@ -56,8 +58,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnErrorFluxTest() {
-        val flux = Flux.error<RuntimeException>(RuntimeException("error"))
-            .logOnError { reactiveLogger.error(it.message) }
+        val flux =
+            Flux.error<RuntimeException>(RuntimeException("error"))
+                .logOnError { reactiveLogger.error(it.message) }
 
         StepVerifier.create(flux).verifyError(RuntimeException::class.java)
         verify(exactly = 1) { logger.error("error") }
@@ -65,8 +68,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnNextMonoCoroutineTest() {
-        val mono = Mono.just("test")
-            .logOnNextCoroutine { coroutineLogger.info(it) }
+        val mono =
+            Mono.just("test")
+                .logOnNextCoroutine { coroutineLogger.info(it) }
 
         stepVerifier("test") { mono }
         verify(exactly = 1) { logger.info("test") }
@@ -74,8 +78,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnNextFluxCoroutineTest() {
-        val flux = Flux.just("test")
-            .logOnNextCoroutine { coroutineLogger.info(it) }
+        val flux =
+            Flux.just("test")
+                .logOnNextCoroutine { coroutineLogger.info(it) }
 
         StepVerifier.create(flux).expectNext("test").verifyComplete()
         verify(exactly = 1) { logger.info("test") }
@@ -83,8 +88,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnErrorMonoCoroutineTest() {
-        val mono = Mono.error<RuntimeException>(RuntimeException("error"))
-            .logOnErrorCoroutine { coroutineLogger.error(it.message) }
+        val mono =
+            Mono.error<RuntimeException>(RuntimeException("error"))
+                .logOnErrorCoroutine { coroutineLogger.error(it.message) }
 
         stepVerifierError(RuntimeException::class.java) { mono }
         verify(exactly = 1) { logger.error("error") }
@@ -92,8 +98,9 @@ class KotlinExtensionsTest {
 
     @Test
     fun logOnErrorFluxCoroutineTest() {
-        val flux = Flux.error<RuntimeException>(RuntimeException("error"))
-            .logOnErrorCoroutine { coroutineLogger.error(it.message) }
+        val flux =
+            Flux.error<RuntimeException>(RuntimeException("error"))
+                .logOnErrorCoroutine { coroutineLogger.error(it.message) }
 
         StepVerifier.create(flux).verifyError(RuntimeException::class.java)
         verify(exactly = 1) { logger.error("error") }

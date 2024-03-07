@@ -3,6 +3,7 @@ package io.github.numichi.reactive.logger.reactor
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.DEFAULT_REACTOR_CONTEXT_MDC_KEY
 import io.github.numichi.reactive.logger.randomText
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -93,6 +94,34 @@ internal class ReactiveLoggerTest {
             assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", instance3.logger.name)
             assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", instance4.logger.name)
             assertEquals("io.github.numichi.reactive.logger.reactor.ReactiveLoggerTest", instance5.logger.name)
+
+            assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance1.contextKey)
+            assertEquals("foo", instance2.contextKey)
+            assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance3.contextKey)
+            assertEquals("foo", instance4.contextKey)
+            assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance5.contextKey)
+
+            assertSame(Schedulers.boundedElastic(), instance1.scheduler)
+            assertSame(Schedulers.boundedElastic(), instance2.scheduler)
+            assertSame(Schedulers.parallel(), instance3.scheduler)
+            assertSame(Schedulers.parallel(), instance4.scheduler)
+            assertSame(Schedulers.boundedElastic(), instance5.scheduler)
+        }
+
+        run {
+            val kLogger = KotlinLogging.logger("bar")
+
+            val instance1 = ReactiveLogger.getLogger(kLogger)
+            val instance2 = ReactiveLogger.getLogger(kLogger, "foo")
+            val instance3 = ReactiveLogger.getLogger(kLogger, Schedulers.parallel())
+            val instance4 = ReactiveLogger.getLogger(kLogger, "foo", Schedulers.parallel())
+            val instance5 = ReactiveLogger.getLogger(kLogger, null, null)
+
+            assertEquals("bar", instance1.logger.name)
+            assertEquals("bar", instance2.logger.name)
+            assertEquals("bar", instance3.logger.name)
+            assertEquals("bar", instance4.logger.name)
+            assertEquals("bar", instance5.logger.name)
 
             assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance1.contextKey)
             assertEquals("foo", instance2.contextKey)

@@ -8,7 +8,4 @@ data class ReactiveLoggerProperties(
     var forceUse: Boolean = false,
     var contextKey: String? = null,
     var scheduler: SchedulerOptions? = null,
-
-    @Deprecated("It will be remove.")
-    var instances: Map<String, InstanceProperties> = mapOf()
 )

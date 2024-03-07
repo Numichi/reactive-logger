@@ -1,15 +1,14 @@
 package io.github.numichi.reactive.logger.core
 
 import io.github.numichi.reactive.logger.Configuration
-import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.coroutine.CoroutineKLogger
 import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
+import io.github.oshai.kotlinlogging.KLogger
 import io.mockk.clearAllMocks
 import io.mockk.mockk
 import io.mockk.verify
-import mu.KLogger
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,7 +23,7 @@ import java.util.*
 internal class CoreTest {
     private val contextKey = UUID.randomUUID().toString()
     private val logger: Logger = mockk(relaxed = true)
-    private val kLogger: KLogger = LoggerFactory.getKLogger(logger)
+    private val kLogger: KLogger = mockk(relaxed = true)
     private val reactiveLogger = ReactiveLogger.getLogger(logger, contextKey, null)
     private val reactiveKLogger = ReactiveKLogger.getLogger(kLogger)
     private val coroutineLogger = CoroutineLogger.getLogger(logger)
@@ -39,11 +38,9 @@ internal class CoreTest {
     @Test
     fun getLoggerTest() {
         assertEquals(logger, reactiveLogger.logger)
-        assertEquals(logger, reactiveKLogger.logger.underlyingLogger)
         assertEquals(kLogger, reactiveKLogger.logger)
 
         assertEquals(logger, coroutineLogger.logger)
-        assertEquals(logger, coroutineKLogger.logger.underlyingLogger)
         assertEquals(kLogger, coroutineKLogger.logger)
     }
 
@@ -52,10 +49,11 @@ internal class CoreTest {
         val randomKey = UUID.randomUUID().toString()
         val randomValue = UUID.randomUUID().toString()
         val mdc = mapOf(randomKey to randomValue)
-        val contextContext = mapOf<Any, Any>(
-            UUID.randomUUID() to UUID.randomUUID(),
-            contextKey to mdc
-        )
+        val contextContext =
+            mapOf<Any, Any>(
+                UUID.randomUUID() to UUID.randomUUID(),
+                contextKey to mdc,
+            )
         val context = Context.of(contextContext)
 
         reactiveLogger.wrapRunner(context) {
@@ -65,8 +63,9 @@ internal class CoreTest {
 
     @Test
     fun logOnEachNextTest() {
-        val mono = Mono.just("test")
-            .doOnEach(reactiveLogger.logOnEach { logger, value -> logger.info(value.get()) })
+        val mono =
+            Mono.just("test")
+                .doOnEach(reactiveLogger.logOnEach { logger, value -> logger.info(value.get()) })
 
         StepVerifier.create(mono)
             .expectNext("test")
@@ -77,12 +76,15 @@ internal class CoreTest {
 
     @Test
     fun logOnEachErrorTest() {
-        val mono = Mono.defer { Mono.error<Exception>(Exception("error")) }
-            .doOnEach(reactiveLogger.logOnEach { logger, signal ->
-                if (signal.type == SignalType.ON_ERROR) {
-                    logger.info(signal.throwable?.message)
-                }
-            })
+        val mono =
+            Mono.defer { Mono.error<Exception>(Exception("error")) }
+                .doOnEach(
+                    reactiveLogger.logOnEach { logger, signal ->
+                        if (signal.type == SignalType.ON_ERROR) {
+                            logger.info(signal.throwable?.message)
+                        }
+                    },
+                )
 
         StepVerifier.create(mono)
             .expectError()

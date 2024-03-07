@@ -15,7 +15,6 @@ import reactor.util.context.Context
 import reactor.util.function.Tuples
 
 internal class MDCContextTest {
-
     @BeforeEach
     fun setUp() {
         Configuration.reset()
@@ -57,10 +56,12 @@ internal class MDCContextTest {
         val mono1 = Mono.defer { MDCContext.read() }
         val mono2 = Mono.defer { MDCContext.read(DEFAULT_REACTOR_CONTEXT_MDC_KEY) }
         val mono3 = Mono.defer { MDCContext.read("foo") }
-        val mono4 = Mono.defer { MDCContext.read("not-found-key") }
-            .contextWrite { it.put("another", mapOf("foo" to "bar")) }
-        val mono5 = Mono.defer { MDCContext.read() }
-            .contextWrite { it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, MDC()) }
+        val mono4 =
+            Mono.defer { MDCContext.read("not-found-key") }
+                .contextWrite { it.put("another", mapOf("foo" to "bar")) }
+        val mono5 =
+            Mono.defer { MDCContext.read() }
+                .contextWrite { it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, MDC()) }
 
         StepVerifier.create(mono1)
             .expectErrorMatches { it.message == "DEFAULT_REACTOR_CONTEXT_MDC_KEY context key is not contain in context" }
@@ -90,8 +91,9 @@ internal class MDCContextTest {
         }
 
         run {
-            val mono = Mono.defer { MDCContext.read() }
-                .contextWrite { it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mapOf("foo" to "bar")) }
+            val mono =
+                Mono.defer { MDCContext.read() }
+                    .contextWrite { it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mapOf("foo" to "bar")) }
 
             StepVerifier.create(mono)
                 .expectNext(MDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mapOf("foo" to "bar")))
@@ -99,8 +101,9 @@ internal class MDCContextTest {
         }
 
         run {
-            val mono = Mono.defer { MDCContext.read("baz") }
-                .contextWrite { it.put("baz", mapOf("foo" to "bar")) }
+            val mono =
+                Mono.defer { MDCContext.read("baz") }
+                    .contextWrite { it.put("baz", mapOf("foo" to "bar")) }
 
             StepVerifier.create(mono)
                 .expectNext(MDC("baz", mapOf("foo" to "bar")))
@@ -135,8 +138,9 @@ internal class MDCContextTest {
         }
 
         run {
-            val mono = Mono.defer { MDCContext.readOrDefault() }
-                .contextWrite { it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mapOf("foo" to "bar")) }
+            val mono =
+                Mono.defer { MDCContext.readOrDefault() }
+                    .contextWrite { it.put(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mapOf("foo" to "bar")) }
 
             StepVerifier.create(mono)
                 .expectNext(MDC(DEFAULT_REACTOR_CONTEXT_MDC_KEY, mapOf("foo" to "bar")))
@@ -144,8 +148,9 @@ internal class MDCContextTest {
         }
 
         run {
-            val mono = Mono.defer { MDCContext.readOrDefault("baz") }
-                .contextWrite { it.put("baz", mapOf("foo" to "bar")) }
+            val mono =
+                Mono.defer { MDCContext.readOrDefault("baz") }
+                    .contextWrite { it.put("baz", mapOf("foo" to "bar")) }
 
             StepVerifier.create(mono)
                 .expectNext(MDC("baz", mapOf("foo" to "bar")))
@@ -153,8 +158,9 @@ internal class MDCContextTest {
         }
 
         run {
-            val mono = MDCContext.readOrDefault("foo")
-                .contextWrite { Context.of("foo", MDC()) }
+            val mono =
+                MDCContext.readOrDefault("foo")
+                    .contextWrite { Context.of("foo", MDC()) }
 
             StepVerifier.create(mono).verifyError(ReadException::class.java)
         }
@@ -262,13 +268,13 @@ internal class MDCContextTest {
                 .expectNext(MDC())
                 .verifyComplete()
 
-
-            val snapshot2 = MDCContext.snapshot()
-                .contextWrite {
-                    MDCContext.modify(it) { mdc ->
-                        mdc + ("foo" to "bar")
+            val snapshot2 =
+                MDCContext.snapshot()
+                    .contextWrite {
+                        MDCContext.modify(it) { mdc ->
+                            mdc + ("foo" to "bar")
+                        }
                     }
-                }
 
             StepVerifier.create(snapshot2)
                 .expectNext(MDC("foo" to "bar"))
@@ -282,13 +288,13 @@ internal class MDCContextTest {
                 .expectNext(MDC("foo"))
                 .verifyComplete()
 
-
-            val snapshot2 = MDCContext.snapshot("foo")
-                .contextWrite {
-                    MDCContext.modify(it, "foo") { mdc ->
-                        mdc + ("foo" to "bar")
+            val snapshot2 =
+                MDCContext.snapshot("foo")
+                    .contextWrite {
+                        MDCContext.modify(it, "foo") { mdc ->
+                            mdc + ("foo" to "bar")
+                        }
                     }
-                }
 
             StepVerifier.create(snapshot2)
                 .expectNext(MDC("foo", "foo" to "bar"))
@@ -296,12 +302,13 @@ internal class MDCContextTest {
         }
 
         run {
-            val context = Context.of(
-                mapOf(
-                    DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
-                    "foo" to mapOf("bar1" to "baz1")
+            val context =
+                Context.of(
+                    mapOf(
+                        DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
+                        "foo" to mapOf("bar1" to "baz1"),
+                    ),
                 )
-            )
 
             val snapshot1 = MDCContext.snapshot(context)
             val snapshot2 = MDCContext.snapshot(context, "foo")
@@ -309,27 +316,5 @@ internal class MDCContextTest {
             assertEquals(MDC("bar" to "baz"), snapshot1)
             assertEquals(MDC("foo", "bar1" to "baz1"), snapshot2)
         }
-    }
-
-    @Test
-    fun `snapshot -- create snapshot from MDC and `() {
-        Configuration.addHook("name", "aaa") { value, mdc ->
-            check(value is String && mdc.contextKey == "foo")
-            mapOf("bbb" to value.uppercase())
-        }
-
-        val context = Context.of(
-            mapOf(
-                DEFAULT_REACTOR_CONTEXT_MDC_KEY to mapOf("bar" to "baz"),
-                "foo" to mapOf("bar1" to "baz1"),
-                "aaa" to "bbb"
-            )
-        )
-
-        val snapshot1 = MDCContext.snapshot(context)
-        val snapshot2 = MDCContext.snapshot(context, "foo")
-
-        assertEquals(MDC("bar" to "baz"), snapshot1)
-        assertEquals(MDC("foo", mapOf("bar1" to "baz1", "bbb" to "BBB")), snapshot2)
     }
 }

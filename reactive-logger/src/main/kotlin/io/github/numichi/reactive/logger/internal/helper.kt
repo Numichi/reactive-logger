@@ -1,5 +1,6 @@
-package io.github.numichi.reactive.logger
+package io.github.numichi.reactive.logger.internal
 
+import io.github.numichi.reactive.logger.KEY_MUST_NOT_BE_NULL
 import reactor.util.function.Tuple2
 import reactor.util.function.Tuples
 

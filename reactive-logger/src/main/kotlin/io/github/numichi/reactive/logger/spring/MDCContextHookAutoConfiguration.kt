@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 
 @AutoConfiguration(after = [DefaultValuesAutoConfiguration::class])
 @ConditionalOnBean(value = [MDCContextHook::class])
-open class MDCContextHookAutoConfiguration(mdcHooks: List<MDCContextHook>) {
+open class MDCContextHookAutoConfiguration(mdcContextHooks: List<MDCContextHook>) {
     init {
-        mdcHooks.forEach {
+        mdcContextHooks.forEach {
             if (MDCContextHookCache.existsHook(it.position)) {
                 throw ContextHookNameAlreadyExistException("MDCContextHook in ${it.position.name} position already exist!")
             }
