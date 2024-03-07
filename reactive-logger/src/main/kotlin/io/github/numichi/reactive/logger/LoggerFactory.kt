@@ -1,12 +1,10 @@
-package io.github.numichi.reactive.logger.internal
+package io.github.numichi.reactive.logger
 
-import io.github.numichi.reactive.logger.toKLogger
-import io.github.numichi.reactive.logger.toSlf4j
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.KLogger
 import org.slf4j.Logger
 
-internal object LoggerFactory {
+object LoggerFactory {
     @JvmStatic
     fun getLogger(string: String): Logger = org.slf4j.LoggerFactory.getLogger(string)
 

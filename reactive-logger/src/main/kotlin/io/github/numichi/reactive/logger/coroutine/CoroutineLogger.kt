@@ -2,10 +2,12 @@ package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.core.CoroutineCore
-import io.github.numichi.reactive.logger.internal.LoggerFactory
+import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.reactor.ReactiveLogger
+import io.github.oshai.kotlinlogging.KLogger
 import org.slf4j.Logger
 import org.slf4j.Marker
+import org.slf4j.event.Level
 import reactor.core.scheduler.Scheduler
 
 open class CoroutineLogger(
@@ -32,6 +34,28 @@ open class CoroutineLogger(
         @JvmStatic
         fun getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger {
             return getLogger(LoggerFactory.getLogger(name), contextKey, scheduler)
+        }
+        //endregion
+
+        //region String base
+        @JvmStatic
+        fun getLogger(kLogger: KLogger): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), null, null)
+        }
+
+        @JvmStatic
+        fun getLogger(kLogger: KLogger, contextKey: Any?): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), contextKey, null)
+        }
+
+        @JvmStatic
+        fun getLogger(kLogger: KLogger, scheduler: Scheduler?): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), null, scheduler)
+        }
+
+        @JvmStatic
+        fun getLogger(kLogger: KLogger, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), contextKey, scheduler)
         }
         //endregion
 
@@ -85,6 +109,8 @@ open class CoroutineLogger(
         }
         //endregion
     }
+
+    override fun isEnabledForLevel(level: Level): Boolean = reactiveLogger.isEnabledForLevel(level)
 
     override val isTraceEnabled: Boolean
         get() = reactiveLogger.isTraceEnabled()
@@ -160,33 +186,5 @@ open class CoroutineLogger(
     override suspend fun error(marker: Marker?, format: String?, arg1: Any?, arg2: Any?) = wrapUnit { it.error(marker, format, arg1, arg2) }
     override suspend fun error(marker: Marker?, format: String?, vararg argArray: Any?) = wrapUnit { it.error(marker, format, *argArray) }
     override suspend fun error(marker: Marker?, msg: String?, t: Throwable?) = wrapUnit { it.error(marker, msg, t) }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is CoroutineLogger) return false
-
-        if (reactiveLogger != other.reactiveLogger) return false
-        if (isTraceEnabled != other.isTraceEnabled) return false
-        if (isDebugEnabled != other.isDebugEnabled) return false
-        if (isInfoEnabled != other.isInfoEnabled) return false
-        if (isWarnEnabled != other.isWarnEnabled) return false
-        if (isErrorEnabled != other.isErrorEnabled) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = reactiveLogger.hashCode()
-        result = 31 * result + isTraceEnabled.hashCode()
-        result = 31 * result + isDebugEnabled.hashCode()
-        result = 31 * result + isInfoEnabled.hashCode()
-        result = 31 * result + isWarnEnabled.hashCode()
-        result = 31 * result + isErrorEnabled.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "CoroutineLogger(reactiveLogger=$reactiveLogger, isTraceEnabled=$isTraceEnabled, isDebugEnabled=$isDebugEnabled, isInfoEnabled=$isInfoEnabled, isWarnEnabled=$isWarnEnabled, isErrorEnabled=$isErrorEnabled)"
-    }
 }
 

@@ -1,5 +1,6 @@
-package io.github.numichi.reactive.logger.coroutine
+package io.github.numichi.reactive.logger.coroutine.extend
 
+import io.github.numichi.reactive.logger.coroutine.CKLogger
 import io.github.oshai.kotlinlogging.Marker
 
 /**
@@ -48,9 +49,9 @@ interface ExtendedCKLogger : CKLogger {
     suspend fun warn(marker: Marker?, message: String?, throwable: Throwable?) = warn(throwable, marker) { message }
     suspend fun error(marker: Marker?, message: String?, throwable: Throwable?) = error(throwable, marker) { message }
 
-    suspend fun trace(marker: Marker?, throwable: Throwable?, message: () -> Any?) = trace(throwable, marker) { message }
-    suspend fun debug(marker: Marker?, throwable: Throwable?, message: () -> Any?) = debug(throwable, marker) { message }
-    suspend fun info(marker: Marker?, throwable: Throwable?, message: () -> Any?) = info(throwable, marker) { message }
-    suspend fun warn(marker: Marker?, throwable: Throwable?, message: () -> Any?) = warn(throwable, marker) { message }
-    suspend fun error(marker: Marker?, throwable: Throwable?, message: () -> Any?) = error(throwable, marker) { message }
+    suspend fun trace(marker: Marker?, throwable: Throwable?, message: () -> Any?) = trace(throwable, marker, message)
+    suspend fun debug(marker: Marker?, throwable: Throwable?, message: () -> Any?) = debug(throwable, marker, message)
+    suspend fun info(marker: Marker?, throwable: Throwable?, message: () -> Any?) = info(throwable, marker, message)
+    suspend fun warn(marker: Marker?, throwable: Throwable?, message: () -> Any?) = warn(throwable, marker, message)
+    suspend fun error(marker: Marker?, throwable: Throwable?, message: () -> Any?) = error(throwable, marker, message)
 }

@@ -6,52 +6,25 @@ import io.github.numichi.reactive.logger.coroutine.readMdc
 import io.github.numichi.reactive.logger.coroutine.readOrDefaultMdc
 import io.github.numichi.reactive.logger.coroutine.snapshotMdc
 import io.github.numichi.reactive.logger.coroutine.withMDCContext
-import io.github.numichi.reactive.logger.spring.beans.LoggerRegistry
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-/**
- * Similar with [io.github.numichi.reactive.logger.example.kotlin.controller.ReactiveKLoggerController]
- */
 @RestController
 @RequestMapping("coroutine")
-class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
+class CoroutineLoggerController {
     companion object {
         const val WILL_NOT_APPEAR = "will-not-appear"
     }
 
-    /**
-     * ### Manual like
-     * ```kotlin
-     * CoroutineLogger.getLogger("io.github.numichi.reactive.logger.example.controllers.ReactiveLoggerController", "context-key-from-yml")
-     * ```
-     *
-     * "example-instance" from application.yml
-     */
-    private val logger1 = loggerRegistry.getCoroutineLogger("example-instance")
-
-    /**
-     * ### Manual like
-     * ```kotlin
-     * CoroutineLogger.getLogger(CoroutineLoggerController::class.java, "another-context-key-from-yml", Schedulers.parallel())
-     * ```
-     *
-     * "another-example-instance" from application.yml
-     */
-    private val logger2 = loggerRegistry.getCoroutineLogger("another-example-instance", CoroutineLoggerController::class.java)
-
-    /**
-     * Manual logger creation
-     */
     private val logger = CoroutineLogger.getLogger(CoroutineLoggerController::class.java)
+    private val logger1 = CoroutineLogger.getLogger("log-name-1", "context-key-1")
+    private val logger2 = CoroutineLogger.getLogger("log-name-2", CoroutineLoggerController::class.java)
 
     /**
-     * See the equivalent of reactive.
-     *
-     * @see [io.github.numichi.reactive.logger.example.kotlin.controller.ReactiveKLoggerController.getSnapshot]
+     * It is similar to the one inside the **reactive-logger-example-java** directory.
      */
     @GetMapping("snapshot")
     suspend fun getSnapshot(): Map<String, String?> {
@@ -59,9 +32,7 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
     }
 
     /**
-     * See the equivalent of reactive.
-     *
-     * @see [io.github.numichi.reactive.logger.example.kotlin.controller.ReactiveKLoggerController.getRead]
+     * It is similar to the one inside the **reactive-logger-example-java** directory.
      */
     @GetMapping("read")
     suspend fun getRead(): Map<String, String?> {
@@ -69,9 +40,7 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
     }
 
     /**
-     * See the equivalent of reactive.
-     *
-     * @see [io.github.numichi.reactive.logger.example.kotlin.controller.ReactiveKLoggerController.doInfo0]
+     * It is similar to the one inside the **reactive-logger-example-java** directory.
      */
     @GetMapping("log0")
     suspend fun doInfo0() {
@@ -79,33 +48,31 @@ class CoroutineLoggerController(loggerRegistry: LoggerRegistry) {
     }
 
     /**
-     * <h2>Description</h2>
-     *
-     * See the equivalent of reactive.
-     *
-     * @see [io.github.numichi.reactive.logger.example.kotlin.controller.ReactiveKLoggerController.doInfo1]
+     * It is similar to the one inside the **reactive-logger-example-java** directory.
      */
     @GetMapping("log1")
     suspend fun doInfo1() {
-        // readMdc(logger1.contextKey) will throw Exception because this context key already not initialized here.
         val mdc1 = readOrDefaultMdc(logger1.contextKey) + mapOf("foo" to "bar")
         val mdc2 = readMdc() + mapOf(WILL_NOT_APPEAR to WILL_NOT_APPEAR)
 
         withMDCContext(mdc1, mdc2) {
             logger1.info("log1-information")
         }
+    }
 
-        // ========= OR =========
-
+    /**
+     * Alternative to [doInfo1]
+     */
+    @GetMapping("log1-alternative")
+    suspend fun doInfo1Alternative() {
         mono { logger1.info("log1-information") }
             .contextWrite { it.modifyMdc(logger1.contextKey, mapOf("foo" to "bar")) }
+            .contextWrite { it.modifyMdc(mapOf(WILL_NOT_APPEAR to WILL_NOT_APPEAR)) }
             .awaitSingleOrNull()
     }
 
     /**
-     * See the equivalent of reactive.
-     *
-     * @see [io.github.numichi.reactive.logger.example.kotlin.controller.ReactiveKLoggerController.doInfo2]
+     * It is similar to the one inside the **reactive-logger-example-java** directory.
      */
     @GetMapping("log2")
     suspend fun doInfo2() {

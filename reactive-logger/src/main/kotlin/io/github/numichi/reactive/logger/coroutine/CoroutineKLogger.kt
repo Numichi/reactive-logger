@@ -2,7 +2,8 @@ package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.core.CoroutineCore
-import io.github.numichi.reactive.logger.internal.LoggerFactory
+import io.github.numichi.reactive.logger.coroutine.extend.ExtendedCKLogger
+import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.reactor.RKLogger
 import io.github.numichi.reactive.logger.reactor.ReactiveKLogger
 import io.github.oshai.kotlinlogging.KLogger

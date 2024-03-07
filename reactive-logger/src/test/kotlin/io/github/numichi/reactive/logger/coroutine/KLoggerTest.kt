@@ -2,11 +2,8 @@ package io.github.numichi.reactive.logger.coroutine
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.randomText
-import io.github.oshai.kotlinlogging.KLogger
-import io.github.oshai.kotlinlogging.KMarkerFactory
-import io.github.oshai.kotlinlogging.Marker
+import io.github.oshai.kotlinlogging.*
 import io.mockk.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -25,108 +22,164 @@ class KLoggerTest {
     fun traceEnabled() {
         every { imperativeLogger.isTraceEnabled() } returnsMany listOf(true, false, true)
 
-        assertTrue(logger.isTraceEnabled, "trace not enabled when it should be")
-        assertFalse(logger.isTraceEnabled, "trace enabled when it should not be")
-        assertTrue(logger.isTraceEnabled, "trace not enabled when it should be")
+        assertTrue(logger.isTraceEnabled)
+        assertFalse(logger.isTraceEnabled)
+        assertTrue(logger.isTraceEnabled)
     }
 
     @Test
     fun traceEnabledMarker() {
-        runTest {
-            val marker = KMarkerFactory.getMarker(randomText())
-            every { imperativeLogger.isTraceEnabled(marker) } returnsMany listOf(true, false, true)
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isTraceEnabled(marker) } returnsMany listOf(true, false, true)
 
-            assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
-            assertFalse(logger.isTraceEnabled(marker), "trace enabled when it should not be")
-            assertTrue(logger.isTraceEnabled(marker), "trace not enabled when it should be")
-        }
+        assertTrue(logger.isTraceEnabled(marker))
+        assertFalse(logger.isTraceEnabled(marker))
+        assertTrue(logger.isTraceEnabled(marker))
     }
 
     @Test
     fun debugEnabled() {
         every { imperativeLogger.isDebugEnabled() } returnsMany listOf(true, false, true)
 
-        assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
-        assertFalse(logger.isDebugEnabled, "debug enabled when it should not be")
-        assertTrue(logger.isDebugEnabled, "debug not enabled when it should be")
+        assertTrue(logger.isDebugEnabled)
+        assertFalse(logger.isDebugEnabled)
+        assertTrue(logger.isDebugEnabled)
     }
 
     @Test
     fun debugEnabledMarker() {
-        runTest {
-            val marker = KMarkerFactory.getMarker(randomText())
-            every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isDebugEnabled(marker) } returnsMany listOf(true, false, true)
 
-            assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
-            assertFalse(logger.isDebugEnabled(marker), "debug enabled when it should not be")
-            assertTrue(logger.isDebugEnabled(marker), "debug not enabled when it should be")
-        }
+        assertTrue(logger.isDebugEnabled(marker))
+        assertFalse(logger.isDebugEnabled(marker))
+        assertTrue(logger.isDebugEnabled(marker))
     }
 
     @Test
     fun infoEnabled() {
         every { imperativeLogger.isInfoEnabled() } returnsMany listOf(true, false, true)
 
-        assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
-        assertFalse(logger.isInfoEnabled, "info enabled when it should not be")
-        assertTrue(logger.isInfoEnabled, "info not enabled when it should be")
+        assertTrue(logger.isInfoEnabled)
+        assertFalse(logger.isInfoEnabled)
+        assertTrue(logger.isInfoEnabled)
     }
 
     @Test
     fun infoEnabledMarker() {
-        runTest {
-            val marker = KMarkerFactory.getMarker(randomText())
-            every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isInfoEnabled(marker) } returnsMany listOf(true, false, true)
 
-            assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
-            assertFalse(logger.isInfoEnabled(marker), "info enabled when it should not be")
-            assertTrue(logger.isInfoEnabled(marker), "info not enabled when it should be")
-        }
+        assertTrue(logger.isInfoEnabled(marker))
+        assertFalse(logger.isInfoEnabled(marker))
+        assertTrue(logger.isInfoEnabled(marker))
     }
 
     @Test
     fun warnEnabled() {
         every { imperativeLogger.isWarnEnabled() } returnsMany listOf(true, false, true)
 
-        assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
-        assertFalse(logger.isWarnEnabled, "warn enabled when it should not be")
-        assertTrue(logger.isWarnEnabled, "warn not enabled when it should be")
+        assertTrue(logger.isWarnEnabled)
+        assertFalse(logger.isWarnEnabled)
+        assertTrue(logger.isWarnEnabled)
     }
 
     @Test
     fun warnEnabledMarker() {
-        runTest {
-            val marker = KMarkerFactory.getMarker(randomText())
-            every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isWarnEnabled(marker) } returnsMany listOf(true, false, true)
 
-            assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
-            assertFalse(logger.isWarnEnabled(marker), "warn enabled when it should not be")
-            assertTrue(logger.isWarnEnabled(marker), "warn not enabled when it should be")
-        }
+        assertTrue(logger.isWarnEnabled(marker))
+        assertFalse(logger.isWarnEnabled(marker))
+        assertTrue(logger.isWarnEnabled(marker))
     }
 
     @Test
     fun errorEnabled() {
         every { imperativeLogger.isErrorEnabled() } returnsMany listOf(true, false, true)
 
-        assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
-        assertFalse(logger.isErrorEnabled, "error enabled when it should not be")
-        assertTrue(logger.isErrorEnabled, "error not enabled when it should be")
+        assertTrue(logger.isErrorEnabled)
+        assertFalse(logger.isErrorEnabled)
+        assertTrue(logger.isErrorEnabled)
     }
 
     @Test
     fun errorEnabledMarker() {
-        runTest {
-            val marker = KMarkerFactory.getMarker(randomText())
-            every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isErrorEnabled(marker) } returnsMany listOf(true, false, true)
 
-            assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
-            assertFalse(logger.isErrorEnabled(marker), "error enabled when it should not be")
-            assertTrue(logger.isErrorEnabled(marker), "error not enabled when it should be")
-        }
+        assertTrue(logger.isErrorEnabled(marker))
+        assertFalse(logger.isErrorEnabled(marker))
+        assertTrue(logger.isErrorEnabled(marker))
+    }
+
+    @Test
+    fun isLoggingEnabledFor() {
+        val level = Level.TRACE
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isLoggingEnabledFor(level, marker) } returnsMany listOf(true, false, true)
+
+        assertTrue(logger.isLoggingEnabledFor(level, marker))
+        assertFalse(logger.isLoggingEnabledFor(level, marker))
+        assertTrue(logger.isLoggingEnabledFor(level, marker))
+    }
+
+    @Test
+    fun isLoggingOff() {
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isLoggingOff(marker) } returnsMany listOf(true, false, true)
+
+        assertTrue(logger.isLoggingOff(marker))
+        assertFalse(logger.isLoggingOff(marker))
+        assertTrue(logger.isLoggingOff(marker))
     }
 
     //region Trace
+    @Test
+    fun traceKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atTrace(capture(supplierCaptor)) } returns Unit
+
+            logger.atTrace {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+        }
+    }
+
+    @Test
+    fun traceMarkerKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val marker = KMarkerFactory.getMarker(randomText())
+            val markerCaptor = slot<Marker>()
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atTrace(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+            logger.atTrace(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+            assertEquals(marker, markerCaptor.captured)
+        }
+    }
+
     @Test
     fun traceMessageSupplier() {
         runTest {
@@ -255,6 +308,51 @@ class KLoggerTest {
 
     //region Debug
     @Test
+    fun debugKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atDebug(capture(supplierCaptor)) } returns Unit
+
+            logger.atDebug {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+        }
+    }
+
+    @Test
+    fun debugMarkerKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val marker = KMarkerFactory.getMarker(randomText())
+            val markerCaptor = slot<Marker>()
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atDebug(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+            logger.atDebug(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+            assertEquals(marker, markerCaptor.captured)
+        }
+    }
+
+    @Test
     fun debugMessageSupplier() {
         runTest {
             val message: String = randomText()
@@ -381,6 +479,51 @@ class KLoggerTest {
     //endregion
 
     //region Info
+    @Test
+    fun infoKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atInfo(capture(supplierCaptor)) } returns Unit
+
+            logger.atInfo {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+        }
+    }
+
+    @Test
+    fun infoMarkerKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val marker = KMarkerFactory.getMarker(randomText())
+            val markerCaptor = slot<Marker>()
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atInfo(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+            logger.atInfo(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+            assertEquals(marker, markerCaptor.captured)
+        }
+    }
+
     @Test
     fun infoMessageSupplier() {
         runTest {
@@ -509,6 +652,51 @@ class KLoggerTest {
 
     //region Warn
     @Test
+    fun warnKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atWarn(capture(supplierCaptor)) } returns Unit
+
+            logger.atWarn {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+        }
+    }
+
+    @Test
+    fun warnMarkerKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val marker = KMarkerFactory.getMarker(randomText())
+            val markerCaptor = slot<Marker>()
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atWarn(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+            logger.atWarn(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+            assertEquals(marker, markerCaptor.captured)
+        }
+    }
+
+    @Test
     fun warnMessageSupplier() {
         runTest {
             val message: String = randomText()
@@ -636,6 +824,51 @@ class KLoggerTest {
 
     //region Error
     @Test
+    fun errorKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atError(capture(supplierCaptor)) } returns Unit
+
+            logger.atError {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+        }
+    }
+
+    @Test
+    fun errorMarkerKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val marker = KMarkerFactory.getMarker(randomText())
+            val markerCaptor = slot<Marker>()
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atError(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+            logger.atError(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+            assertEquals(marker, markerCaptor.captured)
+        }
+    }
+
+    @Test
     fun errorMessageSupplier() {
         runTest {
             val message: String = randomText()
@@ -762,6 +995,33 @@ class KLoggerTest {
     //endregion
 
     //region Other
+    @Test
+    fun atLevelMarkerKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = SimulatedException(randomText())
+            val level = Level.INFO
+            val marker = KMarkerFactory.getMarker(randomText())
+            val levelCaptor = slot<Level>()
+            val markerCaptor = slot<Marker>()
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.at(capture(levelCaptor), capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+            logger.at(level, marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+            assertEquals(marker, markerCaptor.captured)
+            assertEquals(level, levelCaptor.captured)
+        }
+    }
+
     @Test
     fun entry() {
         runTest {

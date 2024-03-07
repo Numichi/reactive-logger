@@ -1,11 +1,16 @@
 package io.github.numichi.reactive.logger.reactor
 
-import io.github.numichi.reactive.logger.*
-import io.github.oshai.kotlinlogging.KLogger
-import io.github.oshai.kotlinlogging.KMarkerFactory
-import io.github.oshai.kotlinlogging.Marker
+import io.github.numichi.reactive.logger.Configuration
+import io.github.numichi.reactive.logger.coroutine.KLoggerTest
+import io.github.numichi.reactive.logger.randomText
+import io.github.numichi.reactive.logger.stepVerifier
+import io.github.numichi.reactive.logger.stepVerifierEmpty
+import io.github.oshai.kotlinlogging.*
 import io.mockk.*
-import org.junit.jupiter.api.Assertions.*
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -15,12 +20,79 @@ class KLoggerTest {
 
     @BeforeEach
     fun afterEach() {
-        clearAllMocks()
         Configuration.reset()
+        clearMocks(imperativeLogger)
     }
 
+    @Test
+    fun isLoggingEnabledFor() {
+        val level = Level.TRACE
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isLoggingEnabledFor(level, marker) } returnsMany listOf(true, false, true)
+
+        assertTrue(logger.isLoggingEnabledFor(level, marker))
+        assertFalse(logger.isLoggingEnabledFor(level, marker))
+        assertTrue(logger.isLoggingEnabledFor(level, marker))
+    }
+
+    @Test
+    fun isLoggingOff() {
+        val marker = KMarkerFactory.getMarker(randomText())
+        every { imperativeLogger.isLoggingOff(marker) } returnsMany listOf(true, false, true)
+
+        assertTrue(logger.isLoggingOff(marker))
+        assertFalse(logger.isLoggingOff(marker))
+        assertTrue(logger.isLoggingOff(marker))
+    }
 
     //region Trace
+    @Test
+    fun traceKLoggingEventBuilderSupplier() {
+        runTest {
+            val message: String = randomText()
+            val exception = KLoggerTest.SimulatedException(randomText())
+            val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+            every { imperativeLogger.atTrace(capture(supplierCaptor)) } returns Unit
+
+            stepVerifierEmpty {
+                logger.atTrace {
+                    this.message = message
+                    this.cause = exception
+                    this.payload = mapOf("A" to "B")
+                }
+            }
+
+            val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+            assertEquals(message, builder.message)
+            assertEquals(exception, builder.cause)
+            assertEquals(mapOf("A" to "B"), builder.payload)
+        }
+    }
+
+    @Test
+    fun traceMarkerKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val marker = KMarkerFactory.getMarker(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atTrace(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atTrace(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+        assertEquals(marker, markerCaptor.captured)
+    }
+
     @Test
     fun traceEnabled() {
         every { imperativeLogger.isTraceEnabled() } returnsMany listOf(true, false, true)
@@ -152,6 +224,51 @@ class KLoggerTest {
 
     //region Debug
     @Test
+    fun debugKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atDebug(capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atDebug {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+    }
+
+    @Test
+    fun debugMarkerKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val marker = KMarkerFactory.getMarker(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atDebug(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atDebug(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+        assertEquals(marker, markerCaptor.captured)
+    }
+
+    @Test
     fun debugEnabled() {
         every { imperativeLogger.isDebugEnabled() } returnsMany listOf(true, false, true)
 
@@ -281,6 +398,51 @@ class KLoggerTest {
     //endregion
 
     //region Info
+    @Test
+    fun infoKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atInfo(capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atInfo {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+    }
+
+    @Test
+    fun infoMarkerKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val marker = KMarkerFactory.getMarker(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atInfo(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atInfo(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+        assertEquals(marker, markerCaptor.captured)
+    }
+
     @Test
     fun infoEnabled() {
         every { imperativeLogger.isInfoEnabled() } returnsMany listOf(true, false, true)
@@ -412,6 +574,51 @@ class KLoggerTest {
 
     //region Warn
     @Test
+    fun warnKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atWarn(capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atWarn {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+    }
+
+    @Test
+    fun warnMarkerKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val marker = KMarkerFactory.getMarker(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atWarn(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atWarn(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+        assertEquals(marker, markerCaptor.captured)
+    }
+
+    @Test
     fun warnEnabled() {
         every { imperativeLogger.isWarnEnabled() } returnsMany listOf(true, false, true)
 
@@ -542,6 +749,51 @@ class KLoggerTest {
 
     //region Error
     @Test
+    fun errorKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atError(capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atError {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+    }
+
+    @Test
+    fun errorMarkerKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val marker = KMarkerFactory.getMarker(randomText())
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.atError(capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.atError(marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+        assertEquals(marker, markerCaptor.captured)
+    }
+
+    @Test
     fun errorEnabled() {
         every { imperativeLogger.isErrorEnabled() } returnsMany listOf(true, false, true)
 
@@ -671,6 +923,33 @@ class KLoggerTest {
     //endregion
 
     //region Other
+    @Test
+    fun atLevelMarkerKLoggingEventBuilderSupplier() {
+        val message: String = randomText()
+        val exception = KLoggerTest.SimulatedException(randomText())
+        val level = Level.INFO
+        val marker = KMarkerFactory.getMarker(randomText())
+        val levelCaptor = slot<Level>()
+        val markerCaptor = slot<Marker>()
+        val supplierCaptor = slot<KLoggingEventBuilder.() -> Unit>()
+        every { imperativeLogger.at(capture(levelCaptor), capture(markerCaptor), capture(supplierCaptor)) } returns Unit
+
+        stepVerifierEmpty {
+            logger.at(level, marker) {
+                this.message = message
+                this.cause = exception
+                this.payload = mapOf("A" to "B")
+            }
+        }
+
+        val builder = KLoggingEventBuilder().apply(supplierCaptor.captured)
+        assertEquals(message, builder.message)
+        assertEquals(exception, builder.cause)
+        assertEquals(mapOf("A" to "B"), builder.payload)
+        assertEquals(marker, markerCaptor.captured)
+        assertEquals(level, levelCaptor.captured)
+    }
+
     @Test
     fun entry() {
         val message1: String = randomText()

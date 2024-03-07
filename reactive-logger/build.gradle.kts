@@ -3,7 +3,6 @@ plugins {
     jacoco
     kotlin("jvm")
     kotlin("kapt")
-    id("com.adarshr.test-logger")
     id("java-library")
     id("maven-publish")
     id("signing")
@@ -80,8 +79,8 @@ publishing {
             from(components["java"])
 
             pom {
-                name.set("Reactive logger layer for slf4j")
-                description.set("A Java & Kotlin library adapting slf4j for reactive applications")
+                name.set("Reactor logger layer for slf4j")
+                description.set("A Java & Kotlin library adapting slf4j for reactor project applications")
                 url.set("https://github.com/Numichi/reactive-logger")
                 inceptionYear.set("2022")
 
@@ -154,6 +153,8 @@ jacoco {
 
 val jacocoIgnorePath = listOf(
     // unimportant
+    "io/github/numichi/reactive/logger/coroutine/extend/**",
+    "io/github/numichi/reactive/logger/reactor/extend/**",
     "io/github/numichi/reactive/logger/spring/properties/**",
     "io/github/numichi/reactive/logger/spring/beans/helper/**",
     "io/github/numichi/reactive/logger/spring/handler/**",

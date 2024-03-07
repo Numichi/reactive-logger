@@ -2,11 +2,7 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.core.RSnapshot
 import org.slf4j.Marker
-import org.slf4j.event.EventConstants
 import org.slf4j.event.Level
-import org.slf4j.helpers.CheckReturnValue
-import org.slf4j.spi.LoggingEventBuilder
-import org.slf4j.spi.NOPLoggingEventBuilder
 import reactor.core.publisher.Mono
 
 /**
@@ -40,7 +36,6 @@ interface RLogger : RSnapshot {
     fun debug(marker: Marker?, format: String?, arg1: Any?, arg2: Any?): Mono<Void>
     fun debug(marker: Marker?, format: String?, vararg arguments: Any?): Mono<Void>
     fun debug(marker: Marker?, msg: String?, t: Throwable?): Mono<Void>
-
 
     fun isInfoEnabled(): Boolean
     fun info(msg: String?): Mono<Void>

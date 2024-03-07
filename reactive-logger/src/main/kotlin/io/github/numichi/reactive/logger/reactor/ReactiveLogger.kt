@@ -1,8 +1,9 @@
 package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
-import io.github.numichi.reactive.logger.internal.LoggerFactory
+import io.github.numichi.reactive.logger.LoggerFactory
 import io.github.numichi.reactive.logger.core.ReactiveCore
+import io.github.oshai.kotlinlogging.KLogger
 import org.slf4j.Logger
 import org.slf4j.Marker
 import org.slf4j.event.Level
@@ -35,6 +36,28 @@ open class ReactiveLogger(
         @JvmStatic
         fun getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): ReactiveLogger {
             return getLogger(LoggerFactory.getLogger(name), contextKey, scheduler)
+        }
+        //endregion
+
+        //region String base
+        @JvmStatic
+        fun getLogger(kLogger: KLogger): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), null, null)
+        }
+
+        @JvmStatic
+        fun getLogger(kLogger: KLogger, contextKey: Any?): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), contextKey, null)
+        }
+
+        @JvmStatic
+        fun getLogger(kLogger: KLogger, scheduler: Scheduler?): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), null, scheduler)
+        }
+
+        @JvmStatic
+        fun getLogger(kLogger: KLogger, contextKey: Any?, scheduler: Scheduler?): ReactiveLogger {
+            return getLogger(LoggerFactory.getLogger(kLogger), contextKey, scheduler)
         }
         //endregion
 

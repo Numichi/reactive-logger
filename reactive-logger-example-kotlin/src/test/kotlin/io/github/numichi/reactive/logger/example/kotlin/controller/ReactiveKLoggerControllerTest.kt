@@ -15,6 +15,9 @@ internal class ReactiveKLoggerControllerTest {
     @Autowired
     lateinit var webTestClient: WebTestClient
 
+    /**
+     * @see ReactiveKLoggerController.getSnapshot
+     */
     @Test
     fun getSnapshotTest() {
         webTestClient.get()
@@ -26,6 +29,9 @@ internal class ReactiveKLoggerControllerTest {
             .jsonPath("$.example").isEqualTo("example")
     }
 
+    /**
+     * @see ReactiveKLoggerController.getRead
+     */
     @Test
     fun getReadTest() {
         webTestClient.get()
@@ -37,10 +43,7 @@ internal class ReactiveKLoggerControllerTest {
     }
 
     /**
-     * Console example:
-     * ```
-     * {"message":"log0-information","context":{"userId":"b97c8da2-3b91-4d37-a4c3-98edbeeb1bc1","example":"example"}}
-     * ```
+     * @see ReactiveKLoggerController.doInfo0
      */
     @Test
     fun doInfo0Test() {
@@ -51,10 +54,7 @@ internal class ReactiveKLoggerControllerTest {
     }
 
     /**
-     * Console example:
-     * ```
-     * {"message":"log1-information","context":{"example":"example","foo":"bar"}}
-     * ```
+     * @see ReactiveKLoggerController.doInfo1
      */
     @Test
     fun doInfo1Test() {
@@ -65,10 +65,7 @@ internal class ReactiveKLoggerControllerTest {
     }
 
     /**
-     * Console example:
-     * ```
-     * {"message":"log2-information","context":{"example":"n/a"}}
-     * ```
+     * @see ReactiveKLoggerController.doInfo2
      */
     @Test
     fun doInfo2Test() {

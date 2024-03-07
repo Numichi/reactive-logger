@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import reactor.core.scheduler.Schedulers
 
 @ExperimentalCoroutinesApi
@@ -156,6 +157,34 @@ internal class CoroutineKLoggerTest {
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", instance3.logger.name)
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", instance4.logger.name)
             assertEquals("io.github.numichi.reactive.logger.coroutine.CoroutineKLoggerTest", instance5.logger.name)
+
+            assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance1.contextKey)
+            assertEquals("foo", instance2.contextKey)
+            assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance3.contextKey)
+            assertEquals("foo", instance4.contextKey)
+            assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance5.contextKey)
+
+            assertSame(Schedulers.boundedElastic(), instance1.scheduler)
+            assertSame(Schedulers.boundedElastic(), instance2.scheduler)
+            assertSame(Schedulers.parallel(), instance3.scheduler)
+            assertSame(Schedulers.parallel(), instance4.scheduler)
+            assertSame(Schedulers.boundedElastic(), instance5.scheduler)
+        }
+
+        run {
+            val slf4jLogger = LoggerFactory.getLogger("slf4jLogger")
+
+            val instance1 = CoroutineKLogger.getLogger(slf4jLogger)
+            val instance2 = CoroutineKLogger.getLogger(slf4jLogger, "foo")
+            val instance3 = CoroutineKLogger.getLogger(slf4jLogger, Schedulers.parallel())
+            val instance4 = CoroutineKLogger.getLogger(slf4jLogger, "foo", Schedulers.parallel())
+            val instance5 = CoroutineKLogger.getLogger(slf4jLogger, null, null)
+
+            assertEquals("slf4jLogger", instance1.logger.name)
+            assertEquals("slf4jLogger", instance2.logger.name)
+            assertEquals("slf4jLogger", instance3.logger.name)
+            assertEquals("slf4jLogger", instance4.logger.name)
+            assertEquals("slf4jLogger", instance5.logger.name)
 
             assertEquals(DEFAULT_REACTOR_CONTEXT_MDC_KEY, instance1.contextKey)
             assertEquals("foo", instance2.contextKey)

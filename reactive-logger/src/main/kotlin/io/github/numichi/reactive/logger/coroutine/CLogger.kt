@@ -1,8 +1,11 @@
 package io.github.numichi.reactive.logger.coroutine
 
 import org.slf4j.Marker
+import org.slf4j.event.Level
 
 interface CLogger {
+    fun isEnabledForLevel(level: Level): Boolean
+
     val isTraceEnabled: Boolean
     fun isTraceEnabled(marker: Marker?): Boolean
     suspend fun trace(msg: String?)

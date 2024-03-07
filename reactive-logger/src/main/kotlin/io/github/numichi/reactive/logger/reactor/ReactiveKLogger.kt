@@ -2,8 +2,12 @@ package io.github.numichi.reactive.logger.reactor
 
 import io.github.numichi.reactive.logger.Configuration
 import io.github.numichi.reactive.logger.core.ReactiveCore
-import io.github.numichi.reactive.logger.internal.LoggerFactory
-import io.github.oshai.kotlinlogging.*
+import io.github.numichi.reactive.logger.LoggerFactory
+import io.github.numichi.reactive.logger.reactor.extend.ExtendedRKLogger
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KLoggingEventBuilder
+import io.github.oshai.kotlinlogging.Level
+import io.github.oshai.kotlinlogging.Marker
 import org.slf4j.Logger
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler

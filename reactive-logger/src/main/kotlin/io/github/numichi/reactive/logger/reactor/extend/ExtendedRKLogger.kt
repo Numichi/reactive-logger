@@ -1,5 +1,6 @@
-package io.github.numichi.reactive.logger.reactor
+package io.github.numichi.reactive.logger.reactor.extend
 
+import io.github.numichi.reactive.logger.reactor.RKLogger
 import io.github.oshai.kotlinlogging.Marker
 
 /**
@@ -48,9 +49,9 @@ interface ExtendedRKLogger : RKLogger {
     fun warn(marker: Marker?, message: String?, throwable: Throwable?) = warn(throwable, marker) { message }
     fun error(marker: Marker?, message: String?, throwable: Throwable?) = error(throwable, marker) { message }
 
-    fun trace(marker: Marker?, throwable: Throwable?, message: () -> Any?) = trace(throwable, marker) { message }
-    fun debug(marker: Marker?, throwable: Throwable?, message: () -> Any?) = debug(throwable, marker) { message }
-    fun info(marker: Marker?, throwable: Throwable?, message: () -> Any?) = info(throwable, marker) { message }
-    fun warn(marker: Marker?, throwable: Throwable?, message: () -> Any?) = warn(throwable, marker) { message }
-    fun error(marker: Marker?, throwable: Throwable?, message: () -> Any?) = error(throwable, marker) { message }
+    fun trace(marker: Marker?, throwable: Throwable?, message: () -> Any?) = trace(throwable, marker, message)
+    fun debug(marker: Marker?, throwable: Throwable?, message: () -> Any?) = debug(throwable, marker, message)
+    fun info(marker: Marker?, throwable: Throwable?, message: () -> Any?) = info(throwable, marker, message)
+    fun warn(marker: Marker?, throwable: Throwable?, message: () -> Any?) = warn(throwable, marker, message)
+    fun error(marker: Marker?, throwable: Throwable?, message: () -> Any?) = error(throwable, marker, message)
 }
