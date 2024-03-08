@@ -1,14 +1,12 @@
 plugins {
     java
     jacoco
-    kotlin("jvm")
-    kotlin("kapt")
+    kotlin("jvm") version "1.9.22"
+    kotlin("kapt") version "1.9.22"
     id("java-library")
     id("maven-publish")
     id("signing")
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
-    id("org.jmailen.kotlinter")
+    id("org.jmailen.kotlinter") version "4.2.0"
 }
 
 group = project.property("group") as String
