@@ -157,6 +157,7 @@ class CoroutineKLogger(
             logger: KLogger,
             contextKey: Any,
         ): CoroutineKLogger {
+            io.github.oshai.kotlinlogging.KotlinLogging.logger {  }
             return getLogger(logger, contextKey, null)
         }
 

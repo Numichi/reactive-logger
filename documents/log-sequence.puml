@@ -1,0 +1,68 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor       Developer as Dev
+boundary    "Coroutine(K)Logger" as CKL
+boundary    "Reactive(K)Logger" as RKL
+control     Core
+entity      MDC
+
+== Use Coroutine(K)Logger ==
+
+Dev -> CKL: use get(K)Logger(...)
+note left: Initialization coroutine proxy
+CKL -> RKL: Init. execution environment
+CKL <- RKL: Reactive(K)Logger instance
+note left: Store the instance
+Dev <- CKL: Coroutine(K)Logger instance
+activate Dev
+note left: Available the logging
+Dev -> CKL: use any logger method
+activate CKL
+CKL -> RKL: Convert to reactive environment
+activate RKL
+RKL -> Core: Make a **Runnable** block
+activate Core
+Core -> Core: Trigger BEFORE MDC map modification hook
+Core -> Core: Append to MDC map the ContextView snapshot
+Core -> Core: Trigger AFTER MDC map  modification hook
+Core -> MDC: MDC map write into
+activate MDC
+Core -> Core: Execute the **Runnable** block
+note left: Where the log event is recorded
+Core -> MDC: to clear
+deactivate MDC
+RKL <-- Core
+deactivate Core
+CKL <-- RKL
+deactivate RKL
+Dev <-- CKL
+deactivate CKL
+deactivate Dev
+
+== Use Reactive(K)Logger ==
+
+Dev -> RKL: use get(K)Logger(...)
+Dev <- RKL: Reactive(K)Logger instance
+activate Dev
+note left: Available the logging
+Dev -> RKL: use any logger method
+activate RKL
+RKL -> Core: Make a **Runnable** block
+activate Core
+Core -> Core: Trigger BEFORE MDC map modification hook
+Core -> Core: Append to MDC map the ContextView snapshot
+Core -> Core: Trigger AFTER MDC map  modification hook
+Core -> MDC: MDC map write into
+activate MDC
+Core -> Core: Execute the **Runnable** block
+note left: Where the log event is recorded
+Core -> MDC: to clear
+deactivate MDC
+RKL <-- Core
+deactivate Core
+Dev <-- RKL
+deactivate RKL
+deactivate Dev
+
+@enduml

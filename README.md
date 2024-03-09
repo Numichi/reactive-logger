@@ -1,7 +1,3 @@
-⚠️ **The README has not yet been updated to v6.**
-
-Change information can be found under the release version label. In general use, it is not significant compared to v5.
-
 # Reactive-Logger
 
 [![CircleCI](https://circleci.com/gh/Numichi/reactive-logger/tree/master.svg?style=shield)](https://circleci.com/gh/Numichi/reactive-logger/tree/develop)
@@ -26,7 +22,6 @@ Change information can be found under the release version label. In general use,
 - [Configuration](#configuration)
   - [Default values](#default-values)
   - [Hook configuration](#hook-configuration-from-v510)
-    - [Deprecated version](#deprecated-from-v510) 
   - [Spring support](#spring-support)
 - [Other helper method](#other-helper-method)
   - [LoggerFactory](#loggerfactory)
@@ -142,7 +137,7 @@ dependencies {
 ## Logging minimal usage
 
 There are two main categories: `Reactive` and `Coroutine`. You can use Reactive in Project Reactor (Java or Kotlin) code-based, Coroutine mainly in Kotlin Coroutine environment. There are also two
-main suffixes: `Logger` and `KLogger`. Where you used Logger that component use `org.slf4j.Logger` interface. Similar way, KLogger means that component use `mu.KLogger`.
+main suffixes: `Logger` and `KLogger`. Where you used Logger that component use `org.slf4j.Logger` interface. Similar way, KLogger means that component use `io.github.oshai.kotlinlogging.KLogger`.
 
 > **_NOTE:_** You can not use Coroutine in Java code. Recommend using just ReactorLogger in Java code-based projects.
 
@@ -181,12 +176,12 @@ class Example {
     private val CoroutineLogger logger = CoroutineLogger.getLogger(Example::class.java);
     
     suspend fun minimal() {
-        logger.info("minimal") // suspended
+        logger.info("minimal") // suspend
     }
 
     suspend fun getAndLogUUID(): UUID {
         val uuid = UUID.randomUUID()
-        logger.info(uuid.toString()) // suspended
+        logger.info(uuid.toString()) // suspend
         return uuid
     }
 }
@@ -301,7 +296,7 @@ override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Vo
 }
 
 suspend fun getCurrentContextKey(): String {
-    val mdc readOrDefaultMdc() // suspend
+    val mdc = readOrDefaultMdc() // suspend
     return mdc.contextKey as String // can throw ClassCastException
 }
 ```
@@ -398,15 +393,21 @@ fun main(args: Array<String>) {
 }
 ```
 
-## Hook configuration (From: v5.1.0)
+## Hook configuration
 
-The purpose of the hook is to transfer data into an MDC snapshot from the current context view. For example, if you or another component saved data in reactive context, you can configure them data transfer into MDC snapshot for every log event. Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
+The hook aims to transfer data into an MDC snapshot from the current context view. For instance, if you or another component saved data in a 
+reactive context, you can configure the transfer of that data into the MDC snapshot for every log event. Therefore, the hook will be activated 
+for each logging event and supplement the current MDC information.
 
-There is a method for adding a hook: `Configuration.addContextHook(...)`. If you use `@Bean` with `MDCContextHook` type, not need used `Configuration` class.
+There is a method for adding a hook: `Configuration.addHook(...)`.
+If you use `Spring Boot`, you can use `@Bean` with `MDCContextHook` type and don't need used `Configuration` class directly.
 
-Hooks can overwrite any current snapshot stored data. You can set your activation position. `BEFORE` position means trigger before reading the current MDC, and `BEFORE` will define the base snapshot if configured. When the current MDC will be read, it may override this snapshot by records or create a default snapshot. Logically, `AFTER` will be run after them and can add or modify this snapshot.
+When you create a hook, you can set its activation position. The `BEFORE` position means it will trigger before reading the current `ContextView`, 
+defining the base snapshot. Afterward, it captures an MDC-like snapshot from the `ContextView`, adding it. This may override the pre-configured 
+records (see the BEFORE event) or create a default snapshot. Logically, the AFTER hook will run afterward, allowing the addition or modification 
+of this MDC-like snapshot.
 
-**Important:** If any exception occurs in a hook function, the entire hook will be ignored.
+❗**Important:** If any exception occurs in a hook function, the entire hook will be ignored.
 
 | parameter | property                  | type                                             | description                           |
 |-----------|---------------------------|--------------------------------------------------|---------------------------------------|
@@ -420,8 +421,8 @@ Hooks can overwrite any current snapshot stored data. You can set your activatio
 | return value        | non-nullable | Map<String, String> | Write or overwrite into the snapshot. If key of map is null that will be skip. |
 
 Kotlin example with Micrometer in Spring Boot 3+ ([source](https://github.com/micrometer-metrics/micrometer-samples/blob/main/webflux/src/main/java/com/example/micrometer/WebFluxApplication.java)):
+
 ```kotlin
-import io.github.numichi.reactive.logger.coroutine.CoroutineLogger
 import io.github.numichi.reactive.logger.hook.MDCContextHook
 import io.micrometer.context.ContextSnapshot
 import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor
@@ -446,69 +447,6 @@ class MDCContextHookConfiguration(private val tracer: Tracer) {
             map
         }
     }
-}
-```
-
-### Deprecated (From: v5.1.0)
-
-The purpose of the hook is to transfer data into an MDC snapshot from outside the context key's scope. Example, you use Spring Boot Sleuth, and you would like to see `traceId` and `snapId`  in MDC information. These are information you can find in `org.springframework.cloud.sleuth.TraceContext` interface context key and may vary depending on run location (see spanId). Therefore, the hook is activated separately for each logging event and supplements the current MDC information.
-
-There are two methods for adding a hook: `Configuration.addHook(...)` and `Configuration.addGenericHook(...)`. The difference between them is that `addHook` is not defined what type searched value, so you get an Object/Any type via `value`. In the case of the `addGenericHook`, it tries to cast the data to a generic value. 
-
-**Important!** Hooks can overwrite any current snapshot stored data. See the `order` parameter!
-
-**How you can skip or filter one or more hooks:** All registered hooks run in every log event, so you need to set up the logic to check you need it in current circumstances. If result map is empty, it cannot add anything. You can throw any exception that it interprets as not being able to add any data to the snapshot, so it works equal to a result empty map, and you never get this exception. Furthermore, you can reach the current snapshot instance via MDC and check the context key or snapshot content.
-
-| parameter  | property              | type                                        | description                                                                                             |
-|------------|-----------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| name       | required              | String                                      | Hook name identifier, if you would to overwrite or delete it later.                                     |
-| contextKey | required              | `Object` or `Any`                           | One key of the Reactor context that we want to reach.                                                   |
-| order      | optional (default: 0) | Integer                                     | A lower value has a higher priority for run. Snapshot be made from rector context between `-1` and `0`. |
-| hook       | required              | Function2<Object, MDC, Map<String, String>> | The new MDC instance will not contain the keys in the map. Like, remove by keys.                        |
-
-> **_NOTE:_** If you use `addGenericHook` replace `Function2<Object, ...>` with `Function2<GENERIC, ...>`.
-
-| Function2 parameter | property     | type                     | description                                                                                   |
-|---------------------|--------------|--------------------------|-----------------------------------------------------------------------------------------------|
-| value               | nullable     | `Object` or Generic type | Found data. It can be null when the context key is not found or can not cast to generic type. |
-| mdc                 | non-nullable | `MDC`                    | One key of the Reactor context that we want to reach.                                         |
-| return value        | non-nullable | Map<String, String>      | Write or overwrite into the snapshot. If key of map is null that will be skip.                |
-
-Example:
-```java
-// Java
-import org.springframework.cloud.sleuth.TraceContext;
-
-public static void main(String[] args) {
-    Configuration.<TraceContext>addGenericHook("hook-name", TraceContext.class, (traceContext, mdc) -> {
-        Objects.requireNonNull(traceContext, "traceContext must not be null");
-        
-        Map<String, String> map = new HashMap<>();
-        map.put("traceId", traceContext.traceId());
-        map.put("spanId", traceContext.spanId());
-        map.put("parentId", traceContext.parentId());
-        
-        return map;
-    });
-    // ...
-}
-```
-```kotlin
-// Kotlin
-import org.springframework.cloud.sleuth.TraceContext
-
-fun main(args: Array<String>) {
-    Configuration.addGenericHook<TraceContext>("hook-name", TraceContext::class.java) { traceContext, mdc ->
-        requireNotNull(traceContext) { "traceContext must not be null" }
-    
-        val map = mutableMapOf<String, String?>()
-        map["traceId"] = traceContext.traceId()
-        map["spanId"] = traceContext.spanId()
-        map["parentId"] = traceContext.parentId()
-    
-        map
-    }
-    // ...
 }
 ```
 
@@ -574,60 +512,30 @@ class LoggerHookConfiguration {
 }
 ```
 
-### Logger registry
-
-#### Logger
-
-In background is created a `LoggerRegistry` bean what basically a lazy logger instance creator from `application.properties` base information or configured default values. If you would not like a lot of logger instance in your project, LoggerRegistry can cache logger information and not make duplicate instance.
-
-```properties
-reactive-logger.instances.your-instance-name.logger = logger-name # you can it override via getter parameter
-reactive-logger.instances.your-instance-name.contextKey = your-context-key
-reactive-logger.instances.your-instance-name.scheduler = parallel
-```
-
-```java
-// Java (same in Kotlin)
-
-public class Example {
-    private final ReactiveLogger logger1; // looger name is "logger-name"
-    private final ReactiveLogger logger2; // logger name is Example class path
-    
-    public Example(LoggerRegistry loggerRegistry) {
-        this.logger1 = loggerRegistry.getReactiveLogger("your-instance-name");
-        this.logger2 = loggerRegistry.getReactiveLogger("your-instance-name", Example.class);
-        
-        var logger = loggerRegistry.getReactiveLogger("your-instance-name");
-        // logger == logger1 is same reference
-        // logger == logger2 is not same reference, because the logger information is different
-    }
-}
-```
-
-#### Handler
-If you use more context keys for MDC data and would not use context key parameters in methods for accidental errors, you can use `getContentHandlerReactive` or `getContentHandlerCoroutine`. They are mainly proxy methods that already contain context key from instance configuration.
-
-If you would like to create a custom instance from the proxy class you can also use simple class initialization: `var handler = new ContentHandlerReactive(...)` or `val handler = ContentHandlerCoroutine(...)`
-
-
 # Other helper method
 
 ## LoggerFactory
 
-There is `io.github.numichi.reactive.logger.LoggerFactory` similar to `org.slf4j.LoggerFactory` is available to Logger or KLogger creation.
+There is `io.github.numichi.reactive.logger.LoggerFactory` similar to `org.slf4j.LoggerFactory` 
+is available to Logger or KLogger creation.
+
+⚠️ **_WARNING_**: `LoggerFactory` serves as a proxy for the `KotlinLogging` and `LoggerFactory` classes.  
+These logger instances do not utilize the features of the `reactor-logger` library! 
+If you wish to leverage the `reactor-logger` library features, make sure to use `ReactiveLogger`, 
+`ReactiveKLogger`, `CoroutineLogger`, or `CoroutineKLogger` classes.
 
 ```java
 // Java
-Logger logger1 = org.slf4j.LoggerFactory.getLogger("foo")
-Logger logger2 = io.github.numichi.reactive.logger.getLogger("foo") 
+Logger logger1 = org.slf4j.LoggerFactory.getLogger("foo");
+Logger logger2 = io.github.numichi.reactive.logger.getLogger("foo");
 ```
 ```kotlin
 // Java
 val logger1: Logger = org.slf4j.LoggerFactory.getLogger("foo")
 val logger2: Logger = io.github.numichi.reactive.logger.LoggerFactory.getLogger("foo")
 
-val kLogger1: KLogger = mu.KotlinLogging.logger(logger1)
-val kLogger2: KLogger = mu.KotlinLogging.logger(logger2)
+val kLogger1: KLogger = io.github.oshai.kotlinlogging.KotlinLogging.logger(logger1)
+val kLogger2: KLogger = io.github.oshai.kotlinlogging.KotlinLogging.logger(logger2)
 
 val kLogger3: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger("foo")
 val kLogger4: KLogger = io.github.numichi.reactive.logger.LoggerFactory.getKLogger(logger1)

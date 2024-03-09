@@ -1,0 +1,315 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package "Coroutine package" {
+    interface CLogger {
+        + val isTraceEnabled: Boolean
+        + val isDebugEnabled: Boolean
+        + val isInfoEnabled: Boolean
+        + val isWarnEnabled: Boolean
+        + val isErrorEnabled: Boolean
+        --
+        + isEnabledForLevel(level: Level): Boolean
+        ..
+        + isTraceEnabled(marker: Marker?): Boolean
+        + suspend  trace(msg: String?)
+        + suspend  trace(format: String?, arg: Any?)
+        + suspend  trace(format: String?, arg1: Any?, arg2: Any?)
+        + suspend  trace(msg: String?, t: Throwable?)
+        + suspend  trace(marker: Marker?, msg: String?)
+        + suspend  trace(marker: Marker?, format: String?, arg: Any?)
+        + suspend  trace(marker: Marker?, format: String?, arg1: Any?, arg2: Any?)
+        + suspend  trace(marker: Marker?, format: String?, vararg argArray: Any?)
+        + suspend  trace(marker: Marker?, msg: String?, t: Throwable?)
+        ..
+        and "debug", "info", "warn", "error" methods
+    }
+
+    interface CKLogger {
+        + val name: String
+        --
+        + isLoggingEnabledFor(level: Level, marker: Marker? = null): Boolean
+        + suspend at(level: Level, marker: Marker? = null, block: KLoggingEventBuilder.() -> Unit)
+        + suspend entry(vararg arguments: Any?)
+        + suspend exit()
+        + suspend <T> exit(result: T): T
+        + suspend <T> throwing(throwable: T): T where T : Throwable
+        + suspend <T> catching(throwable: T) where T : Throwable
+        ..
+        + isTraceEnabled(marker: Marker? = null): Boolean
+        + suspend trace(message: () -> Any?)
+        + suspend trace(throwable: Throwable?, message: () -> Any?)
+        + suspend trace(throwable: Throwable?, marker: Marker?, message: () -> Any?)
+        + suspend atTrace(marker: Marker?, block: KLoggingEventBuilder.() -> Unit)
+        ..
+        and "debug", "info", "warn", "error" methods
+    }
+
+    interface ExtendedCKLogger {
+        + val isTraceEnabled: Boolean
+        + val isDebugEnabled: Boolean
+        + val isInfoEnabled: Boolean
+        + val isWarnEnabled: Boolean
+        + val isErrorEnabled: Boolean
+        --
+        + suspend trace(message: String?)
+        + suspend trace(message: String?, throwable: Throwable?)
+        + suspend trace(throwable: Throwable?, message: String?)
+        + suspend trace(marker: Marker?, message: String?)
+        + suspend trace(marker: Marker?, message: () -> Any?)
+        + suspend trace(marker: Marker?, message: String?, throwable: Throwable?)
+        + suspend trace(marker: Marker?, throwable: Throwable?, message: () -> Any?)
+        ..
+        and "debug", "info", "warn", "error" methods
+    }
+
+    class CoroutineLogger {
+        + static getLogger(name: String): CoroutineLogger
+        + static getLogger(name: String, contextKey: Any): CoroutineLogger
+        + static getLogger(name: String, scheduler: Scheduler): CoroutineLogger
+        + static getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger
+        ..
+        + static getLogger(clazz: Class<*>): CoroutineLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any): CoroutineLogger
+        + static getLogger(clazz: Class<*>, scheduler: Scheduler): CoroutineLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger
+        ..
+        + static getLogger(logger: Logger): CoroutineLogger
+        + static getLogger(logger: Logger, contextKey: Any): CoroutineLogger
+        + static getLogger(logger: Logger, scheduler: Scheduler): CoroutineLogger
+        + static getLogger(logger: Logger, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger
+        ..
+        + static getLogger(logger: KLogger): CoroutineLogger
+        + static getLogger(logger: KLogger, contextKey: Any): CoroutineLogger
+        + static getLogger(logger: KLogger, scheduler: Scheduler): CoroutineLogger
+        + static getLogger(logger: KLogger, contextKey: Any?, scheduler: Scheduler?): CoroutineLogger
+        ..
+        Implemented all interfaces.
+    }
+
+    class CoroutineKLogger {
+        + static getLogger(name: String): CoroutineKLogger
+        + static getLogger(name: String, contextKey: Any): CoroutineKLogger
+        + static getLogger(name: String, scheduler: Scheduler): CoroutineKLogger
+        + static getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger
+        ..
+        + static getLogger(clazz: Class<*>): CoroutineKLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any): CoroutineKLogger
+        + static getLogger(clazz: Class<*>, scheduler: Scheduler): CoroutineKLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger
+        ..
+        + static getLogger(logger: Logger): CoroutineKLogger
+        + static getLogger(logger: Logger, contextKey: Any): CoroutineKLogger
+        + static getLogger(logger: Logger, scheduler: Scheduler): CoroutineKLogger
+        + static getLogger(logger: Logger, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger
+        ..
+        + static getLogger(func: () -> Unit): CoroutineKLogger
+        + static getLogger(func: () -> Unit, contextKey: Any): CoroutineKLogger
+        + static getLogger(func: () -> Unit, scheduler: Scheduler): CoroutineKLogger
+        + static getLogger(func: () -> Unit, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger
+        ..
+        + static getLogger(logger: KLogger): CoroutineKLogger
+        + static getLogger(logger: KLogger, contextKey: Any): CoroutineKLogger
+        + static getLogger(logger: KLogger, scheduler: Scheduler): CoroutineKLogger
+        + static getLogger(logger: KLogger, contextKey: Any?, scheduler: Scheduler?): CoroutineKLogger
+        ..
+        Implemented all interfaces.
+    }
+
+    note left of CLogger
+        All methods are mirror of Slf4j Logger
+    end note
+
+    note left of CKLogger
+        All methods are mirror of Kotlin Logger
+    end note
+
+    note left of ExtendedCKLogger
+        Kotlin Logger does not contain these methods.
+        All methods will be mapped to parent methods.
+    end note
+}
+
+CLogger <.. CoroutineLogger : implements
+CKLogger <|-- ExtendedCKLogger
+ExtendedCKLogger <.. CoroutineKLogger : implements
+
+package "Reactor package" {
+    interface RLogger {
+        + isEnabledForLevel(level: Level): Boolean
+        ..
+        + isTraceEnabled(marker: Marker?): Boolean
+        + isTraceEnabled(): Boolean
+        + trace(msg: String?): Mono<Void>
+        + trace(msg: String?, t: Throwable?): Mono<Void>
+        + trace(format: String?, arg: Any?): Mono<Void>
+        + trace(format: String?, arg1: Any?, arg2: Any?): Mono<Void>
+        + trace(format: String?, vararg arguments: Any?): Mono<Void>
+        + trace(marker: Marker?, msg: String?): Mono<Void>
+        + trace(marker: Marker?, format: String?, arg: Any?): Mono<Void>
+        + trace(marker: Marker?, format: String?, arg1: Any?, arg2: Any?): Mono<Void>
+        + trace(marker: Marker?, format: String?, vararg argArray: Any?): Mono<Void>
+        + trace(marker: Marker?, msg: String?, t: Throwable?): Mono<Void>
+        ..
+        and "debug", "info", "warn", "error" methods
+    }
+
+    interface RKLogger {
+        + val name: String
+        --
+        + isLoggingEnabledFor(level: Level, marker: Marker? = null): Boolean
+        + at(level: Level, marker: Marker? = null, block: KLoggingEventBuilder.() -> Unit): Mono<Void>
+        + entry(vararg arguments: Any?): Mono<Void>
+        + exit(): Mono<Void>
+        + <T> exit(result: T): Mono<T>
+        + <T> throwing(throwable: T): Mono<T> where T : Throwable
+        + <T> catching(throwable: T): Mono<Void> where T : Throwable
+        ..
+        + isTraceEnabled(marker: Marker? = null): Boolean
+        + trace(message: () -> Any?): Mono<Void>
+        + trace(throwable: Throwable?, message: () -> Any?): Mono<Void>
+        + trace(throwable: Throwable?, marker: Marker?, message: () -> Any?): Mono<Void>
+        + atTrace(marker: Marker?, block: KLoggingEventBuilder.() -> Unit): Mono<Void>
+        ..
+        and "debug", "info", "warn", "error" methods
+    }
+
+    interface ExtendedRKLogger {
+        + val isTraceEnabled: Boolean
+        + val isDebugEnabled: Boolean
+        + val isInfoEnabled: Boolean
+        + val isWarnEnabled: Boolean
+        + val isErrorEnabled: Boolean
+        --
+        + trace(message: String?): Mono<Void>
+        + trace(message: String?, throwable: Throwable?): Mono<Void>
+        + trace(throwable: Throwable?, message: String?): Mono<Void>
+        + trace(marker: Marker?, message: String?): Mono<Void>
+        + trace(marker: Marker?, message: () -> Any?): Mono<Void>
+        + trace(marker: Marker?, message: String?, throwable: Throwable?): Mono<Void>
+        + trace(marker: Marker?, throwable: Throwable?, message: () -> Any?): Mono<Void>
+        ..
+        and "debug", "info", "warn", "error" methods
+    }
+
+    class ReactiveKLogger {
+        + static getLogger(name: String): ReactiveKLogger
+        + static getLogger(name: String, contextKey: Any): ReactiveKLogger
+        + static getLogger(name: String, scheduler: Scheduler): ReactiveKLogger
+        + static getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger
+        ..
+        + static getLogger(clazz: Class<*>): ReactiveKLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any): ReactiveKLogger
+        + static getLogger(clazz: Class<*>, scheduler: Scheduler): ReactiveKLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger
+        ..
+        + static getLogger(logger: Logger): ReactiveKLogger
+        + static getLogger(logger: Logger, contextKey: Any): ReactiveKLogger
+        + static getLogger(logger: Logger, scheduler: Scheduler): ReactiveKLogger
+        + static getLogger(logger: Logger, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger
+        ..
+        + static getLogger(func: () -> Unit): ReactiveKLogger
+        + static getLogger(func: () -> Unit, contextKey: Any): ReactiveKLogger
+        + static getLogger(func: () -> Unit, scheduler: Scheduler): ReactiveKLogger
+        + static getLogger(func: () -> Unit, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger
+        ..
+        + static getLogger(logger: KLogger): ReactiveKLogger
+        + static getLogger(logger: KLogger, contextKey: Any): ReactiveKLogger
+        + static getLogger(logger: KLogger, scheduler: Scheduler): ReactiveKLogger
+        + static getLogger(logger: KLogger, contextKey: Any?, scheduler: Scheduler?): ReactiveKLogger
+        ..
+        Implemented all interfaces.
+    }
+
+    class ReactiveLogger {
+        + static getLogger(name: String): ReactiveLogger
+        + static getLogger(name: String, contextKey: Any): ReactiveLogger
+        + static getLogger(name: String, scheduler: Scheduler): ReactiveLogger
+        + static getLogger(name: String, contextKey: Any?, scheduler: Scheduler?): ReactiveLogger
+        ..
+        + static getLogger(clazz: Class<*>): ReactiveLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any): ReactiveLogger
+        + static getLogger(clazz: Class<*>, scheduler: Scheduler): ReactiveLogger
+        + static getLogger(clazz: Class<*>, contextKey: Any?, scheduler: Scheduler?): ReactiveLogger
+        ..
+        + static getLogger(logger: Logger): ReactiveLogger
+        + static getLogger(logger: Logger, contextKey: Any): ReactiveLogger
+        + static getLogger(logger: Logger, scheduler: Scheduler): ReactiveLogger
+        + static getLogger(logger: Logger, contextKey: Any?, scheduler: Scheduler?): ReactiveLogger
+        ..
+        + static getLogger(logger: KLogger): ReactiveLogger
+        + static getLogger(logger: KLogger, contextKey: Any): ReactiveLogger
+        + static getLogger(logger: KLogger, scheduler: Scheduler): ReactiveLogger
+        + static getLogger(logger: KLogger, contextKey: Any?, scheduler: Scheduler?): ReactiveLogger
+        ..
+        Implemented all interfaces.
+    }
+
+    note left of RLogger
+        All methods are mirror of Slf4j Logger
+    end note
+
+    note left of RKLogger
+        All methods are mirror of Kotlin Logger
+    end note
+
+    note left of ExtendedRKLogger
+        Kotlin Logger does not contain these methods.
+        All methods will be mapped to parent methods.
+    end note
+}
+
+RLogger <.. ReactiveLogger : implements
+RKLogger <|-- ExtendedRKLogger
+ExtendedRKLogger <.. ReactiveKLogger : implements
+
+CoroutineLogger --> ReactiveLogger : initialize
+CoroutineKLogger --> ReactiveKLogger : initialize
+
+package "Core package" {
+    interface RSnapshot {
+        + snapshot(): Mono<MDC>
+        + snapshot(ContextView): Mono<MDC>
+    }
+
+    abstract class Core<L (Logger or KLogger)> {
+        + val logger: L
+        + val contextKey: Any
+        + val scheduler: Scheduler
+        --
+        + wrapRunner(ContextView, Runnable)
+        + <T> wrapRunner(ContextView, Supplier<T>): T
+        + <T> logOnEach(BiConsumer<L, Signal<T>>): Consumer<Signal<T>>
+        + <T> logOnSignal(Signal<V>, Consumer<L>)
+    }
+
+    abstract class CoroutineCore<R : RSnapshot, L (Logger or KLogger)> {
+        + val reactiveLogger: R
+        --
+        + suspend snapshot(ContextView? = null): MDC
+        + suspend wrapUnit((R) -> Mono<*>)
+        + suspend <T> wrap((R) -> Mono<T>): T
+        - suspend getContextView(): ContextView
+    }
+
+    abstract class ReactiveCore<L (Logger or KLogger)> {
+        + snapshot(): Mono<MDC>
+        + snapshot(ContextView): Mono<MDC>
+        + wrap(Runnable): Mono<Void>
+        + <T> wrap(Supplier<T>): Mono<T>
+    }
+}
+
+Core <|-- CoroutineCore
+Core <|-- ReactiveCore
+
+CoroutineCore <|-- CoroutineLogger
+CoroutineCore <|-- CoroutineKLogger
+CoroutineCore *-- RSnapshot
+
+RSnapshot <|-- ReactiveCore
+ReactiveCore <|-- ReactiveLogger
+ReactiveCore <|-- ReactiveKLogger
+
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+title Library components overview
+
+component "ReactorLogger" as RL
+component "ReactorKLogger" as RKL
+component "CoroutineLogger" as CL
+component "CoroutineKLogger" as CKL
+component "Core"
+
+Using ..> RL : Create and use API
+Using ..> RKL : Create and use API
+Using ..> CL : Create and use API
+Using ..> CKL :Create and use API
+
+CL ..> RL : use
+CKL ..> RKL : use
+RKL ..> Core : send runnable block
+RL ..> Core : send runnable block
+
+note top of Using
+    Any developer, who wants to use library.
+end note
+
+note left of CL
+    All suspend methods will
+    be reduced to Reactor operation.
+end note
+
+note left of CKL
+    All suspend methods will
+    be reduced to Reactor operation.
+end note
+
+note left of RL
+    It makes a runnable block
+    with a Slf4j Logger
+    and gives it to the core.
+end note
+
+note left of RKL
+    It makes a runnable block
+    with a Kotlin Logger
+    and gives it to the core.
+end note
+
+note left of Core
+    It collects MDC information from Context, copies it to implemented (real) MDC,
+    and a runnable block will be executed. After it, real MDC will be cleaned.
+end note
+
+@enduml
