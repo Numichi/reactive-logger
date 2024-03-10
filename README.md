@@ -1,4 +1,4 @@
-⚠️ **The README has not yet been updated to v6.0.0.**
+⚠️ **The README has not yet been updated to v6.**
 
 Change information can be found under the release version label. In general use, it is not significant compared to v5.
 
