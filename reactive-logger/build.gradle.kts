@@ -60,7 +60,7 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test:3.6.3")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.apache.logging.log4j:log4j-api:2.23.0")
-    testImplementation("org.apache.logging.log4j:log4j-core:2.23.0")
+    testImplementation("org.apache.logging.log4j:log4j-core:2.23.1")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.23.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
