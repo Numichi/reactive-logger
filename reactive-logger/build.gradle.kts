@@ -57,7 +57,7 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor:3.2.3")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.3")
-    testImplementation("io.projectreactor:reactor-test:3.6.3")
+    testImplementation("io.projectreactor:reactor-test:3.6.4")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.apache.logging.log4j:log4j-api:2.23.1")
     testImplementation("org.apache.logging.log4j:log4j-core:2.23.1")
