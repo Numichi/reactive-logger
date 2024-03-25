@@ -53,8 +53,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
     api("io.github.oshai:kotlin-logging-jvm:6.0.3")
 
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.2.3")
-    kapt("org.springframework.boot:spring-boot-configuration-processor:3.2.3")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.4")
     testImplementation("io.projectreactor:reactor-test:3.6.4")
