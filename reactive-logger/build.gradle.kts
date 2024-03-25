@@ -47,7 +47,7 @@ dependencies {
     implementation("io.projectreactor:reactor-core:3.6.4")
     implementation("org.slf4j:slf4j-api:2.0.12")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("org.springframework.boot:spring-boot-starter:3.2.3")
+    implementation("org.springframework.boot:spring-boot-starter:3.2.4")
     implementation("org.springframework.boot:spring-boot-autoconfigure:3.2.4")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
