@@ -9,4 +9,12 @@ updates:
       directory: "/reactive-logger"
       schedule:
           interval: "weekly"
+    - package-ecosystem: "gradle"
+      directory: "/reactive-logger-example-java"
+      schedule:
+          interval: "weekly"
+    - package-ecosystem: "gradle"
+      directory: "/reactive-logger-example-kotlin"
+      schedule:
+          interval: "weekly"
           
