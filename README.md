@@ -15,13 +15,13 @@
   - [Dependency](#dependency)
   - [Logger library (optional)](#logger-library-optional)
   - [Logging minimal usage](#logging-minimal-usage)
-  - [How does it storage MDC information?](#how-does-it-storage-mdc-information)
-  - [Context modification and reading](#context-modification-and-reading)
+  - [How does it store MDC information?](#how-does-it-store-mdc-information)
+  - [Context modification and reading](#context-modification-and-reading-)
   - [MDC](#mdc)
   - [Extended MDC scope in coroutine (withMDCContext)](#extended-mdc-scope-in-coroutine-withmdccontext)
 - [Configuration](#configuration)
   - [Default values](#default-values)
-  - [Hook configuration](#hook-configuration-from-v510)
+  - [Hook configuration](#hook-configuration)
   - [Spring support](#spring-support)
 - [Other helper method](#other-helper-method)
   - [LoggerFactory](#loggerfactory)
@@ -29,10 +29,9 @@
 
 # Compatibility Matrix
 
-| Version (current)                                                                   | Compatibility | Min Java | GitHub Branch                                                                        | 
-|-------------------------------------------------------------------------------------|---------------|----------|--------------------------------------------------------------------------------------|
-| 6.x.x | Spring Boot 3 | Java 17  | master                                                                               |
-| 4.0.5 (maintenance) | Spring Boot 2 | Java 11  | [SpringBoot-2.x.x](https://github.com/Numichi/reactive-logger/tree/SpringBoot-2.x.x) |
+| Version (current)   | Compatibility | Min Java | GitHub Branch                                                                        | 
+|---------------------|---------------|----------|--------------------------------------------------------------------------------------|
+| 6.x.x               | Spring Boot 3 | Java 17  | master                                                                               |
 
 # Getting Started
 
@@ -121,8 +120,8 @@ When using Log4j2 you should 2 things. You have to deactivate Logback and import
 Many documentation can be found on the internet ([here](https://www.callicoder.com/spring-boot-log4j-2-example/) and [here](https://www.baeldung.com/spring-boot-logging)) on how can you change from
 Logback to Log4j2.
 
+Example to Gradle Kotlin DSL:
 ```kotlin
-// Gradle Kotlin DSL
 configurations {
     all {
         exclude("org.springframework.boot", "spring-boot-starter-logging")
@@ -161,7 +160,7 @@ class Example {
     private final ReactiveLogger logger = ReactiveLogger.getLogger(Example.class);
     
     public Mono<Void> minimal() {
-        return logger.info("minimal")
+        return logger.info("minimal");
     }
     
     public Mono<UUID> getAndLogUUID() {
@@ -187,7 +186,7 @@ class Example {
 }
 ```
 
-## How does it storage MDC information?
+## How does it store MDC information?
 Every MDC information is stored in the Reactor context. All MDC information can be stored under a predefined one or more key namespace. You can set it manually or entrust the library to handle it. Mostly `<String, String>` key-value map can be stored in. Thus, the key namespace follows the MDC requirement. If it finds a different type the read from reactor context, `toString()` will be run.
 
 Recommend context structure:
@@ -247,7 +246,6 @@ There is an option to ignore the context key if you use only this library for mo
 // example
 public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     return chain.filter(exchange)
-        .flatMap(())
         .contextWrite(context -> MDCContext.modify(context, mdc -> mdc.plus(Map.of("foo", UUID.randomUUID().toString())))) // context key will "DEFAULT_REACTOR_CONTEXT_MDC_KEY"
         .contextWrite(context -> MDCContext.modify(context, Map.of("bar", UUID.randomUUID().toString()))) // context key will "DEFAULT_REACTOR_CONTEXT_MDC_KEY"
         .contextWrite(context -> MDCContext.modify(context, "another-namespace", Tuples.of("baz", UUID.randomUUID().toString()))); // context key will "another-namespace"
@@ -404,7 +402,7 @@ If you use `Spring Boot`, you can use `@Bean` with `MDCContextHook` type and don
 
 When you create a hook, you can set its activation position. The `BEFORE` position means it will trigger before reading the current `ContextView`, 
 defining the base snapshot. Afterward, it captures an MDC-like snapshot from the `ContextView`, adding it. This may override the pre-configured 
-records (see the BEFORE event) or create a default snapshot. Logically, the AFTER hook will run afterward, allowing the addition or modification 
+records (see the `BEFORE` event) or create a default snapshot. Logically, the `AFTER` hook will run afterward, allowing the addition or modification 
 of this MDC-like snapshot.
 
 ❗**Important:** If any exception occurs in a hook function, the entire hook will be ignored.
@@ -475,8 +473,8 @@ import org.springframework.cloud.sleuth.TraceContext;
 public class HookConfiguration {
 
     @Bean
-    public MDCHook<TraceContext> traceContextHook() {
-        return new MDCHook<>("hook-name", TraceContext.class, (traceContext, mdc) -> {
+    public MDCContextHook<TraceContext> traceContextHook() {
+        return new MDCContextHook<>("hook-name", TraceContext.class, (traceContext, mdc) -> {
             Objects.requireNonNull(traceContext, "traceContext must not be null");
       
             Map<String, String> result = new HashMap<>();
@@ -498,8 +496,8 @@ import org.springframework.cloud.sleuth.TraceContext
 class LoggerHookConfiguration {
 
     @Bean
-    fun traceContextHook(): MDCHook<TraceContext> {
-        return MDCHook("traceContextHook", TraceContext::class.java) { traceContext, _ ->
+    fun traceContextHook(): MDCContextHook<TraceContext> {
+        return MDCContextHook("traceContextHook", TraceContext::class.java) { traceContext, _ ->
             requireNotNull(traceContext) { "traceContext must not be null" }
       
             val map = mutableMapOf<String, String?>()
