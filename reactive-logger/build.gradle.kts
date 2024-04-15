@@ -51,7 +51,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure:3.2.4")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
-    api("io.github.oshai:kotlin-logging-jvm:6.0.4")
+    api("io.github.oshai:kotlin-logging-jvm:6.0.9")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
     kapt("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
