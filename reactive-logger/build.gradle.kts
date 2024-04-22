@@ -47,7 +47,7 @@ dependencies {
     implementation("io.projectreactor:reactor-core:3.6.5")
     implementation("org.slf4j:slf4j-api:2.0.13")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
-    implementation("org.springframework.boot:spring-boot-starter:3.2.4")
+    implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     implementation("org.springframework.boot:spring-boot-autoconfigure:3.2.4")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
@@ -56,7 +56,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
     kapt("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.5")
     testImplementation("io.projectreactor:reactor-test:3.6.5")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.apache.logging.log4j:log4j-api:2.23.1")
