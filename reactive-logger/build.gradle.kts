@@ -56,7 +56,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
     kapt("org.springframework.boot:spring-boot-configuration-processor:3.2.4")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.5")
     testImplementation("io.projectreactor:reactor-test:3.6.5")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testImplementation("org.apache.logging.log4j:log4j-api:2.23.1")
