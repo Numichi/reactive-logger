@@ -63,7 +63,7 @@ dependencies {
     testImplementation("org.apache.logging.log4j:log4j-core:2.23.1")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("io.mockk:mockk:1.13.10")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 }
