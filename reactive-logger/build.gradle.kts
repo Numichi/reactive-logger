@@ -2,7 +2,7 @@ plugins {
     java
     jacoco
     kotlin("jvm") version "1.9.24"
-    kotlin("kapt") version "1.9.23"
+    kotlin("kapt") version "1.9.24"
     id("java-library")
     id("maven-publish")
     id("signing")
@@ -50,7 +50,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     implementation("org.springframework.boot:spring-boot-autoconfigure:3.2.5")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.1")
     api("io.github.oshai:kotlin-logging-jvm:6.0.9")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:3.2.5")
@@ -63,7 +63,7 @@ dependencies {
     testImplementation("org.apache.logging.log4j:log4j-core:2.23.1")
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("io.mockk:mockk:1.13.10")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
 }
