@@ -2,7 +2,7 @@ plugins {
     java
     jacoco
     kotlin("jvm") version "1.9.24"
-    kotlin("kapt") version "1.9.24"
+    kotlin("kapt") version "2.0.0"
     id("java-library")
     id("maven-publish")
     id("signing")
